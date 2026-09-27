@@ -889,7 +889,7 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 <div class="app"><aside class="sidebar"><div class="brand yt-brand-fixed">
       <span class="yt-brand-logo" aria-hidden="true"><span></span></span>
       <span class="yt-brand-name">YOU TIM</span>
-      <small>V44</small>
+      <small>V47</small>
     </div><div class="nav">
 <button class="active" data-page="dashboard"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></span><span>Главная</span></button>
 <button data-page="channels"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span><span>Каналы</span></button>
@@ -2586,13 +2586,38 @@ body.light-theme .yt-account::after{color:#111820}
  let adminRows=[], adminTab='dashboard', adminVerified=false;
  function payload(){try{return JSON.parse(localStorage.getItem('youtim_v2')||'{}')}catch(e){return {}}}
  function savePayload(p){localStorage.setItem('youtim_v2',JSON.stringify(p));try{window.ytCloudSave?.()}catch(e){}}
- function consented(){const p=payload();return !!(p.privacyConsent?.accepted && p.privacyConsent.version===VERSION)}
- function showConsent(){if(consented())return;document.getElementById('ytConsentGate')?.classList.add('on')}
+ async function consentStorageKey(){
+   try{
+     const s=await window.ytSupabase?.auth.getSession();
+     const uid=s?.data?.session?.user?.id;
+     return uid?'youtim_consent_'+VERSION+'_'+uid:null;
+   }catch(e){return null}
+ }
+ async function consented(){
+   const key=await consentStorageKey();
+   if(key && localStorage.getItem(key)==='1')return true;
+   const p=payload();
+   const ok=!!(p.privacyConsent?.accepted && p.privacyConsent.version===VERSION);
+   if(ok && key)localStorage.setItem(key,'1');
+   return ok;
+ }
+ async function showConsent(){
+   if(await consented())return;
+   document.getElementById('ytConsentGate')?.classList.add('on');
+ }
  window.ytShowConsent=showConsent;
  const scroll=document.getElementById('ytTermsScroll'), check=document.getElementById('ytConsentCheck'), agree=document.getElementById('ytConsentAgree');
  scroll?.addEventListener('scroll',()=>{if(scroll.scrollTop+scroll.clientHeight>=scroll.scrollHeight-20)check.disabled=false});
  check?.addEventListener('change',()=>agree.disabled=!check.checked);
- agree?.addEventListener('click',()=>{const p=payload();p.privacyConsent={accepted:true,version:VERSION,acceptedAt:new Date().toISOString(),adminChannelDataAccess:true,channelNames:true,channelUrls:true,channelNiches:true,monetizationStatus:true};savePayload(p);document.getElementById('ytConsentGate')?.classList.remove('on');setTimeout(()=>window.ytCloudSave?.(),500)});
+ agree?.addEventListener('click',async()=>{
+   const p=payload();
+   p.privacyConsent={accepted:true,version:VERSION,acceptedAt:new Date().toISOString(),adminChannelDataAccess:true,channelNames:true,channelUrls:true,channelNiches:true,monetizationStatus:true};
+   savePayload(p);
+   const key=await consentStorageKey();
+   if(key)localStorage.setItem(key,'1');
+   document.getElementById('ytConsentGate')?.classList.remove('on');
+   setTimeout(()=>window.ytCloudSave?.(),500);
+ });
  document.getElementById('ytConsentDecline')?.addEventListener('click',async()=>{alert('Без согласия облачные функции YOU TIM недоступны. / Cloud features are unavailable without agreement.');try{await window.ytSupabase?.auth.signOut()}catch(e){}location.reload()});
 
  function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -2947,6 +2972,85 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
  document.querySelectorAll('.yt-brand-logo').forEach(el=>{el.setAttribute('title','Admin');el.addEventListener('click',async()=>{try{const r=await window.ytSupabase?.rpc('is_admin');if(!r?.error&&r?.data===true){showPage('admin');setTimeout(()=>window.ytAdminLoad?.(),30);return}}catch(e){}open()})});
  document.getElementById('ytAdminPassCancel').onclick=close; gate.addEventListener('click',e=>{if(e.target===gate)close()});
  form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='Проверка...';const btn=form.querySelector('.go');btn.disabled=true;try{const {data,error}=await window.ytSupabase.auth.signInWithPassword({email:'tema666sgl@gmail.com',password:input.value});if(error)throw error;const r=await window.ytSupabase.rpc('is_admin');if(r.error||r.data!==true){await window.ytSupabase.auth.signOut();throw new Error('Этот аккаунт не является администратором.')}close();setTimeout(()=>{showPage('admin');window.ytAdminLoad?.()},180)}catch(err){msg.textContent='Неверный пароль администратора.'}finally{btn.disabled=false}});
+})();
+</script>
+
+
+
+<!-- YOU TIM V47 — mobile navigation + first-login interactive tour -->
+<style id="yt-v47-mobile-tour-css">
+#ytMobileNav47,#ytMore47{display:none}
+@media(max-width:760px){
+ body{padding-bottom:82px!important}
+ .main{padding-bottom:118px!important}
+ #ytMobileNav47{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:95000;height:72px;padding:5px 6px calc(5px + env(safe-area-inset-bottom));background:rgba(8,12,16,.97);border-top:1px solid #26313a;backdrop-filter:blur(18px);box-shadow:0 -10px 30px #0008}
+ #ytMobileNav47 button{border:0;background:transparent;color:#7f8b96;border-radius:12px;font:850 9px system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0}
+ #ytMobileNav47 button b{font-size:19px;line-height:1;font-weight:700}#ytMobileNav47 button.active{color:#35e878;background:#121b18}
+ #ytMore47{position:fixed;inset:0;z-index:96000;background:#0009;align-items:flex-end;padding:10px}#ytMore47.on{display:flex}
+ #ytMore47 .sheet{width:100%;background:#0d1419;border:1px solid #2b3740;border-radius:22px;padding:12px 12px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -25px 80px #000}
+ #ytMore47 .grab{width:42px;height:4px;border-radius:99px;background:#34414a;margin:1px auto 12px}.yt-more-grid47{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .yt-more-grid47 button{padding:14px 10px;border:1px solid #293640;border-radius:13px;background:#121a20;color:#fff;font:900 11px system-ui;text-align:left}.yt-more-grid47 button:active{transform:scale(.98)}
+ #ytPushOpen{bottom:84px!important}.v22-ai-fab{bottom:84px!important}#ytAccountDock{bottom:84px!important}
+}
+#ytTour47{position:fixed;inset:0;z-index:1400000;display:none;pointer-events:none}#ytTour47.on{display:block}
+#ytTour47 .shade{position:absolute;inset:0;background:rgba(0,0,0,.72);pointer-events:auto}
+#ytTour47 .box{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100vw - 24px));z-index:3;background:#0d151a;border:1px solid #35e87888;border-radius:20px;padding:17px;box-shadow:0 25px 80px #000;pointer-events:auto}
+#ytTour47 .count{color:#35e878;font:950 9px system-ui;letter-spacing:1.4px}#ytTour47 h3{margin:7px 0 6px;font:950 18px system-ui}#ytTour47 p{margin:0;color:#a0abb4;font:500 11px/1.55 system-ui}
+#ytTour47 .actions{display:flex;justify-content:flex-end;margin-top:14px}#ytTour47Next{border:0;border-radius:11px;background:#35e878;color:#07110b;padding:11px 18px;font:950 11px system-ui}
+.yt-tour-target47{position:relative!important;z-index:1400002!important;box-shadow:0 0 0 4px #35e878,0 0 0 9999px rgba(0,0,0,.62),0 0 35px #35e87888!important;border-radius:14px!important;pointer-events:none!important}
+@media(max-width:760px){#ytTour47 .box{bottom:84px;width:calc(100vw - 18px);padding:15px}#ytTour47 h3{font-size:16px}#ytTour47 p{font-size:10px}}
+</style>
+<nav id="ytMobileNav47" aria-label="Мобильная навигация">
+ <button data-go47="dashboard" class="active"><b>⌂</b><span>Главная</span></button>
+ <button data-go47="channels"><b>▶</b><span>Каналы</span></button>
+ <button data-go47="work"><b>▦</b><span>Календарь</span></button>
+ <button id="ytMoreBtn47"><b>•••</b><span>Ещё</span></button>
+</nav>
+<div id="ytMore47"><div class="sheet"><div class="grab"></div><div class="yt-more-grid47">
+ <button data-go47="studio">▣ &nbsp; План</button><button data-go47="goals">◎ &nbsp; Цель</button>
+ <button data-go47="income">↗ &nbsp; Доходы</button><button data-go47="expenses">$ &nbsp; Расходы</button>
+ <button data-go47="settings">⚙ &nbsp; Настройки</button><button id="ytMoreAccount47">● &nbsp; Аккаунт</button>
+ </div></div></div>
+<div id="ytTour47"><div class="shade"></div><div class="box"><div class="count" id="ytTourCount47"></div><h3 id="ytTourTitle47"></h3><p id="ytTourText47"></p><div class="actions"><button id="ytTourNext47">ДАЛЬШЕ</button></div></div></div>
+<script id="yt-v47-mobile-tour-js">
+(()=>{
+ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+ const more=$('#ytMore47'), nav=$('#ytMobileNav47');
+ function go(page){ more?.classList.remove('on'); if(window.showPage)showPage(page); $$('[data-go47]').forEach(b=>b.classList.toggle('active',b.dataset.go47===page)); window.scrollTo({top:0,behavior:'smooth'}); }
+ $$('[data-go47]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go47)));
+ $('#ytMoreBtn47')?.addEventListener('click',()=>more.classList.add('on')); more?.addEventListener('click',e=>{if(e.target===more)more.classList.remove('on')});
+ $('#ytMoreAccount47')?.addEventListener('click',()=>{more.classList.remove('on');$('#ytAccountModal')?.classList.add('on')});
+ const oldShow=window.showPage; if(oldShow) window.showPage=function(id){oldShow(id);$$('[data-go47]').forEach(b=>b.classList.toggle('active',b.dataset.go47===id));};
+
+ const tour=$('#ytTour47'), title=$('#ytTourTitle47'), text=$('#ytTourText47'), count=$('#ytTourCount47'), next=$('#ytTourNext47');
+ let i=0,target=null,user=null;
+ const steps=[
+  {p:'dashboard',s:'.welcome',t:'Добро пожаловать в YOU TIM',x:'Здесь твоя главная панель. Ты видишь прогресс, каналы, серию работы, цели и основные показатели.'},
+  {p:'dashboard',s:'.welcome-actions .btn-green',t:'Добавь YouTube-канал',x:'Нажми «Добавить канал», чтобы создать отдельный трекер для каждого своего канала.'},
+  {p:'dashboard',s:'.welcome-actions .btn:not(.btn-green)',t:'Отмечай работу',x:'Эта кнопка ведёт в календарь. Там отмечай дни, когда работал, отдыхал или пропустил работу.'},
+  {p:'dashboard',s:'#globalStreakCard',t:'Твоя серия',x:'Огонь показывает непрерывную серию рабочих дней, а BEST — твой лучший результат.'},
+  {p:'dashboard',s:'#creatorOS',t:'Цели на месяц',x:'Здесь следи за целью по доходу, публикациям и просмотрам. Цели можно менять.'},
+  {p:'channels',s:'#channels',t:'Каналы',x:'В этом разделе находятся все твои каналы. Каждый канал имеет собственную статистику, streak и доход.'},
+  {p:'work',s:'#work',t:'Календарь',x:'Отмечай каждый день. Это помогает видеть дисциплину и не терять рабочую серию.'},
+  {p:'studio',s:'#studio',t:'План',x:'Здесь планируй будущие видео и задачи, чтобы понимать, что нужно сделать дальше.'},
+  {p:'goals',s:'#goals',t:'Цель',x:'Раздел цели показывает, к какому результату ты идёшь и сколько осталось.'},
+  {p:'income',s:'#income',t:'Доходы',x:'Записывай заработок по монетизированным каналам и смотри динамику дохода.'},
+  {p:'expenses',s:'#expenses',t:'Расходы',x:'Добавляй расходы, чтобы YOU TIM считал реальную чистую прибыль.'},
+  {p:'settings',s:'#settings',t:'Настройки и резервная копия',x:'Здесь находятся настройки и backup. Резервная копия помогает сохранить данные отдельно.'},
+  {p:'dashboard',s:'#ytPushOpen',t:'Уведомления',x:'Если включишь уведомления, YOU TIM сможет присылать важные сообщения на это устройство.'},
+  {p:'dashboard',s:'#ytAccountDock, #ytMobileAccountMini',t:'Твой аккаунт',x:'Через аккаунт можно выйти или сменить пользователя. Данные каждого пользователя отделены друг от друга.'},
+  {p:'dashboard',s:'.welcome',t:'Готово',x:'Теперь ты знаешь основные разделы YOU TIM. Добавь первый канал и начинай отмечать работу.'}
+ ];
+ function clear(){if(target)target.classList.remove('yt-tour-target47');target=null}
+ function findTarget(sel){for(const s of sel.split(',').map(x=>x.trim())){const e=$(s);if(e&&getComputedStyle(e).display!=='none')return e}return null}
+ function render(){clear();const st=steps[i];if(st.p)go(st.p);setTimeout(()=>{target=findTarget(st.s);if(target){target.classList.add('yt-tour-target47');target.scrollIntoView({behavior:'smooth',block:'center'})}count.textContent=`ОБУЧЕНИЕ ${i+1} / ${steps.length}`;title.textContent=st.t;text.textContent=st.x;next.textContent=i===steps.length-1?'ЗАВЕРШИТЬ':'ДАЛЬШЕ';tour.classList.add('on')},180)}
+ async function finish(){clear();tour.classList.remove('on');try{localStorage.setItem('yt_tutorial_v47_'+user.id,'1');await window.ytSupabase.auth.updateUser({data:{...(user.user_metadata||{}),yt_tutorial_completed_v47:true}})}catch(e){}go('dashboard')}
+ next.addEventListener('click',()=>{if(i>=steps.length-1)finish();else{i++;render()}});
+ async function maybeStart(){try{if(!window.ytSupabase)return;const r=await window.ytSupabase.auth.getSession(),u=r?.data?.session?.user;if(!u)return;user=u;if(u.user_metadata?.yt_tutorial_completed_v47===true||localStorage.getItem('yt_tutorial_v47_'+u.id)==='1')return;
+   /* Do not cover the consent dialog. Wait until it has been accepted/closed. */
+   const cg=$('#ytConsentGate');if(cg&&(cg.classList.contains('on')||getComputedStyle(cg).display!=='none')){setTimeout(maybeStart,1200);return}i=0;render();
+ }catch(e){}}
+ addEventListener('load',()=>setTimeout(maybeStart,2200));
 })();
 </script>
 

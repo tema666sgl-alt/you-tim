@@ -1,4 +1,4 @@
-const CACHE='you-tim-v43-push-auth-fix';
+const CACHE='you-tim-v47-consent-once';
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))))});
 self.addEventListener('activate',e=>{e.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k))))]))});
 self.addEventListener('fetch',e=>{
