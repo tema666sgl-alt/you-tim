@@ -889,7 +889,7 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 <div class="app"><aside class="sidebar"><div class="brand yt-brand-fixed">
       <span class="yt-brand-logo" aria-hidden="true"><span></span></span>
       <span class="yt-brand-name">YOU TIM</span>
-      <small>V42</small>
+      <small>V43</small>
     </div><div class="nav">
 <button class="active" data-page="dashboard"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></span><span>Главная</span></button>
 <button data-page="channels"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span><span>Каналы</span></button>
@@ -2865,7 +2865,7 @@ body.light-theme .yt-account::after{color:#111820}
  <section id="ytPushAdmin"><h3>ADMIN — отправить сообщение</h3><p>Отправка только пользователям, которые сами включили уведомления.</p><textarea id="ytPushMessage" rows="3" maxlength="400" placeholder="Текст уведомления (до 400 символов)"></textarea><button id="ytPushSend" class="primary" style="width:100%;margin-top:8px">ОТПРАВИТЬ ПОДПИСЧИКАМ</button></section>
  </div>
 </div>
-<script id="yt-v42-push-js">
+<script id="yt-v43-push-js">
 (()=>{
 const PROJECT='https://ugnpjfdqktlabdyqubzk.supabase.co';
 const FN=PROJECT+'/functions/v1/push';
@@ -2873,13 +2873,27 @@ const el=id=>document.getElementById(id), status=s=>{el('ytPushStatus').textCont
 let vapid=null, ready=false;
 function supported(){return window.isSecureContext&&'serviceWorker'in navigator&&'PushManager'in window&&'Notification'in window}
 function decodeKey(k){const s=(k+'='.repeat((4-k.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/');return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
-async function session(){return (await window.ytSupabase?.auth.getSession())?.data?.session}
-async function request(action,body={}){
- const s=await session();if(!s)throw Error('Сначала войди в аккаунт / Sign in first');
- const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.access_token,'apikey':'sb_publishable_AgFy9XHiEIPPrq6MrP247g_CbC7OU2g'},body:JSON.stringify({action,...body})});
- const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||'Сервер уведомлений не настроен ('+r.status+')');return j;
+async function session(fresh=false){
+ if(!window.ytSupabase)return null;
+ let r=await window.ytSupabase.auth.getSession();
+ let s=r?.data?.session||null;
+ if(fresh&&s){try{const x=await window.ytSupabase.auth.refreshSession();if(x?.data?.session)s=x.data.session}catch(e){}}
+ return s;
 }
-async function config(){if(vapid)return vapid;const j=await request('config');if(!j.publicKey)throw Error('На сервере нет VAPID_PUBLIC_KEY');vapid=j.publicKey;return vapid}
+async function request(action,body={}){
+ let s=await session(true);if(!s)throw Error('Сначала войди в аккаунт / Sign in first');
+ const call=async token=>fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':'sb_publishable_AgFy9XHiEIPPrq6MrP247g_CbC7OU2g'},body:JSON.stringify({action,...body})});
+ let r=await call(s.access_token);let j=await r.json().catch(()=>({}));
+ if(r.status===401){s=await session(true);if(s){r=await call(s.access_token);j=await r.json().catch(()=>({}))}}
+ if(!r.ok)throw Error(j.error||'Сервер уведомлений не настроен ('+r.status+')');return j;
+}
+async function config(){
+ if(vapid)return vapid;
+ const r=await fetch(FN,{method:'GET',headers:{'apikey':'sb_publishable_AgFy9XHiEIPPrq6MrP247g_CbC7OU2g'}});
+ const j=await r.json().catch(()=>({}));
+ if(!r.ok)throw Error(j.error||'Не удалось получить VAPID ключ ('+r.status+')');
+ if(!j.publicKey)throw Error('На сервере нет VAPID_PUBLIC_KEY');vapid=j.publicKey;return vapid;
+}
 async function register(){await navigator.serviceWorker.register('./sw.js',{scope:'./'});return navigator.serviceWorker.ready}
 async function open(){el('ytPushPanel').classList.add('open');try{
  if(!supported()){status('Это устройство или браузер не поддерживает Web Push. На iPhone установи YOU TIM на экран «Домой» (iOS 16.4+).');return}
