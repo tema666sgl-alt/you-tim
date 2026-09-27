@@ -3064,7 +3064,7 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
 <div id="ytMore47"><div class="sheet"><div class="grab"></div><div class="yt-more-grid47">
  <button data-go47="studio">▣ &nbsp; План</button><button data-go47="goals">◎ &nbsp; Цель</button>
  <button data-go47="income">↗ &nbsp; Доходы</button><button data-go47="expenses">$ &nbsp; Расходы</button>
- <button data-go47="settings">⚙ &nbsp; Настройки</button><button id="ytMoreAccount47">● &nbsp; Аккаунт</button>
+ <button data-go47="notes53">✎ &nbsp; Заметки</button><button data-go47="settings">⚙ &nbsp; Настройки</button><button id="ytMoreAccount47">● &nbsp; Аккаунт</button>
  </div></div></div>
 <div id="ytTour47"><div class="shade"></div><div class="box"><div class="count" id="ytTourCount47"></div><h3 id="ytTourTitle47"></h3><p id="ytTourText47"></p><div class="actions"><button id="ytTourNext47">ДАЛЬШЕ</button></div></div></div>
 <script id="yt-v47-mobile-tour-js">
@@ -3256,6 +3256,37 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
 })();
 </script>
 
+
+<!-- YOU TIM V58 — MOBILE FIT + NOTES ACCESS -->
+<style id="yt-v58-mobile-fit">
+@media(max-width:760px){
+  /* A little more compact than V57, with a safe zone below the fixed iPhone header. */
+  .main{padding:calc(82px + env(safe-area-inset-top)) 9px calc(110px + env(safe-area-inset-bottom))!important}
+  #ytMobileTop57{height:52px;padding:calc(6px + env(safe-area-inset-top)) 12px 6px!important}
+  .yt57brand{font-size:16px!important;gap:8px!important}.yt57play{width:29px!important;height:21px!important}.yt57mini{font-size:7px!important}
+  .page{scroll-margin-top:calc(76px + env(safe-area-inset-top))!important}
+  .topbar{margin-bottom:10px!important}.topbar h1,h1{font-size:20px!important}
+  .welcome{padding:15px!important;border-radius:17px!important}.welcome h1{font-size:22px!important;line-height:1.08!important}.welcome-actions .btn{min-width:108px!important}
+  .card,.os-card,.settings-card,.command-center,.calendar,.notes-side{padding:11px!important;border-radius:14px!important}
+  .stats,.detail-stats{gap:7px!important}.stat-value{font-size:18px!important}
+  .calendar{padding:10px!important}.days,.weekdays{gap:2px!important}.day{font-size:10px!important;border-radius:7px!important}
+  #ytMobileNav47{height:70px!important}#ytMobileNav47 button{min-height:54px!important}
+  #ytMore47 .sheet{max-height:78vh!important}.yt-more-grid47{grid-template-columns:1fr 1fr!important;gap:7px!important}.yt-more-grid47 button{padding:13px 10px!important}
+  #notes53{padding-top:0!important}.notes53-head{gap:8px!important}.notes53-head .btn{white-space:nowrap!important}.notes53-bg{top:85px!important}
+  .v22-ai-fab{bottom:88px!important}
+}
+@media(max-width:380px){.main{padding-left:7px!important;padding-right:7px!important}.welcome h1{font-size:20px!important}.yt57brand{font-size:15px!important}}
+</style>
+<script id="yt-v58-mobile-notes">
+(()=>{
+ const more=document.getElementById('ytMore47');
+ const notesBtn=more?.querySelector('[data-go47="notes53"]');
+ if(notesBtn && !notesBtn.dataset.v58){
+   notesBtn.dataset.v58='1';
+   notesBtn.addEventListener('click',()=>{more.classList.remove('on');window.showPage?.('notes53');window.scrollTo({top:0,behavior:'smooth'});});
+ }
+})();
+</script>
 </body></html>
 <!-- YOU TIM V57 — MOBILE APP SHELL + DIRECT ADMIN PIN -->
 <style id="yt-v57-mobile-app">
