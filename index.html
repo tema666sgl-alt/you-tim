@@ -1795,4 +1795,76 @@ body{overflow-x:hidden}
 })();
 </script>
 
+
+
+<!-- ===== YOU TIM V26 — SUPABASE AUTH + CLOUD SYNC ===== -->
+<style>
+#ytAuthGate{position:fixed;inset:0;z-index:1000000;background:radial-gradient(circle at 50% 20%,rgba(53,232,120,.10),transparent 30%),#080b0e;display:none;place-items:center;padding:18px}
+#ytAuthGate.on{display:grid}.yt-auth-card{width:min(430px,100%);border:1px solid #2a3640;border-radius:24px;background:linear-gradient(145deg,#111820,#0b1015);padding:25px;box-shadow:0 30px 90px #0009}.yt-auth-logo{font-size:27px;font-weight:1000;letter-spacing:-1px}.yt-auth-logo span{color:#35e878}.yt-auth-sub{font-size:11px;color:#7d8995;line-height:1.55;margin:7px 0 18px}.yt-auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px;border:1px solid #27333d;border-radius:12px;background:#0a1015;margin-bottom:15px}.yt-auth-tabs button{border:0;border-radius:9px;padding:9px;background:transparent;color:#74818d;font-size:10px;font-weight:950}.yt-auth-tabs button.active{background:#202a33;color:#fff}.yt-auth-field{margin:10px 0}.yt-auth-field label{display:block;font-size:8px;color:#778490;font-weight:950;margin:0 0 6px}.yt-auth-field input{width:100%;padding:12px;border:1px solid #2b3742;border-radius:11px;background:#0b1116;color:#fff;outline:none;font-size:14px}.yt-auth-field input:focus{border-color:#35e878}.yt-auth-submit{width:100%;margin-top:8px;border:0;border-radius:11px;padding:12px;background:#35e878;color:#07110b;font-weight:1000}.yt-auth-msg{min-height:18px;margin-top:10px;font-size:9px;line-height:1.5;color:#8b98a4}.yt-auth-msg.err{color:#ff7580}.yt-auth-msg.ok{color:#35e878}.yt-account{position:fixed;right:58px;top:12px;z-index:8999;height:34px;border:1px solid #2a3640;border-radius:11px;background:#10171d;color:#fff;padding:0 10px;font-size:8px;font-weight:900;display:none;align-items:center;gap:7px}.yt-account.on{display:flex}.yt-account button{border:0;background:transparent;color:#ff7b85;font-size:8px;font-weight:950;padding:0}.yt-cloud{font-size:7px;color:#35e878}.yt-cloud.syncing{color:#ffc85a}.yt-cloud.error{color:#ff7580}
+body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e5}body.light-theme .yt-auth-field input{background:#f7f9fa;color:#111820;border-color:#d5dde3}body.light-theme .yt-account{background:#fff;color:#111820;border-color:#d5dde3}
+@media(max-width:760px){.yt-auth-card{padding:19px;border-radius:19px}.yt-account{right:44px;top:7px;height:30px;max-width:160px}.yt-account .yt-email{max-width:82px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+</style>
+<div id="ytAuthGate">
+  <div class="yt-auth-card">
+    <div class="yt-auth-logo">YOU <span>TIM</span></div>
+    <div class="yt-auth-sub" id="ytAuthSub">Войди в аккаунт — данные будут доступны на телефоне и компьютере.</div>
+    <div class="yt-auth-tabs"><button id="ytLoginTab" class="active" type="button">ВОЙТИ</button><button id="ytSignupTab" type="button">РЕГИСТРАЦИЯ</button></div>
+    <form id="ytAuthForm">
+      <div class="yt-auth-field"><label>EMAIL</label><input id="ytAuthEmail" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+      <div class="yt-auth-field"><label>ПАРОЛЬ</label><input id="ytAuthPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Минимум 6 символов"></div>
+      <button class="yt-auth-submit" id="ytAuthSubmit" type="submit">ВОЙТИ</button>
+      <div class="yt-auth-msg" id="ytAuthMsg"></div>
+    </form>
+  </div>
+</div>
+<div class="yt-account" id="ytAccount"><span class="yt-cloud" id="ytCloud">● CLOUD</span><span class="yt-email" id="ytAccountEmail"></span><button id="ytLogout" type="button">ВЫЙТИ</button></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+ const SUPABASE_URL='https://ugnpjfdqktlabdyqubzk.supabase.co';
+ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_AgFy9XHiEIPPrq6MrP247g_CbC7OU2g';
+ const LOCAL_KEY=(typeof STORAGE_KEY!=='undefined'?STORAGE_KEY:'youtim_v2');
+ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ window.ytSupabase=sb;
+ let mode='login', user=null, cloudTimer=null, applyingCloud=false, originalSetItem=localStorage.setItem.bind(localStorage);
+ const gate=document.getElementById('ytAuthGate'),msg=document.getElementById('ytAuthMsg'),submit=document.getElementById('ytAuthSubmit');
+ function lang(){try{return data?.settings?.language==='en'?'en':'ru'}catch(e){return 'ru'}}
+ function setMsg(t,type=''){msg.textContent=t||'';msg.className='yt-auth-msg '+type}
+ function setMode(m){mode=m;document.getElementById('ytLoginTab').classList.toggle('active',m==='login');document.getElementById('ytSignupTab').classList.toggle('active',m==='signup');submit.textContent=m==='login'?'ВОЙТИ':'СОЗДАТЬ АККАУНТ';document.getElementById('ytAuthPassword').autocomplete=m==='login'?'current-password':'new-password';setMsg('')}
+ document.getElementById('ytLoginTab').onclick=()=>setMode('login');document.getElementById('ytSignupTab').onclick=()=>setMode('signup');
+ function cloudState(s){const el=document.getElementById('ytCloud');if(!el)return;el.className='yt-cloud '+(s||'');el.textContent=s==='syncing'?'● SYNC':s==='error'?'● ERROR':'● CLOUD'}
+ function showUser(u){user=u||null;gate.classList.toggle('on',!u);const a=document.getElementById('ytAccount');a.classList.toggle('on',!!u);document.getElementById('ytAccountEmail').textContent=u?.email||''}
+ async function cloudLoad(){if(!user)return;cloudState('syncing');try{
+   const {data:row,error}=await sb.from('user_data').select('*').eq('user_id',user.id).maybeSingle();
+   if(error)throw error;
+   const payload=row&&(row.data||row.app_data||row.payload||row.state);
+   if(payload&&typeof payload==='object'){
+     applyingCloud=true; originalSetItem(LOCAL_KEY,JSON.stringify(payload));
+     try{data=payload}catch(e){} applyingCloud=false;
+     if(typeof renderAll==='function')renderAll(); else {try{renderDashboard()}catch(e){} try{renderChannels()}catch(e){}}
+   }else{await cloudSave(true)}
+   cloudState('');
+ }catch(e){console.error('YOU TIM cloud load',e);cloudState('error')}}
+ async function cloudSave(force){if(!user||applyingCloud)return;cloudState('syncing');try{
+   let payload;try{payload=JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}')}catch(e){payload=(typeof data!=='undefined'?data:{})}
+   let res=await sb.from('user_data').upsert({user_id:user.id,data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+   if(res.error){res=await sb.from('user_data').upsert({user_id:user.id,app_data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'})}
+   if(res.error)throw res.error;cloudState('');
+ }catch(e){console.error('YOU TIM cloud save',e);cloudState('error')}}
+ function scheduleSave(){clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloudSave(false),700)}
+ localStorage.setItem=function(k,v){originalSetItem(k,v);if(k===LOCAL_KEY&&!applyingCloud&&user)scheduleSave()};
+ document.getElementById('ytAuthForm').addEventListener('submit',async e=>{e.preventDefault();setMsg('');submit.disabled=true;const email=document.getElementById('ytAuthEmail').value.trim(),password=document.getElementById('ytAuthPassword').value;try{
+   if(mode==='signup'){
+     const {data:r,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:'https://tema666sgl-alt.github.io/you-tim/'}});if(error)throw error;
+     if(r.session){showUser(r.user);await cloudLoad()}else setMsg('Аккаунт создан. Проверь почту и подтверди email, затем войди.','ok');
+   }else{
+     const {data:r,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;showUser(r.user);await cloudLoad();
+   }
+ }catch(err){setMsg(err.message||'Ошибка входа.','err')}finally{submit.disabled=false}});
+ document.getElementById('ytLogout').onclick=async()=>{await cloudSave(true);await sb.auth.signOut();showUser(null);setMode('login')};
+ sb.auth.onAuthStateChange((event,session)=>{const u=session?.user||null;if(event==='SIGNED_OUT'){showUser(null);return}if(u&&(!user||user.id!==u.id)){showUser(u);setTimeout(cloudLoad,0)}});
+ (async()=>{const {data:r}=await sb.auth.getSession();if(r.session?.user){showUser(r.session.user);await cloudLoad()}else showUser(null)})();
+ window.ytCloudSave=()=>cloudSave(true);
+})();
+</script>
 </body></html>
