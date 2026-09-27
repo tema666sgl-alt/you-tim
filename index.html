@@ -3326,3 +3326,54 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
  fresh.onsubmit=async e=>{e.preventDefault();if(fails()>=3){msg.textContent='Лимит попыток исчерпан. Перезапусти вход.';return}if(!/^\d{6}$/.test(input.value)){msg.textContent='Введите ровно 6 цифр.';return}const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(input.value));const h=Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('');if(h!=='34911b6511668074432b5d846221de62bc0f4ef93e88c08fe9c28f2bd4d7eb6c'){const n=fails()+1;setFails(n);input.value='';msg.textContent=n>=3?'3 неверных PIN. Доступ закрыт.':`Неверный PIN. Осталось попыток: ${3-n}`;return}setFails(0);close();try{showPage('admin');window.ytAdminLoad?.()}catch(_){}};
 })();
 </script>
+
+
+<!-- YOU TIM V59 — iPHONE HOME-SCREEN / STANDALONE HEADER FIX -->
+<style id="yt-v59-standalone-fix">
+@media (max-width:760px) and (display-mode:standalone){
+  /* iOS Home Screen gives us the status-bar safe area. Keep the app header compact
+     and reserve exactly the same space for page content so nothing sits underneath it. */
+  #ytMobileTop57{
+    height:48px!important;
+    padding:calc(env(safe-area-inset-top) + 4px) 12px 4px!important;
+    box-sizing:content-box!important;
+  }
+  .main{
+    padding-top:calc(env(safe-area-inset-top) + 64px)!important;
+    padding-left:9px!important;
+    padding-right:9px!important;
+  }
+  .page{scroll-margin-top:calc(env(safe-area-inset-top) + 64px)!important}
+  .yt57brand{font-size:16px!important;gap:8px!important}
+  .yt57play{width:29px!important;height:21px!important}
+  .yt57mini{font-size:7px!important}
+}
+/* iOS Safari exposes navigator.standalone even on versions where the media query
+   can be inconsistent. JS adds this class only to the installed Home Screen app. */
+@media(max-width:760px){
+  html.yt-ios-standalone #ytMobileTop57{
+    height:48px!important;
+    padding:calc(env(safe-area-inset-top) + 4px) 12px 4px!important;
+    box-sizing:content-box!important;
+  }
+  html.yt-ios-standalone .main{
+    padding-top:calc(env(safe-area-inset-top) + 64px)!important;
+    padding-left:9px!important;
+    padding-right:9px!important;
+  }
+  html.yt-ios-standalone .page{scroll-margin-top:calc(env(safe-area-inset-top) + 64px)!important}
+}
+</style>
+<script id="yt-v59-standalone-fix-js">
+(()=>{
+  const standalone=window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone===true;
+  if(standalone) document.documentElement.classList.add('yt-ios-standalone');
+  /* Page changes in the installed app should start below the fixed app header. */
+  if(standalone && matchMedia('(max-width:760px)').matches){
+    const old=window.showPage;
+    if(typeof old==='function'){
+      window.showPage=function(){const r=old.apply(this,arguments);requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));return r};
+    }
+  }
+})();
+</script>
