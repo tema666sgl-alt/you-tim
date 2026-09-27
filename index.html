@@ -614,6 +614,86 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 }
 </style>
 
+
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#080a0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="YOU TIM">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+
+
+<style id="yt-v33-online-css">
+#ytConnectionToast{
+  position:fixed;left:50%;top:14px;transform:translateX(-50%) translateY(-18px);
+  z-index:100000;display:flex;align-items:center;gap:9px;
+  max-width:calc(100vw - 24px);padding:10px 14px;border-radius:13px;
+  font:900 11px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;letter-spacing:.02em;
+  color:#fff;opacity:0;pointer-events:none;transition:.22s ease;
+  box-shadow:0 12px 34px #0009;backdrop-filter:blur(14px)
+}
+#ytConnectionToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#ytConnectionToast.offline{background:#351014;border:1px solid #ff435c;color:#ff8797}
+#ytConnectionToast.online{background:#0d2c1b;border:1px solid #35e878;color:#79f5ad}
+#ytConnectionToast .dot{width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 12px currentColor;flex:0 0 auto}
+#ytOfflineGate{
+  position:fixed;inset:0;z-index:99999;display:none;place-items:center;padding:22px;
+  background:rgba(5,7,9,.96);backdrop-filter:blur(18px);text-align:center
+}
+#ytOfflineGate.show{display:grid}
+#ytOfflineGate .box{max-width:420px;border:1px solid #ff435c55;background:#130c0e;border-radius:22px;padding:28px 22px;box-shadow:0 24px 80px #000}
+#ytOfflineGate .signal{font-size:34px;color:#ff435c;margin-bottom:10px}
+#ytOfflineGate h2{margin:0 0 8px;color:#ff6377;font:950 22px/1.15 system-ui}
+#ytOfflineGate p{margin:0;color:#c8cbd0;font:700 12px/1.65 system-ui}
+#ytOfflineGate .en{display:block;margin-top:7px;color:#8d9299}
+@media(max-width:760px){#ytConnectionToast{top:9px;width:max-content;justify-content:center}}
+</style>
+
+
+<style id="yt-v35-install-css">
+#ytInstallBar{
+  position:fixed;left:50%;bottom:18px;transform:translate(-50%,24px);
+  z-index:90000;width:min(560px,calc(100vw - 24px));display:none;
+  align-items:center;gap:12px;padding:11px 12px;
+  background:rgba(10,16,20,.96);border:1px solid #2be87955;border-radius:17px;
+  box-shadow:0 18px 55px #000b,0 0 28px #20e87812;backdrop-filter:blur(18px);
+  opacity:0;transition:.22s ease
+}
+#ytInstallBar.show{display:flex;opacity:1;transform:translate(-50%,0)}
+#ytInstallBar img{width:44px;height:44px;border-radius:11px;object-fit:cover;flex:0 0 auto}
+#ytInstallBar .copy{min-width:0;flex:1}
+#ytInstallBar .title{font:950 12px/1.2 system-ui;color:#f6f8fa}
+#ytInstallBar .sub{margin-top:3px;font:700 9px/1.3 system-ui;color:#7f8993}
+#ytInstallBar .install{
+  border:0;border-radius:11px;padding:10px 13px;background:#35e878;color:#06110a;
+  font:950 10px/1 system-ui;cursor:pointer;white-space:nowrap
+}
+#ytInstallBar .close{border:0;background:transparent;color:#7f8993;font-size:18px;cursor:pointer;padding:4px}
+#ytIosHelp{position:fixed;inset:0;z-index:100001;display:none;place-items:end center;background:#0008;padding:16px}
+#ytIosHelp.show{display:grid}
+#ytIosHelp .sheet{width:min(520px,100%);background:#0d1419;border:1px solid #26323a;border-radius:20px;padding:19px;color:#fff}
+#ytIosHelp h3{margin:0 0 9px;font:950 17px system-ui}
+#ytIosHelp p{margin:7px 0;color:#b7c0c8;font:700 12px/1.5 system-ui}
+#ytIosHelp button{width:100%;margin-top:12px;padding:11px;border:0;border-radius:11px;background:#35e878;font-weight:950}
+@media(max-width:760px){
+ #ytInstallBar{bottom:82px;padding:9px 10px;gap:9px}
+ #ytInstallBar img{width:39px;height:39px}
+ #ytInstallBar .sub{font-size:8px}
+ #ytInstallBar .install{padding:9px 10px;font-size:9px}
+}
+</style>
+
+
+<style id="yt-v37-admin-fix-css">
+#ytAdminFloat{
+ position:fixed;right:18px;top:78px;z-index:85000;border:1px solid #35e87866;
+ border-radius:999px;background:#101a15;color:#35e878;padding:9px 13px;
+ font:950 10px/1 system-ui;box-shadow:0 10px 30px #0008;cursor:pointer
+}
+#ytAdminNav{color:#35e878!important}
+@media(max-width:760px){#ytAdminFloat{top:70px;right:10px;padding:8px 10px;font-size:9px}}
+</style>
+
 </head>
 <body>
 
@@ -631,7 +711,7 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
   </div>
 </div>
 
-<div class="app"><aside class="sidebar"><div class="brand">YOU TIM</div><div class="nav">
+<div class="app"><aside class="sidebar"><div class="brand">YOU TIM <small style="font-size:7px;opacity:.45">V37</small></div><div class="nav">
 <button class="active" data-page="dashboard"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></span><span>Главная</span></button>
 <button data-page="channels"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span><span>Каналы</span></button>
 <button data-page="work"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span><span>Календарь</span></button>
@@ -655,6 +735,8 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 <section id="channels" class="page"><div class="topbar"><div><h1>Каналы</h1><div class="muted">Каждый канал — отдельный tracker и streak</div></div><button class="btn btn-green" onclick="openChannelModal()">+ Добавить</button></div><div id="channelGrid" class="channel-grid"></div></section>
 <section id="channelDetail" class="page"><button class="btn" onclick="showPage('channels')">← Назад</button><div id="channelDetailContent"></div></section>
 <section id="work" class="page"><div class="topbar"><div><h1>Календарь работы</h1><div class="muted">Твоя личная дисциплина</div></div></div><div class="work-summary"><div class="card"><div class="stat-label">РАБОТАЛ</div><div class="stat-value green" id="workedCount">0</div></div><div class="card"><div class="stat-label">НЕ РАБОТАЛ</div><div class="stat-value red" id="notWorkedCount">0</div></div><div class="card"><div class="stat-label">ВЫХОДНЫЕ</div><div class="stat-value" id="workOffCount">0</div></div></div><div id="workCalendar"></div></section>
+
+<section id="admin" class="page"><div class="topbar"><div><h1>YOU TIM ADMIN</h1><div class="muted">Пользователи и данные каналов, предоставленные через YOU TIM.</div></div><button class="btn btn-green" onclick="ytAdminLoad()">ОБНОВИТЬ</button></div><div id="ytAdminRoot"></div></section>
 <section id="settings" class="page">
 <div class="topbar"><div><h1 id="settingsTitle">Настройки</h1><div class="muted" id="settingsSub">Язык, тема и защита YOU TIM.</div></div></div>
 <div id="settingsContent"></div>
@@ -670,19 +752,19 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 <section id="income" class="page"><div class="topbar"><div><h1>Доходы</h1><div class="muted">Только монетизированные каналы</div></div></div><div class="stats"><div class="card"><div class="stat-label">СЕГОДНЯ</div><div class="stat-value green" id="incomeToday">$0</div></div><div class="card"><div class="stat-label">ЭТОТ МЕСЯЦ</div><div class="stat-value" id="incomeMonth">$0</div></div><div class="card"><div class="stat-label">ЛУЧШИЙ ДЕНЬ</div><div class="stat-value" id="incomeBest">$0</div></div><div class="card"><div class="stat-label">СРЕДНЕЕ / ДЕНЬ</div><div class="stat-value" id="incomeAverage">$0</div></div></div><div class="income-row"><div class="card"><h3>Добавить доход</h3><div class="form-group"><select id="incomeChannel" class="input"></select></div><div class="form-group"><input id="incomeDate" class="input" type="date"></div><div class="income-input"><input id="incomeAmount" class="input" type="number" step=".01" placeholder="$0.00"><button class="btn btn-green" onclick="addIncome()">Добавить</button></div></div><div class="card"><h3>График дохода</h3><div id="incomeChart" class="chart"></div></div></div><div class="card" style="margin-top:14px"><h3>История</h3><div id="incomeHistory"></div></div></section>
 <section id="expenses" class="page"><div class="topbar"><h1>Расходы</h1></div><div class="stats"><div class="card"><div class="stat-label">ЗА МЕСЯЦ</div><div class="stat-value red" id="expenseMonth">$0</div></div><div class="card"><div class="stat-label">ВСЕГО</div><div class="stat-value" id="expenseAll">$0</div></div></div><div class="card"><h3>Добавить расход</h3><div class="income-input"><input id="expenseName" class="input" placeholder="ChatGPT"><input id="expenseAmount" class="input" type="number" step=".01" placeholder="$20"><button class="btn btn-green" onclick="addExpense()">Добавить</button></div></div><div class="card" style="margin-top:14px"><h3>История</h3><div id="expenseHistory"></div></div></section>
 </main></div>
-<div id="channelModal" class="modal"><div class="modal-box"><h2 id="modalTitle">Новый канал</h2><div class="form-group"><label class="form-label">Название</label><input id="channelName" class="input"></div><div class="form-group"><label class="form-label">Ссылка YouTube</label><input id="channelUrl" class="input"></div><div class="form-group"><label class="form-label">Аватар</label><input id="channelImage" class="input" type="file" accept="image/*"></div><div class="form-group"><label class="form-label">Цвет</label><div class="colors" id="colorPicker"><div class="color-dot selected" data-color="#6c42df" style="background:#6c42df"></div><div class="color-dot" data-color="#287cff" style="background:#287cff"></div><div class="color-dot" data-color="#27c66b" style="background:#27c66b"></div><div class="color-dot" data-color="#e9b52c" style="background:#e9b52c"></div><div class="color-dot" data-color="#ed6338" style="background:#ed6338"></div><div class="color-dot" data-color="#e63d55" style="background:#e63d55"></div></div></div><div class="form-group"><label class="form-label">Дни публикаций</label><div id="schedulePicker" class="schedule-days"><button class="schedule-day" data-day="1">ПН</button><button class="schedule-day" data-day="2">ВТ</button><button class="schedule-day" data-day="3">СР</button><button class="schedule-day" data-day="4">ЧТ</button><button class="schedule-day" data-day="5">ПТ</button><button class="schedule-day" data-day="6">СБ</button><button class="schedule-day" data-day="0">ВС</button></div></div><div class="form-group"><label class="form-label">Видео в день</label><input id="dailyTarget" class="input" type="number" min="1" value="1"></div><div class="form-group"><label class="form-label"><input id="channelMonetized" type="checkbox"> Монетизация подключена</label><div id="monetizationHint" class="monetization-hint"></div></div><div class="modal-actions"><button id="deleteChannelBtn" class="btn btn-red" style="display:none" onclick="deleteEditingChannel()">Удалить</button><button class="btn" onclick="closeChannelModal()">Отмена</button><button id="saveChannelBtn" class="btn btn-green" onclick="saveChannelForm()">Добавить</button></div></div></div>
+<div id="channelModal" class="modal"><div class="modal-box"><h2 id="modalTitle">Новый канал</h2><div class="form-group"><label class="form-label">Название</label><input id="channelName" class="input"></div><div class="form-group"><label class="form-label">Ссылка YouTube</label><input id="channelUrl" class="input"></div><div class="form-group"><label class="form-label">Ниша / Niche</label><input id="channelNiche" class="input" placeholder="Gaming, Animals, Tech..."></div><div class="form-group"><label class="form-label">Аватар</label><input id="channelImage" class="input" type="file" accept="image/*"></div><div class="form-group"><label class="form-label">Цвет</label><div class="colors" id="colorPicker"><div class="color-dot selected" data-color="#6c42df" style="background:#6c42df"></div><div class="color-dot" data-color="#287cff" style="background:#287cff"></div><div class="color-dot" data-color="#27c66b" style="background:#27c66b"></div><div class="color-dot" data-color="#e9b52c" style="background:#e9b52c"></div><div class="color-dot" data-color="#ed6338" style="background:#ed6338"></div><div class="color-dot" data-color="#e63d55" style="background:#e63d55"></div></div></div><div class="form-group"><label class="form-label">Дни публикаций</label><div id="schedulePicker" class="schedule-days"><button class="schedule-day" data-day="1">ПН</button><button class="schedule-day" data-day="2">ВТ</button><button class="schedule-day" data-day="3">СР</button><button class="schedule-day" data-day="4">ЧТ</button><button class="schedule-day" data-day="5">ПТ</button><button class="schedule-day" data-day="6">СБ</button><button class="schedule-day" data-day="0">ВС</button></div></div><div class="form-group"><label class="form-label">Видео в день</label><input id="dailyTarget" class="input" type="number" min="1" value="1"></div><div class="form-group"><label class="form-label"><input id="channelMonetized" type="checkbox"> Монетизация подключена</label><div id="monetizationHint" class="monetization-hint"></div></div><div class="modal-actions"><button id="deleteChannelBtn" class="btn btn-red" style="display:none" onclick="deleteEditingChannel()">Удалить</button><button class="btn" onclick="closeChannelModal()">Отмена</button><button id="saveChannelBtn" class="btn btn-green" onclick="saveChannelForm()">Добавить</button></div></div></div>
 <div id="statusMenu" class="status-menu"><button onclick="setSelectedStatus('success')">✓ Выложил</button><button onclick="setSelectedStatus('fail')">✕ Пропуск</button><button onclick="setSelectedStatus('off')">❄ Выходной</button><button onclick="setSelectedStatus(null)">Убрать отметку</button></div><div id="flash" class="flash"></div>
 <script>
 const STORAGE_KEY="youtim_v2";let data=loadData(),currentChannelId=null,selectedCalendarDate=null,selectedCalendarType=null,selectedColor="#6c42df",uploadedImage="",editingChannelId=null,editingWasMonetized=false;
 function defaultData(){return{channels:[],work:{},income:[],expenses:[]}}function loadData(){try{let d=JSON.parse(localStorage.getItem(STORAGE_KEY))||defaultData();d.channels=d.channels||[];d.work=d.work||{};d.income=d.income||[];d.expenses=d.expenses||[];return d}catch(e){return defaultData()}}function save(render=true){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));if(render)renderAll()}
 function dateKey(date=new Date()){return`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}function money(n){return"$"+Number(n||0).toLocaleString("en-US",{maximumFractionDigits:2})}function escapeHTML(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
 document.querySelectorAll(".nav button").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
-function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===id||(id==="channelDetail"&&b.dataset.page==="channels")));if(id==="work")renderWorkCalendar();if(id==="settings"&&window.renderSettings15)renderSettings15();if(id==="studio"&&window.renderStudio)renderStudio();if(id==="goals"&&window.renderGoalPage)renderGoalPage();if(id==="income")renderIncome();if(id==="expenses")renderExpenses()}
+function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===id||(id==="channelDetail"&&b.dataset.page==="channels")));if(id==="work")renderWorkCalendar();if(id==="settings"&&window.renderSettings15)renderSettings15();if(id==="studio"&&window.renderStudio)renderStudio();if(id==="goals"&&window.renderGoalPage)renderGoalPage();if(id==="income")renderIncome();if(id==="expenses")renderExpenses();if(id==="admin"&&window.ytAdminLoad)window.ytAdminLoad()}
 document.querySelectorAll(".color-dot").forEach(dot=>dot.onclick=()=>{document.querySelectorAll(".color-dot").forEach(d=>d.classList.remove("selected"));dot.classList.add("selected");selectedColor=dot.dataset.color});
 document.querySelectorAll(".schedule-day").forEach(btn=>btn.onclick=e=>{e.preventDefault();btn.classList.toggle("selected")});
 channelImage.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>uploadedImage=r.result;r.readAsDataURL(f)};
-function resetModal(){editingChannelId=null;editingWasMonetized=false;selectedColor="#6c42df";uploadedImage="";channelName.value="";channelUrl.value="";channelImage.value="";dailyTarget.value=1;channelMonetized.checked=false;document.querySelectorAll(".schedule-day").forEach(b=>b.classList.add("selected"));document.querySelectorAll(".color-dot").forEach(d=>d.classList.toggle("selected",d.dataset.color===selectedColor));modalTitle.textContent="Новый канал";saveChannelBtn.textContent="Добавить";deleteChannelBtn.style.display="none"}
-function openChannelModal(id=null){resetModal();if(id){const c=data.channels.find(x=>x.id===id);if(!c)return;editingChannelId=id;editingWasMonetized=!!c.monetized;channelName.value=c.name||"";channelUrl.value=c.url||"";dailyTarget.value=c.target||1;channelMonetized.checked=!!c.monetized;selectedColor=c.color||"#6c42df";uploadedImage=c.image||"";document.querySelectorAll(".color-dot").forEach(d=>d.classList.toggle("selected",d.dataset.color===selectedColor));document.querySelectorAll(".schedule-day").forEach(b=>b.classList.toggle("selected",(c.schedule||[]).includes(Number(b.dataset.day))));modalTitle.textContent="Изменить канал";saveChannelBtn.textContent="Сохранить";deleteChannelBtn.style.display="inline-block";
+function resetModal(){editingChannelId=null;editingWasMonetized=false;selectedColor="#6c42df";uploadedImage="";channelName.value="";channelUrl.value="";channelNiche.value="";channelImage.value="";dailyTarget.value=1;channelMonetized.checked=false;document.querySelectorAll(".schedule-day").forEach(b=>b.classList.add("selected"));document.querySelectorAll(".color-dot").forEach(d=>d.classList.toggle("selected",d.dataset.color===selectedColor));modalTitle.textContent="Новый канал";saveChannelBtn.textContent="Добавить";deleteChannelBtn.style.display="none"}
+function openChannelModal(id=null){resetModal();if(id){const c=data.channels.find(x=>x.id===id);if(!c)return;editingChannelId=id;editingWasMonetized=!!c.monetized;channelName.value=c.name||"";channelUrl.value=c.url||"";channelNiche.value=c.niche||"";dailyTarget.value=c.target||1;channelMonetized.checked=!!c.monetized;selectedColor=c.color||"#6c42df";uploadedImage=c.image||"";document.querySelectorAll(".color-dot").forEach(d=>d.classList.toggle("selected",d.dataset.color===selectedColor));document.querySelectorAll(".schedule-day").forEach(b=>b.classList.toggle("selected",(c.schedule||[]).includes(Number(b.dataset.day))));modalTitle.textContent="Изменить канал";saveChannelBtn.textContent="Сохранить";deleteChannelBtn.style.display="inline-block";
 const earned=channelIncome(c.id);
 monetizationHint.textContent=c.monetized&&earned>0?`Сейчас учтено ${money(earned)}. Если снять монетизацию и сохранить, этот доход будет полностью удалён.`:"";
 monetizationHint.classList.toggle("warning",c.monetized&&earned>0);
@@ -698,6 +780,7 @@ function saveChannelForm(){
   const schedule=[...document.querySelectorAll(".schedule-day.selected")].map(b=>Number(b.dataset.day));
   const mon=document.getElementById("channelMonetized").checked;
   const url=document.getElementById("channelUrl").value.trim();
+  const niche=document.getElementById("channelNiche").value.trim();
   const target=Math.max(1,Number(document.getElementById("dailyTarget").value)||1);
 
   if(editingChannelId!==null){
@@ -715,15 +798,27 @@ function saveChannelForm(){
 
     c.name=name;
     c.url=url;
+    c.niche=niche;
     c.color=selectedColor;
     c.image=uploadedImage||c.image||"";
     c.schedule=schedule;
     c.target=target;
   }else{
-    data.channels.push({
-      id:Date.now(),name,url,color:selectedColor,image:uploadedImage,
+    const newChannel={
+      id:Date.now(),name,url,niche,color:selectedColor,image:uploadedImage,
       monetized:mon,schedule,target,tracker:{},created:dateKey()
-    });
+    };
+    data.channels.push(newChannel);
+
+    /* V32: open a newly-created channel immediately.
+       Cloud persistence continues in the background through the existing save hook. */
+    currentChannelId=newChannel.id;
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    closeChannelModal();
+    showPage("channelDetail");
+    renderChannelDetail();
+    setTimeout(()=>{try{renderAll()}catch(e){}},0);
+    return;
   }
 
   localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
@@ -2176,5 +2271,297 @@ body.light-theme .yt-account::after{color:#111820}
   .yt-account::after{font-size:8px}
 }
 </style>
+
+<div id="ytConnectionToast" role="status" aria-live="polite"><span class="dot"></span><span id="ytConnectionText"></span></div>
+<div id="ytOfflineGate">
+  <div class="box">
+    <div class="signal">●</div>
+    <h2>Нет соединения</h2>
+    <p>YOU TIM работает онлайн. Проверь подключение к интернету.
+      <span class="en">No connection. YOU TIM works online. Check your internet connection.</span>
+    </p>
+  </div>
+</div>
+
+
+<script id="yt-v33-online-js">
+(function(){
+  const toast=document.getElementById('ytConnectionToast');
+  const text=document.getElementById('ytConnectionText');
+  const gate=document.getElementById('ytOfflineGate');
+  let timer=null, initialized=false, lastState=navigator.onLine;
+
+  function showToast(kind,msg,sticky){
+    if(!toast||!text)return;
+    clearTimeout(timer);
+    toast.classList.remove('online','offline');
+    toast.classList.add(kind,'show');
+    text.textContent=msg;
+    if(!sticky)timer=setTimeout(()=>toast.classList.remove('show'),2600);
+  }
+
+  function applyConnection(isOnline, announce){
+    lastState=isOnline;
+    document.documentElement.dataset.connection=isOnline?'online':'offline';
+    if(gate)gate.classList.toggle('show',!isOnline);
+
+    if(!isOnline){
+      showToast('offline','Соединение потеряно • Connection lost',true);
+    }else if(announce){
+      showToast('online','Соединение восстановлено • Connection restored',false);
+    }else if(toast){
+      toast.classList.remove('show','offline');
+    }
+  }
+
+  window.addEventListener('offline',()=>applyConnection(false,true));
+  window.addEventListener('online',()=>applyConnection(true,true));
+
+  /* Browser state is immediate; periodic lightweight check catches captive/dead connections. */
+  async function verify(){
+    if(!navigator.onLine){applyConnection(false,true);return;}
+    try{
+      const controller=new AbortController();
+      const t=setTimeout(()=>controller.abort(),4500);
+      const r=await fetch('./manifest.json?connection_check='+Date.now(),{
+        method:'HEAD',cache:'no-store',signal:controller.signal
+      });
+      clearTimeout(t);
+      if(!r.ok)throw new Error('network');
+      if(lastState===false)applyConnection(true,true);
+      else if(!initialized)applyConnection(true,false);
+      initialized=true;
+    }catch(e){
+      applyConnection(false,true);
+      initialized=true;
+    }
+  }
+
+  applyConnection(navigator.onLine,false);
+  setTimeout(verify,350);
+  setInterval(verify,12000);
+})();
+</script>
+
+
+
+<style id="yt-v36-admin-css">
+#ytConsentGate{position:fixed;inset:0;z-index:120000;background:rgba(2,5,7,.94);display:none;place-items:center;padding:16px}#ytConsentGate.on{display:grid}.yt-terms{width:min(720px,100%);max-height:90vh;background:#0d1419;border:1px solid #2b3943;border-radius:22px;padding:18px;box-shadow:0 30px 100px #000;display:flex;flex-direction:column}.yt-terms h2{margin:0;font-size:20px}.yt-terms .lead{font-size:10px;color:#98a5af;line-height:1.5;margin:6px 0 12px}.yt-terms-scroll{height:min(58vh,520px);overflow:auto;padding:13px;border:1px solid #26323b;border-radius:14px;background:#090e12;font-size:10px;line-height:1.65;color:#b8c2ca}.yt-terms-scroll h3{font-size:11px;color:#fff;margin:16px 0 5px}.yt-terms-scroll strong{color:#fff}.yt-consent-check{display:flex;gap:9px;align-items:flex-start;font-size:9px;line-height:1.45;margin:12px 0;color:#cbd3d9}.yt-consent-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.yt-consent-actions button{padding:12px;border-radius:11px;border:1px solid #2b3943;font-weight:950}.yt-consent-actions .agree{background:#35e878;color:#07110b;border:0}.yt-consent-actions .agree:disabled{opacity:.35}.yt-admin-grid{display:grid;gap:10px}.yt-admin-user{border:1px solid #26323b;border-radius:16px;background:#0d1419;padding:14px}.yt-admin-user h3{margin:0 0 4px;font-size:12px}.yt-admin-meta{font-size:8px;color:#788691;margin-bottom:10px}.yt-admin-channels{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}.yt-admin-channel{border:1px solid #243039;border-radius:12px;background:#090e12;padding:11px}.yt-admin-channel b{font-size:11px}.yt-admin-row{font-size:8px;color:#9ba7b0;margin-top:5px;overflow-wrap:anywhere}.yt-admin-pill{display:inline-block;padding:4px 7px;border-radius:999px;background:#16221b;color:#35e878;font-size:7px;font-weight:950}.yt-admin-pill.off{background:#241619;color:#ff7580}.yt-admin-empty{padding:30px;text-align:center;color:#7c8994;border:1px dashed #2b3943;border-radius:15px}
+@media(max-width:760px){.yt-terms{max-height:94vh}.yt-terms-scroll{height:55vh}.yt-consent-actions{grid-template-columns:1fr}}
+</style>
+<div id="ytConsentGate"><div class="yt-terms"><h2>YOU TIM — Terms & Privacy / Условия и конфиденциальность</h2><div class="lead">Перед использованием облачных функций ознакомьтесь с условиями. Scroll to the end, confirm the checkbox, then agree.</div><div class="yt-terms-scroll" id="ytTermsScroll">
+<h3>1. Назначение сервиса / Purpose</h3><p>YOU TIM — инструмент для организации работы с YouTube-каналами, планирования публикаций, календаря, целей, заметок, статистики, доходов и других функций продуктивности. YOU TIM is a productivity and channel-management tool. Функции могут изменяться, добавляться или удаляться по мере развития продукта.</p>
+<h3>2. Аккаунт / Account</h3><p>Для облачной синхронизации создаётся аккаунт. Пользователь отвечает за корректность введённого email, безопасность пароля и действия в своём аккаунте. Не передавайте пароль третьим лицам. Администратор YOU TIM не запрашивает пароль Google или YouTube.</p>
+<h3>3. Какие данные вы добавляете / Data you provide</h3><p><strong>YOU TIM может хранить данные, которые пользователь сам вводит в приложение:</strong> названия YouTube-каналов, ссылки на каналы, выбранную или указанную нишу, статус монетизации, график публикаций, цели, календарные отметки, прогресс, заметки, доходы/расходы, настройки приложения и другую информацию, которую пользователь сохраняет в интерфейсе. YOU TIM may store channel names, channel URLs, niche/category, monetization status, schedules, goals, progress, notes, financial entries, settings and other information entered into the app.</p>
+<h3>4. Доступ администратора / Administrator access</h3><p><strong>Уполномоченный администратор YOU TIM может иметь доступ к данным, которые вы сохраняете в сервисе, включая названия каналов, ссылки, ниши и статус монетизации.</strong> Такой доступ может использоваться для поддержки пользователей, диагностики ошибок, безопасности, предотвращения злоупотреблений, понимания использования функций и улучшения продукта. Authorized YOU TIM administrators may access information stored in the service, including channel names, URLs, niches and monetization status, for support, diagnostics, security and product improvement.</p>
+<h3>5. Улучшение приложения / Product improvement</h3><p>Агрегированные и предоставленные пользователями данные могут анализироваться, чтобы понять, какие функции полезны, где возникают ошибки, какие типы каналов используют YOU TIM и какие инструменты стоит улучшать. Мы можем анализировать использование функций без необходимости публиковать ваши данные другим пользователям.</p>
+<h3>6. YouTube и Google / YouTube & Google</h3><p>Добавление публичной ссылки на канал не предоставляет YOU TIM пароль или полный доступ к YouTube-аккаунту. Если в будущем будут добавлены официальные интеграции Google/YouTube, требующие OAuth-разрешений, пользователь должен будет отдельно подтвердить соответствующие разрешения.</p>
+<h3>7. Монетизация / Monetization status</h3><p>Статус «монетизирован / не монетизирован» в YOU TIM может быть введён пользователем и не является официальным подтверждением YouTube. Администратор может видеть этот сохранённый статус, если пользователь согласился с этими условиями.</p>
+<h3>8. Облачная синхронизация / Cloud sync</h3><p>Данные могут передаваться между устройством пользователя и облачной инфраструктурой, чтобы один аккаунт мог использовать одинаковые данные на нескольких устройствах. Синхронизация зависит от интернет-соединения и доступности инфраструктуры.</p>
+<h3>9. Технические данные / Technical information</h3><p>Для работы, безопасности и диагностики сервис может обрабатывать обычные технические сведения, необходимые веб-приложению: состояние сессии, время обновления данных, ошибки синхронизации и другие служебные сведения. Мы не обещаем собирать каждую из перечисленных категорий постоянно.</p>
+<h3>10. Доходы и расходы / Financial entries</h3><p>Если пользователь вручную вводит доходы или расходы, они являются пользовательскими записями для личного учёта, а не банковскими данными и не финансовой отчётностью. YOU TIM не гарантирует точность расчётов, если исходные данные введены неверно.</p>
+<h3>11. Безопасность / Security</h3><p>Мы стараемся использовать разумные технические меры защиты, однако ни один интернет-сервис не может гарантировать абсолютную безопасность. Пользователь должен использовать уникальный пароль и защищать доступ к своему устройству.</p>
+<h3>12. Другие пользователи / Other users</h3><p>Обычные пользователи не должны получать доступ к данным чужих аккаунтов через стандартный интерфейс. Административный доступ предназначен только для уполномоченных администраторов сервиса.</p>
+<h3>13. Сторонние сервисы / Third parties</h3><p>YOU TIM может использовать инфраструктуру сторонних поставщиков для хостинга, аутентификации, хранения данных, аналитики или будущих интеграций. У таких поставщиков могут действовать собственные условия и политики.</p>
+<h3>14. AI-функции / AI features</h3><p>Если будут включены AI-функции, информация, которую пользователь сознательно отправляет AI-инструменту, может обрабатываться для формирования ответа. Конкретные возможности и поставщики могут меняться; дополнительные существенные разрешения должны запрашиваться отдельно, когда это требуется.</p>
+<h3>15. Резервные копии / Backups</h3><p>Экспорт или импорт резервной копии может содержать данные YOU TIM. Пользователь отвечает за безопасное хранение экспортированных файлов и за проверку импортируемых файлов.</p>
+<h3>16. Доступность / Availability</h3><p>Сервис предоставляется по принципу «как есть». Возможны технические работы, ошибки, задержки синхронизации, изменения интерфейса и временная недоступность. Мы не гарантируем непрерывную работу без сбоев.</p>
+<h3>17. Ответственность пользователя / User responsibility</h3><p>Пользователь обязуется не использовать сервис для незаконной деятельности, вмешательства в работу системы, попыток получить чужие данные или обхода механизмов доступа.</p>
+<h3>18. Изменения сервиса / Service changes</h3><p>YOU TIM развивается. Интерфейс, функции, ограничения и способы хранения данных могут изменяться. При существенном изменении условий обработки данных может потребоваться новое согласие.</p>
+<h3>19. Изменения условий / Changes to terms</h3><p>Условия могут обновляться. Версия согласия может сохраняться вместе со временем принятия. Существенные изменения могут быть показаны пользователю перед продолжением использования соответствующих функций.</p>
+<h3>20. Отказ от согласия / Declining</h3><p>Если вы не согласны с этими условиями, не подтверждайте согласие. Облачные функции, требующие обработки указанных данных, могут быть недоступны. If you do not agree, do not accept these terms.</p>
+<h3>21. Ваше подтверждение / Your confirmation</h3><p><strong>Нажимая «СОГЛАСЕН / I AGREE», вы подтверждаете, что прочитали условия и понимаете, что данные, которые вы добавляете в YOU TIM — в том числе названия каналов, ссылки, ниши и статус монетизации — сохраняются сервисом и могут быть доступны уполномоченному администратору для целей, описанных выше.</strong></p>
+<p><strong>By selecting “I AGREE”, you confirm that you have read these terms and understand that information you add to YOU TIM — including channel names, URLs, niches and monetization status — may be stored and accessed by authorized administrators for the purposes described above.</strong></p>
+</div><label class="yt-consent-check"><input type="checkbox" id="ytConsentCheck" disabled> <span>Я прочитал(а) и согласен(на) с Условиями использования и Политикой конфиденциальности. / I have read and agree to the Terms of Use and Privacy Policy.</span></label><div class="yt-consent-actions"><button id="ytConsentDecline">НЕ СОГЛАСЕН / DECLINE</button><button class="agree" id="ytConsentAgree" disabled>СОГЛАСЕН / I AGREE</button></div></div></div>
+<script id="yt-v37-admin-js">
+(function(){
+ const VERSION='2026-09-27-v2';
+ function payload(){try{return JSON.parse(localStorage.getItem('youtim_v2')||'{}')}catch(e){return {}}}
+ function savePayload(p){
+   localStorage.setItem('youtim_v2',JSON.stringify(p));
+   try{ if(typeof window.ytCloudSave==='function') window.ytCloudSave(); }catch(e){}
+ }
+ function consented(){
+   const p=payload();
+   return !!(p.privacyConsent && p.privacyConsent.accepted && p.privacyConsent.version===VERSION);
+ }
+ function showConsent(){
+   if(consented()) return;
+   const gate=document.getElementById('ytConsentGate');
+   if(gate) gate.classList.add('on');
+ }
+ window.ytShowConsent=showConsent;
+
+ const scroll=document.getElementById('ytTermsScroll');
+ const check=document.getElementById('ytConsentCheck');
+ const agree=document.getElementById('ytConsentAgree');
+ if(scroll) scroll.addEventListener('scroll',()=>{
+   if(scroll.scrollTop+scroll.clientHeight>=scroll.scrollHeight-20){
+     check.disabled=false;
+   }
+ });
+ if(check) check.addEventListener('change',()=>agree.disabled=!check.checked);
+ if(agree) agree.addEventListener('click',()=>{
+   const p=payload();
+   p.privacyConsent={
+     accepted:true,
+     version:VERSION,
+     acceptedAt:new Date().toISOString(),
+     adminChannelDataAccess:true,
+     channelNames:true,
+     channelUrls:true,
+     channelNiches:true,
+     monetizationStatus:true
+   };
+   savePayload(p);
+   document.getElementById('ytConsentGate')?.classList.remove('on');
+   setTimeout(()=>{try{window.ytCloudSave?.()}catch(e){}},500);
+ });
+
+ document.getElementById('ytConsentDecline')?.addEventListener('click',async()=>{
+   alert('Без согласия облачные функции YOU TIM недоступны. / Cloud features are unavailable without agreement.');
+   try{await window.ytSupabase?.auth.signOut()}catch(e){}
+   location.reload();
+ });
+
+ function addAdminUI(){
+   if(document.getElementById('ytAdminNav')) return;
+   const nav=document.querySelector('.nav');
+   if(nav){
+     const b=document.createElement('button');
+     b.id='ytAdminNav';
+     b.dataset.page='admin';
+     b.innerHTML='<span class="menu-icon">◆</span><span>ADMIN</span>';
+     b.onclick=()=>{showPage('admin');setTimeout(()=>window.ytAdminLoad?.(),50)};
+     nav.appendChild(b);
+   }
+   if(!document.getElementById('ytAdminFloat')){
+     const f=document.createElement('button');
+     f.id='ytAdminFloat';
+     f.textContent='ADMIN';
+     f.onclick=()=>{showPage('admin');setTimeout(()=>window.ytAdminLoad?.(),50)};
+     document.body.appendChild(f);
+   }
+ }
+ function removeAdminUI(){
+   document.getElementById('ytAdminNav')?.remove();
+   document.getElementById('ytAdminFloat')?.remove();
+ }
+ async function adminCheck(){
+   try{
+     if(!window.ytSupabase) return false;
+     const s=await window.ytSupabase.auth.getSession();
+     if(!s?.data?.session?.user){removeAdminUI();return false}
+     const r=await window.ytSupabase.rpc('is_admin');
+     if(r.error || r.data!==true){removeAdminUI();return false}
+     addAdminUI();
+     return true;
+   }catch(e){return false}
+ }
+ window.ytAdminCheck=adminCheck;
+
+ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+ window.ytAdminLoad=async function(){
+   const root=document.getElementById('ytAdminRoot');
+   if(!root)return;
+   root.innerHTML='<div class="yt-admin-empty">Проверка доступа...</div>';
+   if(!(await adminCheck())){root.innerHTML='<div class="yt-admin-empty">Нет доступа / No access</div>';return}
+   root.innerHTML='<div class="yt-admin-empty">Загрузка пользователей...</div>';
+   const q=await window.ytSupabase.from('user_app_data').select('user_id,app_data,updated_at').order('updated_at',{ascending:false});
+   if(q.error){root.innerHTML='<div class="yt-admin-empty">Ошибка: '+esc(q.error.message||q.error)+'</div>';return}
+   const accepted=(q.data||[]).filter(r=>r.app_data?.privacyConsent?.accepted===true && r.app_data?.privacyConsent?.adminChannelDataAccess===true);
+   if(!accepted.length){root.innerHTML='<div class="yt-admin-empty">Пока нет пользователей, которые приняли новую версию условий.</div>';return}
+   root.innerHTML='<div class="yt-admin-grid">'+accepted.map((r,i)=>{
+     const p=r.app_data||{}, chs=Array.isArray(p.channels)?p.channels:[];
+     return '<div class="yt-admin-user"><h3>USER '+(i+1)+'</h3><div class="yt-admin-meta">ID: '+esc(r.user_id)+' · Обновлено: '+esc(new Date(r.updated_at).toLocaleString())+' · Каналов: '+chs.length+'</div><div class="yt-admin-channels">'+
+       (chs.length?chs.map(c=>'<div class="yt-admin-channel"><b>'+esc(c.name||'Без названия')+'</b><div class="yt-admin-row">Ниша: '+esc(c.niche||'Не указана')+'</div><div class="yt-admin-row">YouTube: '+esc(c.url||'Не указана')+'</div><div class="yt-admin-row"><span class="yt-admin-pill '+(c.monetized?'':'off')+'">'+(c.monetized?'МОНЕТИЗИРОВАН':'НЕ МОНЕТИЗИРОВАН')+'</span></div></div>').join(''):'<div class="yt-admin-row">Каналов пока нет.</div>')+
+       '</div></div>';
+   }).join('')+'</div>';
+ };
+
+ // V37: terms are deliberately shown independently of cloud boot timing.
+ function boot(){
+   setTimeout(showConsent,700);
+   setTimeout(adminCheck,1000);
+   setTimeout(adminCheck,2500);
+ }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+ else boot();
+ window.addEventListener('load',()=>{setTimeout(showConsent,500);setTimeout(adminCheck,1200)});
+ setInterval(adminCheck,5000);
+})();
+</script>
+
+<div id="ytInstallBar" aria-live="polite">
+  <img src="./icon-192.png" alt="YOU TIM">
+  <div class="copy">
+    <div class="title">Установить YOU TIM • Install YOU TIM</div>
+    <div class="sub">Приложение для этого устройства • App for this device</div>
+  </div>
+  <button class="install" id="ytInstallNow">УСТАНОВИТЬ / INSTALL</button>
+  <button class="close" id="ytInstallClose" aria-label="Close">×</button>
+</div>
+<div id="ytIosHelp">
+  <div class="sheet">
+    <h3>Установить YOU TIM • Install YOU TIM</h3>
+    <p>iPhone / iPad: нажми «Поделиться» в Safari → «На экран Домой» → «Добавить».</p>
+    <p>iPhone / iPad: tap “Share” in Safari → “Add to Home Screen” → “Add”.</p>
+    <button id="ytIosClose">ПОНЯТНО / GOT IT</button>
+  </div>
+</div>
+
+
+<script id="yt-v35-install-js">
+(function(){
+  let deferredPrompt=null;
+  const bar=document.getElementById('ytInstallBar');
+  const install=document.getElementById('ytInstallNow');
+  const close=document.getElementById('ytInstallClose');
+  const iosHelp=document.getElementById('ytIosHelp');
+  const iosClose=document.getElementById('ytIosClose');
+
+  const standalone=window.matchMedia('(display-mode: standalone)').matches ||
+                   window.navigator.standalone===true;
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const dismissed=sessionStorage.getItem('yt_install_dismissed')==='1';
+
+  function show(){ if(!standalone && !dismissed) bar && bar.classList.add('show'); }
+  function hide(){ bar && bar.classList.remove('show'); }
+
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    show();
+  });
+
+  if(!standalone){
+    /* Always offer our own visible install entry.
+       On supported browsers it triggers the native PWA prompt;
+       on iOS it opens exact installation instructions. */
+    setTimeout(show,900);
+  }
+
+  install && install.addEventListener('click',async()=>{
+    if(isIOS){
+      hide(); iosHelp && iosHelp.classList.add('show'); return;
+    }
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      try{await deferredPrompt.userChoice}catch(e){}
+      deferredPrompt=null;
+      hide();
+      return;
+    }
+    /* Browser has not exposed native PWA prompt yet. Give a bilingual fallback. */
+    alert('В браузере открой меню → «Установить приложение» / «Установить страницу как приложение».\\n\\nOpen browser menu → “Install app” / “Install page as app”.');
+  });
+
+  close && close.addEventListener('click',()=>{
+    sessionStorage.setItem('yt_install_dismissed','1'); hide();
+  });
+  iosClose && iosClose.addEventListener('click',()=>iosHelp.classList.remove('show'));
+  window.addEventListener('appinstalled',()=>{hide();});
+})();
+</script>
 
 </body></html>
