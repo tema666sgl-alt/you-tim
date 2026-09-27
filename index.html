@@ -1826,46 +1826,205 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
  const LOCAL_KEY=(typeof STORAGE_KEY!=='undefined'?STORAGE_KEY:'youtim_v2');
  const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  window.ytSupabase=sb;
- let mode='login',user=null,cloudTimer=null,applyingCloud=false,lastCloudJSON='',syncReady=false,pollTimer=null;
+
+ let mode='login', user=null, cloudTimer=null, applyingCloud=false, syncReady=false, pollTimer=null, realtimeChannel=null;
+ let saveGeneration=0, appliedGeneration=0;
  const originalSetItem=localStorage.setItem.bind(localStorage);
  const gate=document.getElementById('ytAuthGate'),msg=document.getElementById('ytAuthMsg'),submit=document.getElementById('ytAuthSubmit');
+
  function setMsg(t,type=''){msg.textContent=t||'';msg.className='yt-auth-msg '+type}
- function setMode(m){mode=m;document.getElementById('ytLoginTab').classList.toggle('active',m==='login');document.getElementById('ytSignupTab').classList.toggle('active',m==='signup');submit.textContent=m==='login'?'ВОЙТИ':'СОЗДАТЬ АККАУНТ';document.getElementById('ytAuthPassword').autocomplete=m==='login'?'current-password':'new-password';setMsg('')}
- document.getElementById('ytLoginTab').onclick=()=>setMode('login');document.getElementById('ytSignupTab').onclick=()=>setMode('signup');
- function cloudState(s){const el=document.getElementById('ytCloud');if(!el)return;el.className='yt-cloud '+(s||'');el.textContent=s==='syncing'?'● SYNC':s==='error'?'● ERROR':'● CLOUD'}
- function showUser(u){user=u||null;gate.classList.toggle('on',!u);const a=document.getElementById('ytAccount');a.classList.toggle('on',!!u);document.getElementById('ytAccountEmail').textContent=u?.email||''}
- function localPayload(){try{return JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}')}catch(e){try{return data||{}}catch(_){return {}}}}
- function payloadScore(x){if(!x||typeof x!=='object')return 0;let n=Object.keys(x).length;for(const k of ['channels','income','expenses','videos','videoRecords','archivedChannels','notes']){const v=x[k];if(Array.isArray(v))n+=v.length*10;else if(v&&typeof v==='object')n+=Object.keys(v).length*5}for(const k of ['trackers','todos','channelGoals']){const v=x[k];if(v&&typeof v==='object')n+=Object.keys(v).length*4}return n}
- function renderFromPayload(payload){applyingCloud=true;originalSetItem(LOCAL_KEY,JSON.stringify(payload));try{data=payload}catch(e){}applyingCloud=false;try{if(typeof renderAll==='function')renderAll();else{if(typeof renderDashboard==='function')renderDashboard();if(typeof renderChannels==='function')renderChannels()}}catch(e){console.warn('YOU TIM render after sync',e)}}
+ function setMode(m){
+   mode=m;
+   document.getElementById('ytLoginTab').classList.toggle('active',m==='login');
+   document.getElementById('ytSignupTab').classList.toggle('active',m==='signup');
+   submit.textContent=m==='login'?'ВОЙТИ':'СОЗДАТЬ АККАУНТ';
+   document.getElementById('ytAuthPassword').autocomplete=m==='login'?'current-password':'new-password';
+   setMsg('');
+ }
+ document.getElementById('ytLoginTab').onclick=()=>setMode('login');
+ document.getElementById('ytSignupTab').onclick=()=>setMode('signup');
+
+ function cloudState(s){
+   const el=document.getElementById('ytCloud'); if(!el)return;
+   el.className='yt-cloud '+(s||'');
+   el.textContent=s==='syncing'?'● SYNC':s==='error'?'● ERROR':'● CLOUD';
+ }
+ function showUser(u){
+   user=u||null;
+   gate.classList.toggle('on',!u);
+   const a=document.getElementById('ytAccount');
+   a.classList.toggle('on',!!u);
+   document.getElementById('ytAccountEmail').textContent=u?.email||'';
+ }
+ function localPayload(){
+   try{return JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}')}
+   catch(e){try{return data||{}}catch(_){return {}}}
+ }
  function extractPayload(row){return row&&(row.app_data||row.data||row.payload||row.state)||null}
- async function writeCloud(payload){let res=await sb.from('user_app_data').upsert({user_id:user.id,app_data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(res.error)res=await sb.from('user_app_data').upsert({user_id:user.id,data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(res.error)throw res.error;lastCloudJSON=JSON.stringify(payload)}
- async function cloudBoot(){if(!user)return;cloudState('syncing');syncReady=false;try{
-   const {data:row,error}=await sb.from('user_app_data').select('*').eq('user_id',user.id).maybeSingle();if(error)throw error;
-   const cloud=extractPayload(row),local=localPayload();
-   if(!cloud||typeof cloud!=='object'||Object.keys(cloud).length===0){await writeCloud(local);lastCloudJSON=JSON.stringify(local)}
-   else{
-     /* One-time safe migration: keep the richer existing workspace, then cloud becomes canonical. */
-     const chosen=payloadScore(local)>payloadScore(cloud)?local:cloud;
-     if(chosen===local&&JSON.stringify(local)!==JSON.stringify(cloud))await writeCloud(local);else{lastCloudJSON=JSON.stringify(cloud);renderFromPayload(cloud)}
+ function validPayload(p){return p&&typeof p==='object'&&!Array.isArray(p)&&Object.keys(p).length>0}
+
+ function renderFromPayload(payload){
+   if(!validPayload(payload))return;
+   applyingCloud=true;
+   originalSetItem(LOCAL_KEY,JSON.stringify(payload));
+   try{data=payload}catch(e){}
+   applyingCloud=false;
+   try{
+     if(typeof renderAll==='function')renderAll();
+     else{
+       if(typeof renderDashboard==='function')renderDashboard();
+       if(typeof renderChannels==='function')renderChannels();
+       if(typeof renderCalendar==='function')renderCalendar();
+     }
+   }catch(e){console.warn('YOU TIM render after cloud sync',e)}
+ }
+
+ async function getCloud(){
+   const {data:row,error}=await sb.from('user_app_data').select('*').eq('user_id',user.id).maybeSingle();
+   if(error)throw error;
+   return {row,payload:extractPayload(row)};
+ }
+
+ async function writeCloud(payload){
+   if(!user||!validPayload(payload))return;
+   const body={user_id:user.id,app_data:payload,updated_at:new Date().toISOString()};
+   const {error}=await sb.from('user_app_data').upsert(body,{onConflict:'user_id'});
+   if(error)throw error;
+ }
+
+ async function cloudBoot(){
+   if(!user)return;
+   cloudState('syncing'); syncReady=false;
+   try{
+     const {payload:cloud}=await getCloud();
+     if(validPayload(cloud)){
+       // V29 RULE: existing cloud data is ALWAYS canonical for this account.
+       renderFromPayload(cloud);
+     }else{
+       // Only the very first device seeds an empty account.
+       const local=localPayload();
+       if(validPayload(local)) await writeCloud(local);
+     }
+     syncReady=true;
+     cloudState('');
+     startPolling();
+     startRealtime();
+   }catch(e){
+     console.error('YOU TIM V29 cloud boot',e);
+     cloudState('error');
    }
-   syncReady=true;cloudState('');startPolling();
- }catch(e){console.error('YOU TIM cloud boot',e);cloudState('error')}}
- async function cloudSave(){if(!user||applyingCloud||!syncReady)return;cloudState('syncing');try{const payload=localPayload(),j=JSON.stringify(payload);if(j!==lastCloudJSON)await writeCloud(payload);cloudState('')}catch(e){console.error('YOU TIM cloud save',e);cloudState('error')}}
- function scheduleSave(){clearTimeout(cloudTimer);cloudTimer=setTimeout(cloudSave,500)}
- async function pullCloud(){if(!user||applyingCloud||!syncReady)return;try{const {data:row,error}=await sb.from('user_app_data').select('*').eq('user_id',user.id).maybeSingle();if(error)throw error;const payload=extractPayload(row);if(!payload)return;const j=JSON.stringify(payload);if(j!==lastCloudJSON){lastCloudJSON=j;renderFromPayload(payload)}cloudState('')}catch(e){console.error('YOU TIM cloud pull',e);cloudState('error')}}
- function startPolling(){clearInterval(pollTimer);pollTimer=setInterval(pullCloud,4000)}
- localStorage.setItem=function(k,v){originalSetItem(k,v);if(k===LOCAL_KEY&&!applyingCloud&&user&&syncReady)scheduleSave()};
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)pullCloud()});window.addEventListener('focus',pullCloud);
- document.getElementById('ytAuthForm').addEventListener('submit',async e=>{e.preventDefault();setMsg('');submit.disabled=true;const email=document.getElementById('ytAuthEmail').value.trim(),password=document.getElementById('ytAuthPassword').value;try{if(mode==='signup'){const {data:r,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:'https://tema666sgl-alt.github.io/you-tim/'}});if(error)throw error;if(r.session){showUser(r.user);await cloudBoot()}else setMsg('Аккаунт создан. Проверь почту и подтверди email, затем войди.','ok')}else{const {data:r,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;showUser(r.user);await cloudBoot()}}catch(err){setMsg(err.message||'Ошибка входа.','err')}finally{submit.disabled=false}});
- document.getElementById('ytLogout').onclick=async()=>{await cloudSave();clearInterval(pollTimer);syncReady=false;await sb.auth.signOut();showUser(null);setMode('login')};
- sb.auth.onAuthStateChange((event,session)=>{const u=session?.user||null;if(event==='SIGNED_OUT'){clearInterval(pollTimer);syncReady=false;showUser(null);return}if(u&&(!user||user.id!==u.id)){showUser(u);setTimeout(cloudBoot,0)}});
- (async()=>{const {data:r}=await sb.auth.getSession();if(r.session?.user){showUser(r.session.user);await cloudBoot()}else showUser(null)})();
- window.ytCloudSave=()=>cloudSave();window.ytCloudPull=()=>pullCloud();
+ }
+
+ async function cloudSave(){
+   if(!user||applyingCloud||!syncReady)return;
+   const myGen=++saveGeneration;
+   cloudState('syncing');
+   try{
+     const payload=localPayload();
+     if(validPayload(payload)) await writeCloud(payload);
+     appliedGeneration=Math.max(appliedGeneration,myGen);
+     cloudState('');
+   }catch(e){
+     console.error('YOU TIM V29 cloud save',e);
+     cloudState('error');
+   }
+ }
+ function scheduleSave(){
+   clearTimeout(cloudTimer);
+   cloudTimer=setTimeout(cloudSave,650);
+ }
+
+ async function pullCloud(){
+   if(!user||applyingCloud||!syncReady)return;
+   try{
+     const {payload:cloud}=await getCloud();
+     if(!validPayload(cloud))return;
+     // Compare cloud with what THIS device is actually showing.
+     // This fixes V28, where lastCloudJSON could match cloud while local UI was different.
+     const local=localPayload();
+     if(JSON.stringify(cloud)!==JSON.stringify(local)) renderFromPayload(cloud);
+     cloudState('');
+   }catch(e){
+     console.error('YOU TIM V29 cloud pull',e);
+     cloudState('error');
+   }
+ }
+
+ function startPolling(){
+   clearInterval(pollTimer);
+   pollTimer=setInterval(pullCloud,2500);
+ }
+ function startRealtime(){
+   if(realtimeChannel){try{sb.removeChannel(realtimeChannel)}catch(e){}}
+   if(!user)return;
+   realtimeChannel=sb.channel('youtim-'+user.id)
+     .on('postgres_changes',{
+       event:'*',schema:'public',table:'user_app_data',filter:'user_id=eq.'+user.id
+     },()=>setTimeout(pullCloud,120))
+     .subscribe();
+ }
+
+ localStorage.setItem=function(k,v){
+   originalSetItem(k,v);
+   if(k===LOCAL_KEY&&!applyingCloud&&user&&syncReady)scheduleSave();
+ };
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)pullCloud()});
+ window.addEventListener('focus',pullCloud);
+ window.addEventListener('online',pullCloud);
+
+ document.getElementById('ytAuthForm').addEventListener('submit',async e=>{
+   e.preventDefault(); setMsg(''); submit.disabled=true;
+   const email=document.getElementById('ytAuthEmail').value.trim();
+   const password=document.getElementById('ytAuthPassword').value;
+   try{
+     if(mode==='signup'){
+       const {data:r,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:'https://tema666sgl-alt.github.io/you-tim/'}});
+       if(error)throw error;
+       if(r.session){showUser(r.user);await cloudBoot()}
+       else setMsg('Аккаунт создан. Проверь почту и подтверди email, затем войди.','ok');
+     }else{
+       const {data:r,error}=await sb.auth.signInWithPassword({email,password});
+       if(error)throw error;
+       showUser(r.user); await cloudBoot();
+     }
+   }catch(err){setMsg(err.message||'Ошибка входа.','err')}
+   finally{submit.disabled=false}
+ });
+
+ document.getElementById('ytLogout').onclick=async()=>{
+   await cloudSave();
+   clearInterval(pollTimer); clearTimeout(cloudTimer); syncReady=false;
+   if(realtimeChannel){try{await sb.removeChannel(realtimeChannel)}catch(e){} realtimeChannel=null}
+   await sb.auth.signOut(); showUser(null); setMode('login');
+ };
+
+ sb.auth.onAuthStateChange((event,session)=>{
+   const u=session?.user||null;
+   if(event==='SIGNED_OUT'){
+     clearInterval(pollTimer); clearTimeout(cloudTimer); syncReady=false;
+     if(realtimeChannel){try{sb.removeChannel(realtimeChannel)}catch(e){} realtimeChannel=null}
+     showUser(null); return;
+   }
+   if(u&&(!user||user.id!==u.id)){showUser(u);setTimeout(cloudBoot,0)}
+ });
+
+ (async()=>{
+   const {data:r}=await sb.auth.getSession();
+   if(r.session?.user){showUser(r.session.user);await cloudBoot()}
+   else showUser(null);
+ })();
+
+ window.ytCloudSave=()=>cloudSave();
+ window.ytCloudPull=()=>pullCloud();
+ window.ytCloudResetFromThisDevice=async()=>{
+   if(!user)throw new Error('Not signed in');
+   const p=localPayload(); await writeCloud(p); await pullCloud(); return true;
+ };
 })();
 </script>
 
 <style>
-/* ===== YOU TIM V28 — CLOUD SYNC + CLEAN ACCOUNT BAR ===== */
+/* ===== YOU TIM V29 — ONE ACCOUNT = ONE DATA + CLEAN ACCOUNT BAR ===== */
 .v21name{display:none!important}
 .yt-account{
   right:58px!important;top:12px!important;height:34px!important;max-width:none!important;
