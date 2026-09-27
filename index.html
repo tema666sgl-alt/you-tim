@@ -1007,6 +1007,7 @@ function saveChannelForm(){
        Cloud persistence continues in the background through the existing save hook. */
     currentChannelId=newChannel.id;
     localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    try{window.ytCloudSave?.()}catch(e){}
     closeChannelModal();
     showPage("channelDetail");
     renderChannelDetail();
@@ -1015,6 +1016,7 @@ function saveChannelForm(){
   }
 
   localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+  try{window.ytCloudSave?.()}catch(e){}
   closeChannelModal();
   renderAll();
   if(currentChannelId)renderChannelDetail();
@@ -2220,7 +2222,7 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
  window.ytSupabase=sb;
 
  let mode='login', user=null, cloudTimer=null, applyingCloud=false, syncReady=false, pollTimer=null, realtimeChannel=null;
- let saveGeneration=0, appliedGeneration=0;
+ let saveGeneration=0, appliedGeneration=0, localDirty=false, cloudSaving=false;
  const originalSetItem=localStorage.setItem.bind(localStorage);
  const gate=document.getElementById('ytAuthGate'),msg=document.getElementById('ytAuthMsg'),submit=document.getElementById('ytAuthSubmit');
 
@@ -2330,6 +2332,7 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
        await writeCloud(fresh);
      }
      syncReady=true;
+     localDirty=false; cloudSaving=false;
      cloudState('');
      startPolling();
      startRealtime();
@@ -2340,36 +2343,46 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
  }
 
  async function cloudSave(){
-   if(!user||applyingCloud||!syncReady)return;
-   const myGen=++saveGeneration;
+   if(!user||applyingCloud||!syncReady)return false;
+   if(cloudSaving){scheduleSave(180);return false;}
+   clearTimeout(cloudTimer);
+   const myGen=saveGeneration;
+   const payload=localPayload();
+   if(!validPayload(payload))return false;
+   cloudSaving=true;
    cloudState('syncing');
    try{
-     const payload=localPayload();
-     if(validPayload(payload)) await writeCloud(payload);
+     await writeCloud(payload);
      appliedGeneration=Math.max(appliedGeneration,myGen);
+     // Only mark clean when nothing changed while the request was in flight.
+     if(saveGeneration===myGen)localDirty=false;
      cloudState('');
+     if(localDirty)scheduleSave(120);
+     return true;
    }catch(e){
-     console.error('YOU TIM V29 cloud save',e);
+     console.error('YOU TIM stable cloud save',e);
+     localDirty=true;
      cloudState('error');
-   }
+     scheduleSave(1200);
+     return false;
+   }finally{cloudSaving=false;}
  }
- function scheduleSave(){
+ function scheduleSave(delay=180){
    clearTimeout(cloudTimer);
-   cloudTimer=setTimeout(cloudSave,650);
+   cloudTimer=setTimeout(cloudSave,delay);
  }
 
  async function pullCloud(){
-   if(!user||applyingCloud||!syncReady)return;
+   // Never let an older cloud snapshot overwrite a fresh local edit.
+   if(!user||applyingCloud||!syncReady||localDirty||cloudSaving)return;
    try{
      const {payload:cloud}=await getCloud();
-     if(!validPayload(cloud))return;
-     // Compare cloud with what THIS device is actually showing.
-     // This fixes V28, where lastCloudJSON could match cloud while local UI was different.
+     if(!validPayload(cloud)||localDirty||cloudSaving)return;
      const local=localPayload();
      if(JSON.stringify(cloud)!==JSON.stringify(local)) renderFromPayload(cloud);
      cloudState('');
    }catch(e){
-     console.error('YOU TIM V29 cloud pull',e);
+     console.error('YOU TIM stable cloud pull',e);
      cloudState('error');
    }
  }
@@ -2390,7 +2403,11 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
 
  localStorage.setItem=function(k,v){
    originalSetItem(k,v);
-   if(k===LOCAL_KEY&&!applyingCloud&&user&&syncReady)scheduleSave();
+   if(k===LOCAL_KEY&&!applyingCloud&&user&&syncReady){
+     saveGeneration++;
+     localDirty=true;
+     scheduleSave();
+   }
  };
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)pullCloud()});
  window.addEventListener('focus',pullCloud);
@@ -2425,7 +2442,9 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
  });
 
  document.getElementById('ytLogout').onclick=async()=>{
-   await cloudSave();
+   if(localDirty)await cloudSave();
+   if(cloudSaving)await new Promise(r=>setTimeout(r,350));
+   if(localDirty)await cloudSave();
    clearInterval(pollTimer); clearTimeout(cloudTimer); syncReady=false;
    if(realtimeChannel){try{await sb.removeChannel(realtimeChannel)}catch(e){} realtimeChannel=null}
    await sb.auth.signOut(); showUser(null); setMode('login');
