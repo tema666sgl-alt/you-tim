@@ -3005,9 +3005,10 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
      // The current account must already be the server-authorized administrator.
      const adm=await window.ytSupabase.rpc('is_admin');
      if(adm.error||adm.data!==true)throw new Error('not-admin');
-     // PIN is the 6-digit password of the admin account; re-authenticate before opening ADMIN.
-     const {error}=await window.ytSupabase.auth.signInWithPassword({email:'tema666sgl@gmail.com',password:input.value});
-     if(error)throw error;
+     // Separate local ADMIN gate. The signed-in account must also be authorized by Supabase.
+     const data=new TextEncoder().encode(input.value);
+     const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',data))).map(b=>b.toString(16).padStart(2,'0')).join('');
+     if(digest!=='34911b6511668074432b5d846221de62bc0f4ef93e88c08fe9c28f2bd4d7eb6c')throw new Error('bad-pin');
      setFails(0);close();setTimeout(()=>{showPage('admin');window.ytAdminLoad?.()},120);
    }catch(err){
      const n=fails()+1;setFails(n);input.value='';
