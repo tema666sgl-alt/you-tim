@@ -729,6 +729,35 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 @media(max-width:760px){.yt-brand-fixed{display:none!important}.yt-admin-kpis{grid-template-columns:1fr 1fr}.yt-admin-toolbar{flex-direction:column}.yt-admin-tabs{padding-bottom:8px}}
 </style>
 
+
+<style id="yt-v39-account-css">
+#ytAccountDock{
+ position:fixed;left:10px;bottom:12px;width:132px;z-index:70000;
+ border:1px solid #26323b;background:rgba(10,15,19,.96);border-radius:13px;
+ padding:9px;box-shadow:0 12px 35px #0008;backdrop-filter:blur(14px);
+ font-family:system-ui;cursor:pointer
+}
+#ytAccountDock .mail{font-size:8px;font-weight:900;color:#e8eef2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ytAccountDock .since{font-size:6.5px;color:#73818b;margin-top:4px;line-height:1.35}
+#ytAccountDock .role{display:inline-block;margin-top:6px;padding:3px 5px;border:1px solid #35e87855;border-radius:99px;color:#35e878;font-size:6px;font-weight:950}
+#ytAccountModal{position:fixed;inset:0;z-index:110000;display:none;place-items:center;background:#000b;padding:16px}
+#ytAccountModal.on{display:grid}
+#ytAccountModal .card{width:min(440px,100%);border:1px solid #2a3740;background:#0c1318;border-radius:20px;padding:18px;color:#fff;box-shadow:0 30px 80px #000}
+#ytAccountModal h2{margin:0 0 5px;font:950 18px system-ui}
+#ytAccountModal .muted2{font:700 9px/1.5 system-ui;color:#82909a}
+#ytAccountModal .info{margin:14px 0;border:1px solid #222e36;border-radius:13px;padding:11px;background:#091015}
+#ytAccountModal .line{font:800 9px/1.55 system-ui;color:#c7d0d6;word-break:break-word}
+#ytAccountModal .actions{display:grid;gap:8px;margin-top:13px}
+#ytAccountModal button{border:0;border-radius:11px;padding:11px;font:950 9px system-ui;cursor:pointer}
+#ytAccountLogout{background:#ff405c;color:#fff}
+#ytAccountSwitch{background:#35e878;color:#06110a}
+#ytAccountClose{background:#182229;color:#aab5bc}
+@media(max-width:760px){
+ #ytAccountDock{left:10px;bottom:78px;width:118px;padding:7px}
+ #ytAccountDock .since{display:none}
+}
+</style>
+
 </head>
 <body>
 
@@ -749,7 +778,7 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 <div class="app"><aside class="sidebar"><div class="brand yt-brand-fixed">
       <span class="yt-brand-logo" aria-hidden="true"><span></span></span>
       <span class="yt-brand-name">YOU TIM</span>
-      <small>V38</small>
+      <small>V39</small>
     </div><div class="nav">
 <button class="active" data-page="dashboard"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></span><span>Главная</span></button>
 <button data-page="channels"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span><span>Каналы</span></button>
@@ -2615,6 +2644,71 @@ body.light-theme .yt-account::after{color:#111820}
   });
   iosClose && iosClose.addEventListener('click',()=>iosHelp.classList.remove('show'));
   window.addEventListener('appinstalled',()=>{hide();});
+})();
+</script>
+
+
+<div id="ytAccountDock" title="Аккаунт / Account">
+  <div class="mail" id="ytAccountDockEmail">Аккаунт</div>
+  <div class="since" id="ytAccountDockSince">Дата регистрации: —</div>
+  <span class="role" id="ytAccountDockRole">USER</span>
+</div>
+
+<div id="ytAccountModal">
+ <div class="card">
+  <h2>Аккаунт / Account</h2>
+  <div class="muted2">Текущая учётная запись YOU TIM</div>
+  <div class="info">
+   <div class="line" id="ytAccountEmail">Email: —</div>
+   <div class="line" id="ytAccountCreated">Дата регистрации / Joined: —</div>
+   <div class="line" id="ytAccountRole">Статус / Role: USER</div>
+  </div>
+  <div class="actions">
+   <button id="ytAccountSwitch">СМЕНИТЬ АККАУНТ / SWITCH ACCOUNT</button>
+   <button id="ytAccountLogout">ВЫЙТИ / SIGN OUT</button>
+   <button id="ytAccountClose">ЗАКРЫТЬ / CLOSE</button>
+  </div>
+ </div>
+</div>
+
+
+<script id="yt-v39-account-js">
+(function(){
+ const dock=document.getElementById('ytAccountDock'), modal=document.getElementById('ytAccountModal');
+ const fmt=d=>{try{return d?new Date(d).toLocaleDateString():'—'}catch(e){return '—'}};
+ async function refreshAccount(){
+   try{
+     if(!window.ytSupabase){dock.style.display='none';return}
+     const s=await window.ytSupabase.auth.getSession();
+     const u=s?.data?.session?.user;
+     if(!u){dock.style.display='none';return}
+     dock.style.display='block';
+     let admin=false;
+     try{const r=await window.ytSupabase.rpc('is_admin');admin=!r.error&&r.data===true}catch(e){}
+     document.getElementById('ytAccountDockEmail').textContent=u.email||'YOU TIM';
+     document.getElementById('ytAccountDockSince').textContent='Регистрация: '+fmt(u.created_at);
+     document.getElementById('ytAccountDockRole').textContent=admin?'ADMIN':'USER';
+     document.getElementById('ytAccountEmail').textContent='Email: '+(u.email||'—');
+     document.getElementById('ytAccountCreated').textContent='Дата регистрации / Joined: '+fmt(u.created_at);
+     document.getElementById('ytAccountRole').textContent='Статус / Role: '+(admin?'ADMIN':'USER');
+   }catch(e){}
+ }
+ dock?.addEventListener('click',()=>modal.classList.add('on'));
+ document.getElementById('ytAccountClose')?.addEventListener('click',()=>modal.classList.remove('on'));
+ modal?.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('on')});
+ async function signOut(switching){
+   if(!confirm(switching?'Выйти и войти в другой аккаунт? / Sign out and use another account?':'Выйти из YOU TIM? / Sign out of YOU TIM?'))return;
+   try{
+     await window.ytSupabase?.auth.signOut();
+     sessionStorage.removeItem('yt_install_dismissed');
+     location.reload();
+   }catch(e){alert('Не удалось выйти. Попробуй ещё раз. / Sign out failed.')}
+ }
+ document.getElementById('ytAccountLogout')?.addEventListener('click',()=>signOut(false));
+ document.getElementById('ytAccountSwitch')?.addEventListener('click',()=>signOut(true));
+ window.addEventListener('load',()=>setTimeout(refreshAccount,1200));
+ setTimeout(refreshAccount,1800);
+ setInterval(refreshAccount,12000);
 })();
 </script>
 
