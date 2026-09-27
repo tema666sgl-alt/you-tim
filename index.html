@@ -1821,6 +1821,13 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
+ // V30 one-time device cleanup: remove legacy YOU TIM app state, keep auth session.
+ try{
+   if(localStorage.getItem('youtim_v30_device_reset')!=='1'){
+     localStorage.removeItem('youtim_v2');
+     localStorage.setItem('youtim_v30_device_reset','1');
+   }
+ }catch(e){}
  const SUPABASE_URL='https://ugnpjfdqktlabdyqubzk.supabase.co';
  const SUPABASE_PUBLISHABLE_KEY='sb_publishable_AgFy9XHiEIPPrq6MrP247g_CbC7OU2g';
  const LOCAL_KEY=(typeof STORAGE_KEY!=='undefined'?STORAGE_KEY:'youtim_v2');
@@ -1898,19 +1905,46 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
    try{
      const {payload:cloud}=await getCloud();
      if(validPayload(cloud)){
-       // V29 RULE: existing cloud data is ALWAYS canonical for this account.
+       // Existing cloud is the only source of truth for this account.
        renderFromPayload(cloud);
      }else{
-       // Only the very first device seeds an empty account.
-       const local=localPayload();
-       if(validPayload(local)) await writeCloud(local);
+       // V30 CLEAN START:
+       // Never seed a new/cleared cloud account from stale phone/PC localStorage.
+       // Build a fresh YOU TIM state from the app defaults, then save it to cloud.
+       applyingCloud=true;
+       try{
+         originalSetItem(LOCAL_KEY,'');
+         if(typeof defaultData==='function') data=defaultData();
+         else {
+           // Reloading with an empty storage key lets the original app initializer
+           // recreate its normal defaults without importing old device data.
+           localStorage.removeItem(LOCAL_KEY);
+         }
+       }catch(e){}
+       applyingCloud=false;
+
+       // If defaultData is not exposed by this legacy build, force one clean reload
+       // exactly once so the original app creates its built-in defaults.
+       let fresh=localPayload();
+       if(!validPayload(fresh)){
+         const guard='youtim_v30_clean_'+user.id;
+         if(sessionStorage.getItem(guard)!=='1'){
+           sessionStorage.setItem(guard,'1');
+           originalSetItem(LOCAL_KEY,'');
+           location.reload();
+           return;
+         }
+         fresh={channels:[],income:[],expenses:[],todos:{},settings:{language:'ru'}};
+         renderFromPayload(fresh);
+       }
+       await writeCloud(fresh);
      }
      syncReady=true;
      cloudState('');
      startPolling();
      startRealtime();
    }catch(e){
-     console.error('YOU TIM V29 cloud boot',e);
+     console.error('YOU TIM V30 cloud boot',e);
      cloudState('error');
    }
  }
@@ -2024,7 +2058,7 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
 </script>
 
 <style>
-/* ===== YOU TIM V29 — ONE ACCOUNT = ONE DATA + CLEAN ACCOUNT BAR ===== */
+/* ===== YOU TIM V30 — CLEAN CLOUD START + ONE ACCOUNT ONE DATA ===== */
 .v21name{display:none!important}
 .yt-account{
   right:58px!important;top:12px!important;height:34px!important;max-width:none!important;
