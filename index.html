@@ -694,6 +694,41 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 @media(max-width:760px){#ytAdminFloat{top:70px;right:10px;padding:8px 10px;font-size:9px}}
 </style>
 
+
+<style id="yt-v38-admin-pro-css">
+/* Stable desktop brand: no pseudo-element positioning bugs */
+.yt-brand-fixed{position:relative!important;display:grid!important;grid-template-columns:32px auto auto!important;align-items:center!important;gap:9px!important;white-space:nowrap!important;margin:2px 7px 29px!important}
+.yt-brand-fixed:before,.yt-brand-fixed:after{display:none!important;content:none!important}
+.yt-brand-logo{width:32px;height:22px;border-radius:7px;background:#ff0033;display:grid;place-items:center;box-shadow:0 0 18px #ff003344;flex:none}
+.yt-brand-logo span{width:0;height:0;border-left:9px solid #fff;border-top:5.5px solid transparent;border-bottom:5.5px solid transparent;margin-left:2px}
+.yt-brand-name{font-size:18px;font-weight:950;letter-spacing:1.6px;line-height:1}
+.yt-brand-fixed small{font-size:7px;opacity:.48;letter-spacing:.6px}
+
+.yt-admin-tabs{display:flex;gap:6px;overflow:auto;padding:0 0 12px;margin-bottom:4px;scrollbar-width:thin}
+.yt-admin-tabs button{border:1px solid #26323b;background:#0d1419;color:#7f8c96;border-radius:10px;padding:9px 11px;font:900 8px/1 system-ui;white-space:nowrap;cursor:pointer}
+.yt-admin-tabs button.active{border-color:#35e87866;color:#35e878;background:#102018}
+.yt-admin-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}
+.yt-admin-kpi{border:1px solid #26323b;background:#0d1419;border-radius:14px;padding:13px}
+.yt-admin-kpi .k{font-size:7px;color:#7d8a94;font-weight:900;letter-spacing:.7px}
+.yt-admin-kpi .v{font-size:23px;font-weight:950;margin-top:5px}
+.yt-admin-toolbar{display:flex;gap:8px;margin:0 0 10px}
+.yt-admin-search{flex:1;border:1px solid #29343d;background:#090e12;color:#fff;border-radius:11px;padding:11px 12px;font:700 10px system-ui;outline:none}
+.yt-admin-select{border:1px solid #29343d;background:#090e12;color:#c6d0d7;border-radius:11px;padding:10px;font:800 9px system-ui}
+.yt-admin-table{border:1px solid #26323b;border-radius:15px;overflow:hidden;background:#0d1419}
+.yt-admin-tr{display:grid;grid-template-columns:1.5fr .8fr .8fr 1fr auto;gap:8px;align-items:center;padding:11px 12px;border-bottom:1px solid #202a31;font-size:9px}
+.yt-admin-tr:last-child{border-bottom:0}.yt-admin-tr.head{font-size:7px;color:#71808a;font-weight:950;background:#0a1014}
+.yt-admin-link{color:#35e878;text-decoration:none;font-weight:900}
+.yt-admin-btn{border:1px solid #35e87855;background:#102018;color:#35e878;border-radius:9px;padding:7px 9px;font:900 8px system-ui;cursor:pointer}
+.yt-admin-btn.gray{border-color:#33404a;color:#aab4bb;background:#10161a}
+.yt-admin-user-detail{margin-top:10px;border:1px solid #35e87844;border-radius:16px;background:#0b1210;padding:14px}
+.yt-admin-user-detail h2{margin:0 0 4px;font-size:15px}.yt-admin-section-title{font-size:9px;font-weight:950;margin:14px 0 8px;color:#dbe2e7}
+.yt-admin-note{border:1px dashed #2b3943;border-radius:14px;padding:18px;color:#8c99a3;font-size:9px;line-height:1.6}
+.yt-admin-bars{display:grid;gap:8px}.yt-admin-bar-row{display:grid;grid-template-columns:120px 1fr 45px;gap:8px;align-items:center;font-size:8px}.yt-admin-bar{height:7px;border-radius:99px;background:#1c252b;overflow:hidden}.yt-admin-bar i{display:block;height:100%;background:#35e878;border-radius:99px}
+.yt-admin-system{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.yt-admin-system .yt-admin-note b{color:#fff}
+@media(max-width:1000px){.yt-admin-kpis{grid-template-columns:repeat(2,1fr)}.yt-admin-tr{grid-template-columns:1fr auto}.yt-admin-tr>*:nth-child(2),.yt-admin-tr>*:nth-child(3),.yt-admin-tr>*:nth-child(4){display:none}}
+@media(max-width:760px){.yt-brand-fixed{display:none!important}.yt-admin-kpis{grid-template-columns:1fr 1fr}.yt-admin-toolbar{flex-direction:column}.yt-admin-tabs{padding-bottom:8px}}
+</style>
+
 </head>
 <body>
 
@@ -711,7 +746,11 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
   </div>
 </div>
 
-<div class="app"><aside class="sidebar"><div class="brand">YOU TIM <small style="font-size:7px;opacity:.45">V37</small></div><div class="nav">
+<div class="app"><aside class="sidebar"><div class="brand yt-brand-fixed">
+      <span class="yt-brand-logo" aria-hidden="true"><span></span></span>
+      <span class="yt-brand-name">YOU TIM</span>
+      <small>V38</small>
+    </div><div class="nav">
 <button class="active" data-page="dashboard"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></span><span>Главная</span></button>
 <button data-page="channels"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span><span>Каналы</span></button>
 <button data-page="work"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span><span>Календарь</span></button>
@@ -736,7 +775,21 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 <section id="channelDetail" class="page"><button class="btn" onclick="showPage('channels')">← Назад</button><div id="channelDetailContent"></div></section>
 <section id="work" class="page"><div class="topbar"><div><h1>Календарь работы</h1><div class="muted">Твоя личная дисциплина</div></div></div><div class="work-summary"><div class="card"><div class="stat-label">РАБОТАЛ</div><div class="stat-value green" id="workedCount">0</div></div><div class="card"><div class="stat-label">НЕ РАБОТАЛ</div><div class="stat-value red" id="notWorkedCount">0</div></div><div class="card"><div class="stat-label">ВЫХОДНЫЕ</div><div class="stat-value" id="workOffCount">0</div></div></div><div id="workCalendar"></div></section>
 
-<section id="admin" class="page"><div class="topbar"><div><h1>YOU TIM ADMIN</h1><div class="muted">Пользователи и данные каналов, предоставленные через YOU TIM.</div></div><button class="btn btn-green" onclick="ytAdminLoad()">ОБНОВИТЬ</button></div><div id="ytAdminRoot"></div></section>
+<section id="admin" class="page">
+<div class="topbar"><div><h1>YOU TIM ADMIN</h1><div class="muted">Управление сервисом и разрешёнными данными пользователей.</div></div><button class="btn btn-green" onclick="ytAdminLoad()">ОБНОВИТЬ</button></div>
+<div class="yt-admin-tabs" id="ytAdminTabs">
+  <button class="active" data-atab="dashboard">DASHBOARD</button>
+  <button data-atab="users">USERS</button>
+  <button data-atab="channels">CHANNELS</button>
+  <button data-atab="analytics">ANALYTICS</button>
+  <button data-atab="activity">ACTIVITY</button>
+  <button data-atab="feedback">FEEDBACK</button>
+  <button data-atab="consents">CONSENTS</button>
+  <button data-atab="announcements">ANNOUNCEMENTS</button>
+  <button data-atab="system">SYSTEM</button>
+</div>
+<div id="ytAdminRoot"></div>
+</section>
 <section id="settings" class="page">
 <div class="topbar"><div><h1 id="settingsTitle">Настройки</h1><div class="muted" id="settingsSub">Язык, тема и защита YOU TIM.</div></div></div>
 <div id="settingsContent"></div>
@@ -2373,122 +2426,123 @@ body.light-theme .yt-account::after{color:#111820}
 <h3>21. Ваше подтверждение / Your confirmation</h3><p><strong>Нажимая «СОГЛАСЕН / I AGREE», вы подтверждаете, что прочитали условия и понимаете, что данные, которые вы добавляете в YOU TIM — в том числе названия каналов, ссылки, ниши и статус монетизации — сохраняются сервисом и могут быть доступны уполномоченному администратору для целей, описанных выше.</strong></p>
 <p><strong>By selecting “I AGREE”, you confirm that you have read these terms and understand that information you add to YOU TIM — including channel names, URLs, niches and monetization status — may be stored and accessed by authorized administrators for the purposes described above.</strong></p>
 </div><label class="yt-consent-check"><input type="checkbox" id="ytConsentCheck" disabled> <span>Я прочитал(а) и согласен(на) с Условиями использования и Политикой конфиденциальности. / I have read and agree to the Terms of Use and Privacy Policy.</span></label><div class="yt-consent-actions"><button id="ytConsentDecline">НЕ СОГЛАСЕН / DECLINE</button><button class="agree" id="ytConsentAgree" disabled>СОГЛАСЕН / I AGREE</button></div></div></div>
-<script id="yt-v37-admin-js">
+<script id="yt-v38-admin-js">
 (function(){
  const VERSION='2026-09-27-v2';
+ let adminRows=[], adminTab='dashboard', adminVerified=false;
  function payload(){try{return JSON.parse(localStorage.getItem('youtim_v2')||'{}')}catch(e){return {}}}
- function savePayload(p){
-   localStorage.setItem('youtim_v2',JSON.stringify(p));
-   try{ if(typeof window.ytCloudSave==='function') window.ytCloudSave(); }catch(e){}
- }
- function consented(){
-   const p=payload();
-   return !!(p.privacyConsent && p.privacyConsent.accepted && p.privacyConsent.version===VERSION);
- }
- function showConsent(){
-   if(consented()) return;
-   const gate=document.getElementById('ytConsentGate');
-   if(gate) gate.classList.add('on');
- }
+ function savePayload(p){localStorage.setItem('youtim_v2',JSON.stringify(p));try{window.ytCloudSave?.()}catch(e){}}
+ function consented(){const p=payload();return !!(p.privacyConsent?.accepted && p.privacyConsent.version===VERSION)}
+ function showConsent(){if(consented())return;document.getElementById('ytConsentGate')?.classList.add('on')}
  window.ytShowConsent=showConsent;
+ const scroll=document.getElementById('ytTermsScroll'), check=document.getElementById('ytConsentCheck'), agree=document.getElementById('ytConsentAgree');
+ scroll?.addEventListener('scroll',()=>{if(scroll.scrollTop+scroll.clientHeight>=scroll.scrollHeight-20)check.disabled=false});
+ check?.addEventListener('change',()=>agree.disabled=!check.checked);
+ agree?.addEventListener('click',()=>{const p=payload();p.privacyConsent={accepted:true,version:VERSION,acceptedAt:new Date().toISOString(),adminChannelDataAccess:true,channelNames:true,channelUrls:true,channelNiches:true,monetizationStatus:true};savePayload(p);document.getElementById('ytConsentGate')?.classList.remove('on');setTimeout(()=>window.ytCloudSave?.(),500)});
+ document.getElementById('ytConsentDecline')?.addEventListener('click',async()=>{alert('Без согласия облачные функции YOU TIM недоступны. / Cloud features are unavailable without agreement.');try{await window.ytSupabase?.auth.signOut()}catch(e){}location.reload()});
 
- const scroll=document.getElementById('ytTermsScroll');
- const check=document.getElementById('ytConsentCheck');
- const agree=document.getElementById('ytConsentAgree');
- if(scroll) scroll.addEventListener('scroll',()=>{
-   if(scroll.scrollTop+scroll.clientHeight>=scroll.scrollHeight-20){
-     check.disabled=false;
-   }
- });
- if(check) check.addEventListener('change',()=>agree.disabled=!check.checked);
- if(agree) agree.addEventListener('click',()=>{
-   const p=payload();
-   p.privacyConsent={
-     accepted:true,
-     version:VERSION,
-     acceptedAt:new Date().toISOString(),
-     adminChannelDataAccess:true,
-     channelNames:true,
-     channelUrls:true,
-     channelNiches:true,
-     monetizationStatus:true
-   };
-   savePayload(p);
-   document.getElementById('ytConsentGate')?.classList.remove('on');
-   setTimeout(()=>{try{window.ytCloudSave?.()}catch(e){}},500);
- });
-
- document.getElementById('ytConsentDecline')?.addEventListener('click',async()=>{
-   alert('Без согласия облачные функции YOU TIM недоступны. / Cloud features are unavailable without agreement.');
-   try{await window.ytSupabase?.auth.signOut()}catch(e){}
-   location.reload();
- });
-
+ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+ function fmt(d){try{return d?new Date(d).toLocaleString():'—'}catch(e){return '—'}}
+ function channelsOf(r){return Array.isArray(r?.app_data?.channels)?r.app_data.channels:[]}
+ function isMon(c){return !!(c?.monetized || c?.monetization===true || c?.mon==='yes' || c?.mon==='on')}
+ function accepted(r){return !!(r?.app_data?.privacyConsent?.accepted && r?.app_data?.privacyConsent?.adminChannelDataAccess)}
  function addAdminUI(){
-   if(document.getElementById('ytAdminNav')) return;
-   const nav=document.querySelector('.nav');
-   if(nav){
-     const b=document.createElement('button');
-     b.id='ytAdminNav';
-     b.dataset.page='admin';
-     b.innerHTML='<span class="menu-icon">◆</span><span>ADMIN</span>';
-     b.onclick=()=>{showPage('admin');setTimeout(()=>window.ytAdminLoad?.(),50)};
-     nav.appendChild(b);
+   if(!document.getElementById('ytAdminNav')){
+     const nav=document.querySelector('.nav'); if(nav){const b=document.createElement('button');b.id='ytAdminNav';b.dataset.page='admin';b.innerHTML='<span class="menu-icon">◆</span><span>ADMIN</span>';b.onclick=()=>{showPage('admin');setTimeout(()=>window.ytAdminLoad?.(),30)};nav.appendChild(b)}
    }
-   if(!document.getElementById('ytAdminFloat')){
-     const f=document.createElement('button');
-     f.id='ytAdminFloat';
-     f.textContent='ADMIN';
-     f.onclick=()=>{showPage('admin');setTimeout(()=>window.ytAdminLoad?.(),50)};
-     document.body.appendChild(f);
-   }
+   if(!document.getElementById('ytAdminFloat')){const f=document.createElement('button');f.id='ytAdminFloat';f.textContent='ADMIN';f.onclick=()=>{showPage('admin');setTimeout(()=>window.ytAdminLoad?.(),30)};document.body.appendChild(f)}
  }
- function removeAdminUI(){
-   document.getElementById('ytAdminNav')?.remove();
-   document.getElementById('ytAdminFloat')?.remove();
- }
+ function removeAdminUI(){document.getElementById('ytAdminNav')?.remove();document.getElementById('ytAdminFloat')?.remove()}
  async function adminCheck(){
    try{
-     if(!window.ytSupabase) return false;
-     const s=await window.ytSupabase.auth.getSession();
-     if(!s?.data?.session?.user){removeAdminUI();return false}
-     const r=await window.ytSupabase.rpc('is_admin');
-     if(r.error || r.data!==true){removeAdminUI();return false}
-     addAdminUI();
-     return true;
-   }catch(e){return false}
+     if(!window.ytSupabase)return false;
+     const s=await window.ytSupabase.auth.getSession(); if(!s?.data?.session?.user){adminVerified=false;removeAdminUI();return false}
+     const r=await window.ytSupabase.rpc('is_admin'); adminVerified=!r.error && r.data===true;
+     if(adminVerified)addAdminUI();else removeAdminUI(); return adminVerified;
+   }catch(e){adminVerified=false;return false}
  }
  window.ytAdminCheck=adminCheck;
 
- function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+ async function fetchRows(){
+   const q=await window.ytSupabase.from('user_app_data').select('user_id,app_data,updated_at').order('updated_at',{ascending:false});
+   if(q.error)throw q.error;
+   adminRows=(q.data||[]).filter(accepted);
+   return adminRows;
+ }
+ function stats(){
+   const users=adminRows.length, channels=adminRows.reduce((n,r)=>n+channelsOf(r).length,0);
+   const monetized=adminRows.reduce((n,r)=>n+channelsOf(r).filter(isMon).length,0);
+   const now=Date.now(), active7=adminRows.filter(r=>now-new Date(r.updated_at).getTime()<7*864e5).length;
+   const niches=new Set(adminRows.flatMap(r=>channelsOf(r).map(c=>(c.niche||'').trim()).filter(Boolean)));
+   return {users,channels,monetized,active7,niches:niches.size};
+ }
+ function kpis(){
+   const s=stats();return '<div class="yt-admin-kpis">'+
+   [['USERS',s.users],['CHANNELS',s.channels],['MONETIZED',s.monetized],['ACTIVE 7D',s.active7],['NICHES',s.niches]].map(x=>'<div class="yt-admin-kpi"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+'</div></div>').join('')+'</div>';
+ }
+ function userLabel(r,i){return esc(r.app_data?.profile?.name || r.app_data?.userName || r.app_data?.name || ('USER '+(i+1)))}
+ function renderDashboard(){
+   const recent=adminRows.slice(0,8);
+   return kpis()+'<div class="yt-admin-section-title">ПОСЛЕДНЯЯ АКТИВНОСТЬ</div><div class="yt-admin-table"><div class="yt-admin-tr head"><span>USER</span><span>CHANNELS</span><span>MONETIZED</span><span>UPDATED</span><span></span></div>'+
+   recent.map((r,i)=>'<div class="yt-admin-tr"><b>'+userLabel(r,i)+'</b><span>'+channelsOf(r).length+'</span><span>'+channelsOf(r).filter(isMon).length+'</span><span>'+fmt(r.updated_at)+'</span><button class="yt-admin-btn" onclick="ytAdminOpenUser(\''+esc(r.user_id)+'\')">OPEN</button></div>').join('')+'</div>';
+ }
+ function renderUsers(q=''){
+   const z=q.toLowerCase(), rows=adminRows.filter((r,i)=>!z || r.user_id.toLowerCase().includes(z) || userLabel(r,i).toLowerCase().includes(z) || channelsOf(r).some(c=>(c.name||'').toLowerCase().includes(z)||(c.url||'').toLowerCase().includes(z)||(c.niche||'').toLowerCase().includes(z)));
+   return kpis()+'<div class="yt-admin-toolbar"><input id="ytAdminSearch" class="yt-admin-search" placeholder="Поиск: пользователь, канал, ниша, URL..." value="'+esc(q)+'"></div><div class="yt-admin-table"><div class="yt-admin-tr head"><span>USER / ID</span><span>CHANNELS</span><span>MONETIZED</span><span>LAST SYNC</span><span></span></div>'+
+   rows.map((r,i)=>'<div class="yt-admin-tr"><span><b>'+userLabel(r,i)+'</b><br><small>'+esc(r.user_id)+'</small></span><span>'+channelsOf(r).length+'</span><span>'+channelsOf(r).filter(isMon).length+'</span><span>'+fmt(r.updated_at)+'</span><button class="yt-admin-btn" onclick="ytAdminOpenUser(\''+esc(r.user_id)+'\')">DETAILS</button></div>').join('')+'</div>';
+ }
+ function allChannels(){
+   const arr=[];adminRows.forEach((r,ui)=>channelsOf(r).forEach(c=>arr.push({c,r,ui})));return arr;
+ }
+ function renderChannels(q=''){
+   const z=q.toLowerCase(), arr=allChannels().filter(x=>!z || [x.c.name,x.c.niche,x.c.url,x.r.user_id].some(v=>String(v||'').toLowerCase().includes(z)));
+   return kpis()+'<div class="yt-admin-toolbar"><input id="ytAdminSearch" class="yt-admin-search" placeholder="Поиск канала, ниши, URL..." value="'+esc(q)+'"></div><div class="yt-admin-grid">'+arr.map(x=>'<div class="yt-admin-channel"><b>'+esc(x.c.name||'Без названия')+'</b><div class="yt-admin-row">Ниша: '+esc(x.c.niche||'Не указана')+'</div><div class="yt-admin-row">Монетизация: <span class="yt-admin-pill '+(isMon(x.c)?'':'off')+'">'+(isMon(x.c)?'ON':'OFF')+'</span></div><div class="yt-admin-row">Владелец: '+esc(x.r.user_id)+'</div><div class="yt-admin-row">Добавлен: '+esc(x.c.created||'—')+'</div><div class="yt-admin-row">URL: '+esc(x.c.url||'Не указана')+'</div>'+(x.c.url?'<div class="yt-admin-row"><a class="yt-admin-link" href="'+esc(x.c.url)+'" target="_blank" rel="noopener">ОТКРЫТЬ YOUTUBE ↗</a></div>':'')+'</div>').join('')+'</div>';
+ }
+ function renderAnalytics(){
+   const counts={};allChannels().forEach(x=>{const n=(x.c.niche||'Не указана').trim()||'Не указана';counts[n]=(counts[n]||0)+1});
+   const arr=Object.entries(counts).sort((a,b)=>b[1]-a[1]), max=Math.max(1,...arr.map(x=>x[1]));
+   return kpis()+'<div class="yt-admin-section-title">НИШИ ВНУТРИ YOU TIM</div><div class="yt-admin-user"><div class="yt-admin-bars">'+(arr.length?arr.map(([n,v])=>'<div class="yt-admin-bar-row"><b>'+esc(n)+'</b><div class="yt-admin-bar"><i style="width:'+Math.round(v/max*100)+'%"></i></div><span>'+v+'</span></div>').join(''):'<div class="yt-admin-note">Пока нет данных по нишам.</div>')+'</div></div>';
+ }
+ function renderActivity(){
+   const events=[];adminRows.forEach((r,i)=>{events.push({t:r.updated_at,s:'Синхронизация данных — '+userLabel(r,i)});channelsOf(r).forEach(c=>{if(c.created)events.push({t:c.created,s:'Добавлен канал — '+(c.name||'Без названия')})})});events.sort((a,b)=>new Date(b.t)-new Date(a.t));
+   return '<div class="yt-admin-table">'+events.slice(0,100).map(e=>'<div class="yt-admin-tr" style="grid-template-columns:1fr auto"><span>'+esc(e.s)+'</span><span>'+fmt(e.t)+'</span></div>').join('')+'</div>';
+ }
+ function renderConsents(){
+   return kpis()+'<div class="yt-admin-table">'+adminRows.map((r,i)=>'<div class="yt-admin-tr"><b>'+userLabel(r,i)+'</b><span>'+esc(r.app_data?.privacyConsent?.version||'—')+'</span><span>AGREED</span><span>'+fmt(r.app_data?.privacyConsent?.acceptedAt)+'</span><button class="yt-admin-btn" onclick="ytAdminOpenUser(\''+esc(r.user_id)+'\')">OPEN</button></div>').join('')+'</div>';
+ }
+ function placeholder(title,text){return '<div class="yt-admin-section-title">'+title+'</div><div class="yt-admin-note">'+text+'</div>'}
+ function renderSystem(){return '<div class="yt-admin-system"><div class="yt-admin-note"><b>SUPABASE</b><br>Connected through authenticated YOU TIM session.</div><div class="yt-admin-note"><b>APP VERSION</b><br>V38 ADMIN PRO</div><div class="yt-admin-note"><b>TERMS VERSION</b><br>'+VERSION+'</div><div class="yt-admin-note"><b>CLOUD DATA</b><br>'+adminRows.length+' consented user records visible to this administrator.</div></div>'}
+ function render(){
+   const root=document.getElementById('ytAdminRoot');if(!root)return;
+   if(adminTab==='dashboard')root.innerHTML=renderDashboard();
+   else if(adminTab==='users')root.innerHTML=renderUsers();
+   else if(adminTab==='channels')root.innerHTML=renderChannels();
+   else if(adminTab==='analytics')root.innerHTML=renderAnalytics();
+   else if(adminTab==='activity')root.innerHTML=renderActivity();
+   else if(adminTab==='consents')root.innerHTML=renderConsents();
+   else if(adminTab==='feedback')root.innerHTML=placeholder('FEEDBACK','Раздел подготовлен. Здесь будут обращения пользователей, когда добавим форму обратной связи в приложение.');
+   else if(adminTab==='announcements')root.innerHTML=placeholder('ANNOUNCEMENTS','Раздел подготовлен для будущих объявлений всем пользователям. Публикацию сообщений подключим через отдельную защищённую таблицу Supabase.');
+   else if(adminTab==='system')root.innerHTML=renderSystem();
+   root.querySelector('#ytAdminSearch')?.addEventListener('input',e=>{if(adminTab==='users')root.innerHTML=renderUsers(e.target.value);else if(adminTab==='channels')root.innerHTML=renderChannels(e.target.value);setTimeout(()=>root.querySelector('#ytAdminSearch')?.focus(),0)});
+ }
+ window.ytAdminOpenUser=function(id){
+   const r=adminRows.find(x=>x.user_id===id),root=document.getElementById('ytAdminRoot');if(!r||!root)return;
+   const ch=channelsOf(r), pc=r.app_data?.privacyConsent||{};
+   root.innerHTML='<button class="yt-admin-btn gray" onclick="ytAdminBack()">← BACK</button><div class="yt-admin-user-detail"><h2>USER DETAILS</h2><div class="yt-admin-meta">ID: '+esc(r.user_id)+' · Last sync: '+fmt(r.updated_at)+'</div><div class="yt-admin-section-title">CONSENT</div><div class="yt-admin-row">Terms: '+esc(pc.version||'—')+' · Accepted: '+fmt(pc.acceptedAt)+'</div><div class="yt-admin-section-title">CHANNELS ('+ch.length+')</div><div class="yt-admin-channels">'+(ch.length?ch.map(c=>'<div class="yt-admin-channel"><b>'+esc(c.name||'Без названия')+'</b><div class="yt-admin-row">Ниша: '+esc(c.niche||'Не указана')+'</div><div class="yt-admin-row">Монетизация: <span class="yt-admin-pill '+(isMon(c)?'':'off')+'">'+(isMon(c)?'ON':'OFF')+'</span></div><div class="yt-admin-row">Создан: '+esc(c.created||'—')+'</div><div class="yt-admin-row">Расписание: '+esc(Array.isArray(c.schedule)?c.schedule.join(', '):(c.schedule||'—'))+'</div><div class="yt-admin-row">Цель: '+esc(c.target||'—')+'</div><div class="yt-admin-row">URL: '+esc(c.url||'—')+'</div>'+(c.url?'<div class="yt-admin-row"><a class="yt-admin-link" href="'+esc(c.url)+'" target="_blank" rel="noopener">ОТКРЫТЬ КАНАЛ ↗</a></div>':'')+'</div>').join(''):'<div class="yt-admin-note">Пользователь ещё не добавил каналов.</div>')+'</div></div>';
+ }
+ window.ytAdminBack=render;
+ document.getElementById('ytAdminTabs')?.addEventListener('click',e=>{const b=e.target.closest('button[data-atab]');if(!b)return;adminTab=b.dataset.atab;document.querySelectorAll('#ytAdminTabs button').forEach(x=>x.classList.toggle('active',x===b));render()});
  window.ytAdminLoad=async function(){
-   const root=document.getElementById('ytAdminRoot');
-   if(!root)return;
+   const root=document.getElementById('ytAdminRoot');if(!root)return;
    root.innerHTML='<div class="yt-admin-empty">Проверка доступа...</div>';
    if(!(await adminCheck())){root.innerHTML='<div class="yt-admin-empty">Нет доступа / No access</div>';return}
-   root.innerHTML='<div class="yt-admin-empty">Загрузка пользователей...</div>';
-   const q=await window.ytSupabase.from('user_app_data').select('user_id,app_data,updated_at').order('updated_at',{ascending:false});
-   if(q.error){root.innerHTML='<div class="yt-admin-empty">Ошибка: '+esc(q.error.message||q.error)+'</div>';return}
-   const accepted=(q.data||[]).filter(r=>r.app_data?.privacyConsent?.accepted===true && r.app_data?.privacyConsent?.adminChannelDataAccess===true);
-   if(!accepted.length){root.innerHTML='<div class="yt-admin-empty">Пока нет пользователей, которые приняли новую версию условий.</div>';return}
-   root.innerHTML='<div class="yt-admin-grid">'+accepted.map((r,i)=>{
-     const p=r.app_data||{}, chs=Array.isArray(p.channels)?p.channels:[];
-     return '<div class="yt-admin-user"><h3>USER '+(i+1)+'</h3><div class="yt-admin-meta">ID: '+esc(r.user_id)+' · Обновлено: '+esc(new Date(r.updated_at).toLocaleString())+' · Каналов: '+chs.length+'</div><div class="yt-admin-channels">'+
-       (chs.length?chs.map(c=>'<div class="yt-admin-channel"><b>'+esc(c.name||'Без названия')+'</b><div class="yt-admin-row">Ниша: '+esc(c.niche||'Не указана')+'</div><div class="yt-admin-row">YouTube: '+esc(c.url||'Не указана')+'</div><div class="yt-admin-row"><span class="yt-admin-pill '+(c.monetized?'':'off')+'">'+(c.monetized?'МОНЕТИЗИРОВАН':'НЕ МОНЕТИЗИРОВАН')+'</span></div></div>').join(''):'<div class="yt-admin-row">Каналов пока нет.</div>')+
-       '</div></div>';
-   }).join('')+'</div>';
+   root.innerHTML='<div class="yt-admin-empty">Загрузка...</div>';
+   try{await fetchRows();render()}catch(e){root.innerHTML='<div class="yt-admin-empty">Ошибка: '+esc(e.message||e)+'</div>'}
  };
-
- // V37: terms are deliberately shown independently of cloud boot timing.
- function boot(){
-   setTimeout(showConsent,700);
-   setTimeout(adminCheck,1000);
-   setTimeout(adminCheck,2500);
- }
- if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
- else boot();
+ function boot(){setTimeout(showConsent,700);setTimeout(adminCheck,1000);setTimeout(adminCheck,2500)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
  window.addEventListener('load',()=>{setTimeout(showConsent,500);setTimeout(adminCheck,1200)});
- setInterval(adminCheck,5000);
+ setInterval(adminCheck,7000);
 })();
 </script>
 
