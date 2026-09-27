@@ -6,85 +6,48 @@
 <title>YOU TIM</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
-
+*{box-sizing:border-box}
 body{
   margin:0;
   background:#080a0d;
   color:#fff;
   font-family:Arial,sans-serif;
 }
+button,input,select{font:inherit}
+button{cursor:pointer}
 
-button,input,select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-/* START */
-
-#startScreen{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-
-.logo{
-  font-size:58px;
-  font-weight:800;
-  letter-spacing:2px;
-  margin:0;
-}
-
-.subtitle{
-  color:#7e8792;
-  font-size:18px;
-  margin:12px 0 36px;
-}
-
-.green-btn{
-  background:#22c55e;
-  color:#041108;
-  border:0;
-  border-radius:14px;
-  padding:15px 30px;
-  font-weight:800;
-  transition:.2s;
-}
-
-.green-btn:hover{
-  transform:translateY(-2px);
-  background:#2bd568;
+:root{
+  --green:#35e878;
+  --red:#ff4d57;
+  --blue:#55aaff;
+  --panel:#101318;
+  --panel2:#15191f;
+  --border:#252b34;
+  --muted:#818995;
 }
 
 /* APP */
-
-#app{
-  display:none;
+.app{
+  display:flex;
   min-height:100vh;
 }
 
 .sidebar{
-  width:245px;
-  background:#0d1014;
-  border-right:1px solid #1d232b;
+  width:230px;
+  border-right:1px solid var(--border);
+  background:#0c0f13;
+  padding:25px 18px;
   position:fixed;
-  left:0;
   top:0;
   bottom:0;
-  padding:28px 18px;
+  left:0;
 }
 
-.side-logo{
-  font-size:25px;
+.brand{
+  font-size:24px;
   font-weight:900;
-  margin:0 10px 35px;
+  letter-spacing:2px;
+  margin-bottom:35px;
 }
 
 .nav{
@@ -94,386 +57,623 @@ button{
 }
 
 .nav button{
-  width:100%;
+  background:transparent;
+  border:0;
+  color:#8d949e;
   text-align:left;
   padding:13px 14px;
-  border:0;
   border-radius:10px;
-  background:transparent;
-  color:#8e98a5;
-  font-weight:700;
 }
 
 .nav button:hover,
 .nav button.active{
-  background:#171c22;
+  background:#171b21;
   color:#fff;
 }
 
 .main{
-  margin-left:245px;
-  padding:38px;
-  max-width:1500px;
+  margin-left:230px;
+  width:calc(100% - 230px);
+  padding:32px;
 }
 
-.top{
+.page{display:none}
+.page.active{display:block}
+
+.topbar{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  gap:20px;
-  margin-bottom:35px;
+  justify-content:space-between;
+  margin-bottom:28px;
 }
 
-.top h1{
-  margin:0;
-  font-size:34px;
+h1,h2,h3,p{margin-top:0}
+
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:11px 16px;
+  font-weight:700;
 }
 
-.muted{
-  color:#7d8794;
+.btn-green{
+  background:var(--green);
+  color:#07110a;
 }
 
-.grid{
+.btn-dark{
+  background:#1b2027;
+  color:#fff;
+  border:1px solid #303741;
+}
+
+.btn-red{
+  background:#301519;
+  color:#ff6a72;
+  border:1px solid #61242b;
+}
+
+/* CARDS */
+.stats{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:16px;
-}
-
-.stat{
-  background:#101419;
-  border:1px solid #20262e;
-  border-radius:16px;
-  padding:20px;
-}
-
-.stat-title{
-  color:#7f8996;
-  font-size:13px;
-  margin-bottom:12px;
-}
-
-.stat-number{
-  font-size:30px;
-  font-weight:800;
-}
-
-.green{
-  color:#22c55e;
-}
-
-.red{
-  color:#ef4444;
-}
-
-.section{
-  margin-top:34px;
-}
-
-.section-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
-  margin-bottom:15px;
-}
-
-.section h2{
-  margin:0;
-  font-size:21px;
+  gap:14px;
+  margin-bottom:22px;
 }
 
 .card{
-  background:#101419;
-  border:1px solid #20262e;
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:16px;
   padding:20px;
 }
 
+.stat-label{
+  color:var(--muted);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.stat-value{
+  font-size:28px;
+  font-weight:900;
+  margin-top:9px;
+}
+
+.green{color:var(--green)}
+.red{color:var(--red)}
+.blue{color:var(--blue)}
+.muted{color:var(--muted)}
+
+/* MAIN STREAK */
+.hero-streak{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  min-height:150px;
+  margin-bottom:22px;
+  overflow:hidden;
+  position:relative;
+}
+
+.fire{
+  width:88px;
+  height:88px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:62px;
+  filter:drop-shadow(0 0 18px rgba(255,65,40,.6));
+  animation:firePulse 1.5s infinite alternate;
+}
+
+.fire.frozen{
+  filter:drop-shadow(0 0 18px rgba(70,160,255,.8));
+}
+
+@keyframes firePulse{
+  from{transform:scale(.96)}
+  to{transform:scale(1.06)}
+}
+
+.streak-number{
+  font-size:42px;
+  font-weight:900;
+}
+
+.streak-sub{
+  color:var(--muted);
+  margin-top:5px;
+}
+
+/* CHANNELS */
 .channel-grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:16px;
 }
 
 .channel-card{
-  background:#101419;
-  border:1px solid #20262e;
+  background:var(--panel);
+  border:1px solid var(--border);
   border-radius:16px;
-  padding:20px;
+  padding:18px;
+  transition:.2s;
 }
 
-.channel-top{
+.channel-card:hover{
+  transform:translateY(-2px);
+  border-color:#3b434f;
+}
+
+.channel-head{
   display:flex;
-  justify-content:space-between;
-  gap:15px;
+  align-items:center;
+  gap:12px;
 }
 
-.channel-name{
+.avatar{
+  width:50px;
+  height:50px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   font-size:20px;
-  font-weight:800;
+  font-weight:900;
+  background:#6639d6;
+  overflow:hidden;
+  flex-shrink:0;
 }
 
-.channel-niche{
-  color:#7d8794;
-  margin-top:6px;
-  font-size:14px;
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.channel-title{
+  font-size:17px;
+  font-weight:800;
 }
 
 .badge{
   display:inline-block;
-  padding:7px 10px;
-  border-radius:8px;
-  font-size:11px;
+  margin-top:5px;
+  padding:4px 7px;
+  border-radius:6px;
+  font-size:10px;
   font-weight:800;
-  height:max-content;
 }
 
-.badge-off{
-  color:#a3aab3;
-  background:#20252b;
+.badge.on{
+  background:rgba(53,232,120,.12);
+  color:var(--green);
 }
 
-.badge-on{
-  color:#2ce26c;
-  background:#0d2b18;
+.badge.off{
+  background:#1c2026;
+  color:#777f89;
+}
+
+.channel-streak{
+  margin:20px 0;
+  padding:13px;
+  background:#0b0e12;
+  border-radius:12px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.small-fire{
+  font-size:20px;
 }
 
 .channel-actions{
   display:flex;
   gap:8px;
-  margin-top:20px;
-  flex-wrap:wrap;
 }
 
-.small-btn{
-  border:1px solid #2b333d;
-  background:#171c22;
-  color:white;
-  padding:9px 12px;
-  border-radius:9px;
+.channel-actions button{
+  flex:1;
 }
 
-.small-btn:hover{
-  background:#20262d;
+/* TRACKER */
+.channel-detail{
+  max-width:1100px;
 }
 
-.delete-btn{
-  color:#ff6b6b;
+.detail-head{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:22px;
 }
 
-.work-btn{
-  border:0;
-  background:#22c55e;
-  color:#061008;
-  padding:9px 12px;
-  border-radius:9px;
-  font-weight:800;
+.detail-avatar{
+  width:70px;
+  height:70px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  font-weight:900;
+  overflow:hidden;
 }
 
-/* CALENDAR */
+.detail-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.detail-stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
 
 .calendar{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+}
+
+.calendar-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.weekdays,
+.days{
   display:grid;
   grid-template-columns:repeat(7,1fr);
   gap:8px;
 }
 
+.weekdays div{
+  text-align:center;
+  color:#737b86;
+  font-size:11px;
+  padding:6px;
+}
+
 .day{
-  min-height:68px;
-  background:#151a20;
-  border:1px solid #242b34;
+  aspect-ratio:1.25/1;
+  min-height:64px;
   border-radius:10px;
-  padding:9px;
-  color:#8f98a4;
+  border:1px solid #242a32;
+  background:#11151a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:5px;
   cursor:pointer;
+  position:relative;
+  transition:.15s;
 }
 
 .day:hover{
-  border-color:#22c55e;
+  border-color:#4a5360;
 }
 
-.day.worked{
-  background:#0e2a18;
-  border-color:#22c55e;
-  color:#fff;
+.day.success{
+  background:rgba(53,232,120,.14);
+  border-color:rgba(53,232,120,.5);
+  color:#6dff9c;
 }
 
-.day.empty{
-  opacity:.25;
-  cursor:default;
+.day.fail{
+  background:rgba(255,77,87,.13);
+  border-color:rgba(255,77,87,.5);
+  color:#ff747c;
 }
 
-.week-name{
-  color:#646e79;
+.day.off{
+  background:#191d23;
+  color:#7e8792;
+}
+
+.day.today{
+  outline:2px solid #fff;
+}
+
+.day.future{
+  opacity:.45;
+}
+
+.day-num{
+  font-weight:800;
+}
+
+.day-icon{
+  font-size:11px;
+}
+
+/* WORK CALENDAR */
+.work-summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+/* INCOME */
+.locked{
+  padding:35px;
   text-align:center;
-  font-size:12px;
-  padding:8px 0;
+  color:#777f89;
 }
 
-/* FORMS */
+.income-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
 
+.income-input{
+  display:flex;
+  gap:10px;
+}
+
+.input{
+  width:100%;
+  background:#0c0f13;
+  border:1px solid #2a313a;
+  color:#fff;
+  border-radius:10px;
+  padding:12px;
+  outline:none;
+}
+
+.input:focus{
+  border-color:#4a5562;
+}
+
+.chart{
+  height:260px;
+  position:relative;
+  margin-top:20px;
+}
+
+.chart svg{
+  width:100%;
+  height:100%;
+}
+
+.chart-line{
+  fill:none;
+  stroke:#35e878;
+  stroke-width:3;
+}
+
+.chart-grid{
+  stroke:#252b34;
+  stroke-width:1;
+}
+
+/* MODAL */
 .modal{
+  display:none;
   position:fixed;
   inset:0;
   background:rgba(0,0,0,.72);
-  display:none;
+  z-index:100;
   align-items:center;
   justify-content:center;
   padding:20px;
-  z-index:50;
+}
+
+.modal.show{
+  display:flex;
 }
 
 .modal-box{
   width:100%;
-  max-width:470px;
+  max-width:520px;
   background:#11151a;
-  border:1px solid #282f38;
+  border:1px solid #303741;
   border-radius:18px;
-  padding:25px;
+  padding:24px;
 }
 
-.modal-box h2{
-  margin-top:0;
+.form-group{
+  margin-bottom:14px;
 }
 
-.field{
-  margin:15px 0;
-}
-
-.field label{
-  display:block;
-  color:#858f9b;
+.form-label{
+  color:#858d98;
+  font-size:12px;
   margin-bottom:7px;
-  font-size:13px;
-}
-
-.field input,
-.field select{
-  width:100%;
-  background:#090c10;
-  border:1px solid #29313a;
-  color:white;
-  padding:13px;
-  border-radius:10px;
-  outline:none;
-}
-
-.field input:focus,
-.field select:focus{
-  border-color:#22c55e;
-}
-
-.modal-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-  margin-top:22px;
-}
-
-/* MONEY */
-
-.money-row{
-  display:grid;
-  grid-template-columns:1.5fr 1fr auto;
-  gap:10px;
-  margin-bottom:12px;
-}
-
-.money-row input,
-.money-row select{
-  background:#090c10;
-  border:1px solid #29313a;
-  color:white;
-  padding:12px;
-  border-radius:9px;
-}
-
-.list-item{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 0;
-  border-bottom:1px solid #20262e;
-  gap:15px;
-}
-
-.list-item:last-child{
-  border-bottom:0;
-}
-
-.amount{
-  font-weight:800;
-}
-
-.page{
-  display:none;
-}
-
-.page.active-page{
   display:block;
 }
 
-.empty-state{
-  color:#68727e;
-  padding:30px 5px;
-  text-align:center;
+.colors{
+  display:flex;
+  gap:8px;
+}
+
+.color-dot{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  border:2px solid transparent;
+  cursor:pointer;
+}
+
+.color-dot.selected{
+  border-color:#fff;
+}
+
+.schedule-days{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.schedule-day{
+  border:1px solid #303741;
+  background:#151a20;
+  color:#777f89;
+  padding:8px 10px;
+  border-radius:8px;
+}
+
+.schedule-day.selected{
+  background:#244d32;
+  color:#6eff9c;
+  border-color:#397b4d;
+}
+
+/* STATUS POPUP */
+.status-menu{
+  position:fixed;
+  display:none;
+  width:210px;
+  background:#171b21;
+  border:1px solid #343c47;
+  border-radius:12px;
+  padding:7px;
+  z-index:150;
+  box-shadow:0 15px 50px rgba(0,0,0,.5);
+}
+
+.status-menu.show{
+  display:block;
+}
+
+.status-menu button{
+  width:100%;
+  text-align:left;
+  background:transparent;
+  border:0;
+  color:#fff;
+  padding:10px;
+  border-radius:8px;
+}
+
+.status-menu button:hover{
+  background:#232932;
+}
+
+/* FLASH */
+.flash{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  z-index:200;
+}
+
+.flash.win{
+  background:radial-gradient(circle,rgba(53,232,120,.35),transparent 60%);
+  animation:flash .7s;
+}
+
+.flash.lose{
+  background:radial-gradient(circle,rgba(255,77,87,.32),transparent 60%);
+  animation:flash .7s;
+}
+
+.flash.freeze{
+  background:radial-gradient(circle,rgba(70,160,255,.30),transparent 60%);
+  animation:flash .7s;
+}
+
+@keyframes flash{
+  0%{opacity:0}
+  30%{opacity:1}
+  100%{opacity:0}
 }
 
 /* RESPONSIVE */
-
-@media(max-width:1000px){
-  .grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .channel-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:700px){
+@media(max-width:900px){
   .sidebar{
-    position:static;
-    width:100%;
-    border-right:0;
-    border-bottom:1px solid #1d232b;
+    width:72px;
+    padding:22px 10px;
   }
 
-  #app{
-    display:none;
-  }
-
-  .main{
-    margin-left:0;
-    padding:22px;
-  }
-
-  .nav{
-    flex-direction:row;
-    overflow:auto;
+  .brand{
+    font-size:14px;
+    text-align:center;
   }
 
   .nav button{
-    width:auto;
-    white-space:nowrap;
+    font-size:0;
+    text-align:center;
   }
 
-  .grid,
+  .nav button::first-letter{
+    font-size:16px;
+  }
+
+  .main{
+    margin-left:72px;
+    width:calc(100% - 72px);
+    padding:18px;
+  }
+
+  .stats,
+  .detail-stats{
+    grid-template-columns:1fr 1fr;
+  }
+
   .channel-grid{
     grid-template-columns:1fr;
   }
+}
 
-  .money-row{
-    grid-template-columns:1fr;
+@media(max-width:600px){
+  .sidebar{
+    position:fixed;
+    width:100%;
+    height:64px;
+    top:auto;
+    bottom:0;
+    padding:7px;
+    z-index:80;
   }
 
-  .calendar{
-    gap:4px;
+  .brand{display:none}
+
+  .nav{
+    flex-direction:row;
+    justify-content:space-around;
+  }
+
+  .nav button{
+    font-size:10px;
+    padding:10px 5px;
+  }
+
+  .main{
+    margin:0 0 64px 0;
+    width:100%;
+    padding:15px;
+  }
+
+  .stats,
+  .detail-stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .topbar h1{
+    font-size:23px;
   }
 
   .day{
-    min-height:52px;
-    padding:6px;
+    min-height:48px;
+  }
+
+  .income-row{
+    grid-template-columns:1fr;
   }
 }
 </style>
@@ -481,257 +681,244 @@ button{
 
 <body>
 
-<!-- START SCREEN -->
+<div class="app">
 
-<div id="startScreen">
-  <div>
-    <h1 class="logo">YOU TIM</h1>
-    <div class="subtitle">Создавай. Публикуй. Расти.</div>
-    <button class="green-btn" onclick="startApp()">НАЧАТЬ</button>
+<aside class="sidebar">
+  <div class="brand">YOU TIM</div>
+
+  <div class="nav">
+    <button class="active" data-page="dashboard">Главная</button>
+    <button data-page="channels">Каналы</button>
+    <button data-page="work">Календарь</button>
+    <button data-page="income">Доходы</button>
+    <button data-page="expenses">Расходы</button>
   </div>
+</aside>
+
+<main class="main">
+
+<section id="dashboard" class="page active">
+
+  <div class="topbar">
+    <div>
+      <h1>Главная</h1>
+      <div class="muted" id="todayText"></div>
+    </div>
+
+    <button class="btn btn-green" onclick="openChannelModal()">
+      + Добавить канал
+    </button>
+  </div>
+
+  <div class="card hero-streak">
+    <div class="fire" id="globalFire">🔥</div>
+
+    <div>
+      <div class="stat-label">ОБЩАЯ СЕРИЯ YOU TIM</div>
+      <div class="streak-number">
+        <span id="globalStreak">0</span> ДНЕЙ
+      </div>
+      <div class="streak-sub">
+        Рекорд: <span id="globalBest">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+
+    <div class="card">
+      <div class="stat-label">КАНАЛЫ</div>
+      <div class="stat-value" id="dashboardChannels">0</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">С МОНЕТИЗАЦИЕЙ</div>
+      <div class="stat-value" id="dashboardMonetized">0</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">ДОХОД ЗА МЕСЯЦ</div>
+      <div class="stat-value green" id="dashboardIncome">$0</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">ЧИСТАЯ ПРИБЫЛЬ</div>
+      <div class="stat-value" id="dashboardProfit">$0</div>
+    </div>
+
+  </div>
+
+  <h2>Каналы</h2>
+
+  <div id="dashboardChannelGrid" class="channel-grid"></div>
+
+</section>
+
+<section id="channels" class="page">
+
+  <div class="topbar">
+    <h1>Каналы</h1>
+
+    <button class="btn btn-green" onclick="openChannelModal()">
+      + Добавить канал
+    </button>
+  </div>
+
+  <div id="channelGrid" class="channel-grid"></div>
+
+</section>
+
+<section id="channelDetail" class="page channel-detail">
+
+  <button class="btn btn-dark" onclick="showPage('channels')">
+    ← Назад
+  </button>
+
+  <div id="channelDetailContent" style="margin-top:20px"></div>
+
+</section>
+
+<section id="work" class="page">
+
+  <div class="topbar">
+    <div>
+      <h1>Календарь работы</h1>
+      <div class="muted">Работал ли ты сегодня?</div>
+    </div>
+  </div>
+
+  <div class="work-summary">
+
+    <div class="card">
+      <div class="stat-label">РАБОТАЛ</div>
+      <div class="stat-value green" id="workedCount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">НЕ РАБОТАЛ</div>
+      <div class="stat-value red" id="notWorkedCount">0</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">ВЫХОДНЫЕ</div>
+      <div class="stat-value" id="workOffCount">0</div>
+    </div>
+
+  </div>
+
+  <div id="workCalendar"></div>
+
+</section>
+
+<section id="income" class="page">
+
+  <div class="topbar">
+    <div>
+      <h1>Доходы</h1>
+      <div class="muted">Только монетизированные каналы</div>
+    </div>
+  </div>
+
+  <div class="stats">
+
+    <div class="card">
+      <div class="stat-label">СЕГОДНЯ</div>
+      <div class="stat-value green" id="incomeToday">$0</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">ЭТОТ МЕСЯЦ</div>
+      <div class="stat-value" id="incomeMonth">$0</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">ЛУЧШИЙ ДЕНЬ</div>
+      <div class="stat-value" id="incomeBest">$0</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">СРЕДНЕЕ / ДЕНЬ</div>
+      <div class="stat-value" id="incomeAverage">$0</div>
+    </div>
+
+  </div>
+
+  <div class="income-row">
+
+    <div class="card">
+
+      <h3>Добавить доход</h3>
+
+      <div class="form-group">
+        <select id="incomeChannel" class="input"></select>
+      </div>
+
+      <div class="form-group">
+        <input id="incomeDate" class="input" type="date">
+      </div>
+
+      <div class="income-input">
+        <input id="incomeAmount" class="input" type="number" step="0.01" placeholder="$0.00">
+        <button class="btn btn-green" onclick="addIncome()">Добавить</button>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h3>График дохода</h3>
+      <div id="incomeChart" class="chart"></div>
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>История</h3>
+    <div id="incomeHistory"></div>
+  </div>
+
+</section>
+
+<section id="expenses" class="page">
+
+  <div class="topbar">
+    <h1>Расходы</h1>
+  </div>
+
+  <div class="stats">
+
+    <div class="card">
+      <div class="stat-label">РАСХОДЫ ЗА МЕСЯЦ</div>
+      <div class="stat-value red" id="expenseMonth">$0</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">ВСЕГО</div>
+      <div class="stat-value" id="expenseAll">$0</div>
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Добавить расход</h3>
+
+    <div class="income-input">
+      <input id="expenseName" class="input" placeholder="ChatGPT">
+      <input id="expenseAmount" class="input" type="number" step="0.01" placeholder="$20">
+      <button class="btn btn-green" onclick="addExpense()">Добавить</button>
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>История</h3>
+    <div id="expenseHistory"></div>
+  </div>
+
+</section>
+
+</main>
 </div>
-
-
-<!-- APPLICATION -->
-
-<div id="app">
-
-  <aside class="sidebar">
-
-    <div class="side-logo">YOU TIM</div>
-
-    <div class="nav">
-      <button class="active" onclick="openPage('dashboard',this)">Dashboard</button>
-      <button onclick="openPage('channels',this)">Каналы</button>
-      <button onclick="openPage('calendarPage',this)">Календарь</button>
-      <button onclick="openPage('incomePage',this)">Доходы</button>
-      <button onclick="openPage('expensesPage',this)">Расходы</button>
-    </div>
-
-  </aside>
-
-
-  <main class="main">
-
-    <!-- DASHBOARD -->
-
-    <div id="dashboard" class="page active-page">
-
-      <div class="top">
-        <div>
-          <h1>Dashboard</h1>
-          <div class="muted">Твой YouTube-трекер</div>
-        </div>
-
-        <button class="green-btn" onclick="openChannelModal()">
-          + Добавить канал
-        </button>
-      </div>
-
-      <div class="grid">
-
-        <div class="stat">
-          <div class="stat-title">КАНАЛЫ</div>
-          <div class="stat-number" id="totalChannels">0</div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-title">С МОНЕТИЗАЦИЕЙ</div>
-          <div class="stat-number green" id="monetizedChannels">0</div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-title">ДОХОД</div>
-          <div class="stat-number green" id="totalIncome">$0</div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-title">ЧИСТАЯ ПРИБЫЛЬ</div>
-          <div class="stat-number" id="profit">$0</div>
-        </div>
-
-      </div>
-
-
-      <div class="section">
-
-        <div class="section-head">
-          <h2>Мои каналы</h2>
-        </div>
-
-        <div id="dashboardChannels" class="channel-grid"></div>
-
-      </div>
-
-
-      <div class="section">
-
-        <div class="section-head">
-          <h2>Активность</h2>
-          <span class="muted" id="workedCount">0 рабочих дней</span>
-        </div>
-
-        <div class="card">
-          <div id="dashboardCalendar" class="calendar"></div>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- CHANNELS -->
-
-    <div id="channels" class="page">
-
-      <div class="top">
-        <div>
-          <h1>Каналы</h1>
-          <div class="muted">Управление YouTube-каналами</div>
-        </div>
-
-        <button class="green-btn" onclick="openChannelModal()">
-          + Добавить канал
-        </button>
-      </div>
-
-      <div id="allChannels" class="channel-grid"></div>
-
-    </div>
-
-
-    <!-- CALENDAR -->
-
-    <div id="calendarPage" class="page">
-
-      <div class="top">
-        <div>
-          <h1>Календарь</h1>
-          <div class="muted">Нажимай на день, когда работал</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 id="calendarTitle"></h2>
-        <div style="height:15px"></div>
-        <div id="fullCalendar" class="calendar"></div>
-      </div>
-
-    </div>
-
-
-    <!-- INCOME -->
-
-    <div id="incomePage" class="page">
-
-      <div class="top">
-        <div>
-          <h1>Доходы</h1>
-          <div class="muted">Доходы монетизированных каналов</div>
-        </div>
-      </div>
-
-      <div class="grid">
-
-        <div class="stat">
-          <div class="stat-title">ВСЕГО ЗАРАБОТАНО</div>
-          <div class="stat-number green" id="incomeTotal2">$0</div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-title">РАСХОДЫ</div>
-          <div class="stat-number red" id="expenseTotal2">$0</div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-title">ЧИСТАЯ ПРИБЫЛЬ</div>
-          <div class="stat-number" id="profit2">$0</div>
-        </div>
-
-      </div>
-
-
-      <div class="section card">
-
-        <h2>Добавить доход</h2>
-
-        <div style="height:15px"></div>
-
-        <div class="money-row">
-
-          <select id="incomeChannel"></select>
-
-          <input id="incomeAmount"
-                 type="number"
-                 step="0.01"
-                 placeholder="Сумма, $">
-
-          <button class="green-btn" onclick="addIncome()">
-            Добавить
-          </button>
-
-        </div>
-
-        <div id="incomeList"></div>
-
-      </div>
-
-    </div>
-
-
-    <!-- EXPENSES -->
-
-    <div id="expensesPage" class="page">
-
-      <div class="top">
-        <div>
-          <h1>Расходы</h1>
-          <div class="muted">Подписки, сервисы и другие расходы</div>
-        </div>
-      </div>
-
-      <div class="grid">
-
-        <div class="stat">
-          <div class="stat-title">ПОТРАЧЕНО</div>
-          <div class="stat-number red" id="expenseTotal3">$0</div>
-        </div>
-
-      </div>
-
-
-      <div class="section card">
-
-        <h2>Добавить расход</h2>
-
-        <div style="height:15px"></div>
-
-        <div class="money-row">
-
-          <input id="expenseName"
-                 placeholder="Например: ChatGPT">
-
-          <input id="expenseAmount"
-                 type="number"
-                 step="0.01"
-                 placeholder="Сумма, $">
-
-          <button class="green-btn" onclick="addExpense()">
-            Добавить
-          </button>
-
-        </div>
-
-        <div id="expenseList"></div>
-
-      </div>
-
-    </div>
-
-  </main>
-
-</div>
-
 
 <!-- ADD CHANNEL MODAL -->
 
@@ -739,156 +926,476 @@ button{
 
   <div class="modal-box">
 
-    <h2>Добавить канал</h2>
+    <h2>Новый канал</h2>
 
-    <div class="field">
-      <label>Название канала</label>
-      <input id="channelName" placeholder="Например: WILD SHIFT">
+    <div class="form-group">
+      <input id="channelName" class="input" placeholder="Название канала">
     </div>
 
-    <div class="field">
-      <label>Ниша</label>
-      <input id="channelNiche" placeholder="Например: Animals">
+    <div class="form-group">
+      <input id="channelUrl" class="input" placeholder="Ссылка YouTube">
     </div>
 
-    <div class="field">
-      <label>Ссылка на канал</label>
-      <input id="channelLink" placeholder="https://youtube.com/...">
+    <div class="form-group">
+      <label class="form-label">Аватар</label>
+      <input id="channelImage" class="input" type="file" accept="image/*">
     </div>
 
-    <div class="field">
-      <label>Монетизация</label>
+    <div class="form-group">
 
-      <select id="channelMonetized">
-        <option value="false">Не подключена</option>
-        <option value="true">Подключена</option>
-      </select>
+      <label class="form-label">Цвет</label>
+
+      <div class="colors" id="colorPicker">
+
+        <div class="color-dot selected" data-color="#6c42df" style="background:#6c42df"></div>
+        <div class="color-dot" data-color="#287cff" style="background:#287cff"></div>
+        <div class="color-dot" data-color="#27c66b" style="background:#27c66b"></div>
+        <div class="color-dot" data-color="#e9b52c" style="background:#e9b52c"></div>
+        <div class="color-dot" data-color="#ed6338" style="background:#ed6338"></div>
+        <div class="color-dot" data-color="#e63d55" style="background:#e63d55"></div>
+
+      </div>
 
     </div>
 
-    <div class="modal-actions">
+    <div class="form-group">
 
-      <button class="small-btn" onclick="closeChannelModal()">
-        Отмена
-      </button>
+      <label class="form-label">Дни публикаций</label>
 
-      <button class="green-btn" onclick="addChannel()">
-        Добавить
-      </button>
+      <div id="schedulePicker" class="schedule-days">
+        <button class="schedule-day selected" data-day="1">ПН</button>
+        <button class="schedule-day selected" data-day="2">ВТ</button>
+        <button class="schedule-day selected" data-day="3">СР</button>
+        <button class="schedule-day selected" data-day="4">ЧТ</button>
+        <button class="schedule-day selected" data-day="5">ПТ</button>
+        <button class="schedule-day selected" data-day="6">СБ</button>
+        <button class="schedule-day selected" data-day="0">ВС</button>
+      </div>
 
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Видео в день</label>
+      <input id="dailyTarget" class="input" type="number" min="1" value="1">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        <input id="channelMonetized" type="checkbox">
+        Монетизация подключена
+      </label>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-dark" onclick="closeChannelModal()">Отмена</button>
+      <button class="btn btn-green" onclick="createChannel()">Добавить</button>
     </div>
 
   </div>
+</div>
+
+<!-- STATUS MENU -->
+
+<div id="statusMenu" class="status-menu">
+
+  <button onclick="setSelectedStatus('success')">✓ Выложил</button>
+  <button onclick="setSelectedStatus('fail')">✕ Не выложил</button>
+  <button onclick="setSelectedStatus('off')">❄ Выходной</button>
+  <button onclick="setSelectedStatus(null)">Убрать отметку</button>
 
 </div>
 
+<div id="flash" class="flash"></div>
 
 <script>
 
-/* DATA */
+const STORAGE_KEY="youtim_v2";
 
-let data = JSON.parse(localStorage.getItem("youTimData")) || {
-  channels:[],
-  workedDays:[],
-  income:[],
-  expenses:[]
-};
+let data=loadData();
 
-function save(){
-  localStorage.setItem("youTimData",JSON.stringify(data));
+let currentChannelId=null;
+let selectedCalendarDate=null;
+let selectedCalendarType=null;
+let selectedColor="#6c42df";
+let uploadedImage="";
+
+function defaultData(){
+  return{
+    channels:[],
+    work:{},
+    income:[],
+    expenses:[]
+  };
 }
 
+function loadData(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultData();
+  }catch(e){
+    return defaultData();
+  }
+}
 
-/* START */
-
-function startApp(){
-
-  document.getElementById("startScreen").style.display="none";
-  document.getElementById("app").style.display="block";
-
+function save(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
   renderAll();
 }
 
+function dateKey(date=new Date()){
+  const y=date.getFullYear();
+  const m=String(date.getMonth()+1).padStart(2,"0");
+  const d=String(date.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+
+function money(n){
+  return "$"+Number(n||0).toLocaleString("en-US",{
+    maximumFractionDigits:2
+  });
+}
+
+function escapeHTML(value){
+  return String(value||"")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
+}
 
 /* NAVIGATION */
 
-function openPage(page,button){
+document.querySelectorAll(".nav button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    showPage(btn.dataset.page);
+  });
+});
 
-  document.querySelectorAll(".page")
-    .forEach(p=>p.classList.remove("active-page"));
+function showPage(id){
 
-  document.getElementById(page)
-    .classList.add("active-page");
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 
-  document.querySelectorAll(".nav button")
-    .forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".nav button").forEach(b=>{
+    b.classList.toggle("active",b.dataset.page===id);
+  });
 
-  button.classList.add("active");
-
-  renderAll();
+  if(id==="work") renderWorkCalendar();
+  if(id==="income") renderIncome();
+  if(id==="expenses") renderExpenses();
 }
-
 
 /* CHANNEL MODAL */
 
 function openChannelModal(){
-  document.getElementById("channelModal").style.display="flex";
+  document.getElementById("channelModal").classList.add("show");
 }
 
 function closeChannelModal(){
-  document.getElementById("channelModal").style.display="none";
+  document.getElementById("channelModal").classList.remove("show");
 }
 
+document.querySelectorAll(".color-dot").forEach(dot=>{
+  dot.addEventListener("click",()=>{
+    document.querySelectorAll(".color-dot").forEach(d=>d.classList.remove("selected"));
+    dot.classList.add("selected");
+    selectedColor=dot.dataset.color;
+  });
+});
 
-/* ADD CHANNEL */
+document.querySelectorAll(".schedule-day").forEach(btn=>{
+  btn.addEventListener("click",e=>{
+    e.preventDefault();
+    btn.classList.toggle("selected");
+  });
+});
 
-function addChannel(){
+document.getElementById("channelImage").addEventListener("change",e=>{
+
+  const file=e.target.files[0];
+
+  if(!file){
+    uploadedImage="";
+    return;
+  }
+
+  const reader=new FileReader();
+
+  reader.onload=()=>{
+    uploadedImage=reader.result;
+  };
+
+  reader.readAsDataURL(file);
+});
+
+function createChannel(){
 
   const name=document.getElementById("channelName").value.trim();
-  const niche=document.getElementById("channelNiche").value.trim();
-  const link=document.getElementById("channelLink").value.trim();
-
-  const monetized=
-    document.getElementById("channelMonetized").value==="true";
 
   if(!name){
     alert("Напиши название канала");
     return;
   }
 
-  data.channels.push({
+  const schedule=[...document.querySelectorAll(".schedule-day.selected")]
+    .map(b=>Number(b.dataset.day));
+
+  const channel={
     id:Date.now(),
     name,
-    niche,
-    link,
-    monetized
-  });
+    url:document.getElementById("channelUrl").value.trim(),
+    color:selectedColor,
+    image:uploadedImage,
+    monetized:document.getElementById("channelMonetized").checked,
+    schedule,
+    target:Math.max(1,Number(document.getElementById("dailyTarget").value)||1),
+    tracker:{},
+    created:dateKey()
+  };
+
+  data.channels.push(channel);
 
   document.getElementById("channelName").value="";
-  document.getElementById("channelNiche").value="";
-  document.getElementById("channelLink").value="";
-  document.getElementById("channelMonetized").value="false";
+  document.getElementById("channelUrl").value="";
+  document.getElementById("channelImage").value="";
+  document.getElementById("channelMonetized").checked=false;
+  document.getElementById("dailyTarget").value=1;
 
-  save();
+  uploadedImage="";
+
   closeChannelModal();
-  renderAll();
-}
-
-
-/* DELETE CHANNEL */
-
-function deleteChannel(id){
-
-  if(!confirm("Удалить этот канал?")) return;
-
-  data.channels=data.channels.filter(c=>c.id!==id);
-
   save();
-  renderAll();
 }
 
+/* AUTO MISSED DAYS */
 
-/* MONETIZATION */
+function applyAutomaticMisses(){
+
+  const today=new Date();
+  today.setHours(0,0,0,0);
+
+  data.channels.forEach(channel=>{
+
+    const start=new Date(channel.created+"T00:00:00");
+    const cursor=new Date(start);
+
+    while(cursor<today){
+
+      const key=dateKey(cursor);
+      const weekday=cursor.getDay();
+
+      if(channel.schedule.includes(weekday) && !channel.tracker[key]){
+        channel.tracker[key]={status:"fail",count:0};
+      }
+
+      cursor.setDate(cursor.getDate()+1);
+    }
+
+  });
+
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+}
+
+/* STREAK */
+
+function calculateChannelStreak(channel){
+
+  let current=0;
+  let best=0;
+  let running=0;
+
+  const keys=Object.keys(channel.tracker).sort();
+
+  keys.forEach(key=>{
+
+    const status=channel.tracker[key]?.status;
+
+    if(status==="success"){
+      running++;
+      best=Math.max(best,running);
+    }
+
+    if(status==="fail"){
+      running=0;
+    }
+
+    if(status==="off"){
+      /* freeze */
+    }
+
+  });
+
+  const today=new Date();
+  let cursor=new Date(today);
+  cursor.setHours(0,0,0,0);
+
+  for(let i=0;i<1000;i++){
+
+    const key=dateKey(cursor);
+    const entry=channel.tracker[key];
+
+    if(entry?.status==="success"){
+      current++;
+    }else if(entry?.status==="off"){
+      /* frozen */
+    }else{
+      if(cursor.getTime()!==today.setHours(0,0,0,0)){
+        break;
+      }
+    }
+
+    cursor.setDate(cursor.getDate()-1);
+  }
+
+  return{current,best};
+}
+
+function calculateGlobalStreak(){
+
+  if(!data.channels.length){
+    return{current:0,best:0,frozen:false};
+  }
+
+  const allDates=new Set();
+
+  data.channels.forEach(c=>{
+    Object.keys(c.tracker).forEach(k=>allDates.add(k));
+  });
+
+  const dates=[...allDates].sort();
+
+  let run=0;
+  let best=0;
+
+  dates.forEach(key=>{
+
+    const date=new Date(key+"T00:00:00");
+    const weekday=date.getDay();
+
+    const required=data.channels.filter(c=>c.schedule.includes(weekday));
+
+    if(!required.length) return;
+
+    let failed=false;
+    let completed=true;
+
+    required.forEach(c=>{
+
+      const entry=c.tracker[key];
+
+      if(entry?.status==="fail") failed=true;
+
+      if(!entry || (
+        entry.status!=="success" &&
+        entry.status!=="off"
+      )){
+        completed=false;
+      }
+
+    });
+
+    if(failed){
+      run=0;
+    }else if(completed){
+      run++;
+      best=Math.max(best,run);
+    }
+
+  });
+
+  return{
+    current:run,
+    best,
+    frozen:false
+  };
+}
+
+/* CHANNEL CARDS */
+
+function avatarHTML(channel,large=false){
+
+  const sizeClass=large?"detail-avatar":"avatar";
+
+  if(channel.image){
+    return `
+      <div class="${sizeClass}" style="background:${channel.color}">
+        <img src="${channel.image}">
+      </div>
+    `;
+  }
+
+  return `
+    <div class="${sizeClass}" style="background:${channel.color}">
+      ${escapeHTML(channel.name.charAt(0).toUpperCase())}
+    </div>
+  `;
+}
+
+function channelCardHTML(channel){
+
+  const streak=calculateChannelStreak(channel);
+
+  return `
+    <div class="channel-card">
+
+      <div class="channel-head">
+
+        ${avatarHTML(channel)}
+
+        <div>
+          <div class="channel-title">${escapeHTML(channel.name)}</div>
+
+          <div class="badge ${channel.monetized?"on":"off"}">
+            ${channel.monetized?"MONETIZED":"NOT MONETIZED"}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="channel-streak">
+
+        <div>
+          <span class="small-fire">🔥</span>
+          <strong>${streak.current}</strong>
+          <span class="muted">дней</span>
+        </div>
+
+        <div class="muted">
+          🏆 ${streak.best}
+        </div>
+
+      </div>
+
+      <div class="channel-actions">
+
+        <button class="btn btn-dark"
+          onclick="openChannel(${channel.id})">
+          Открыть
+        </button>
+
+        <button class="btn btn-dark"
+          onclick="toggleMonetization(${channel.id})">
+          ${channel.monetized?"Монета ✓":"Монета"}
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
+function renderChannels(){
+
+  const html=data.channels.length
+    ? data.channels.map(channelCardHTML).join("")
+    : `
+      <div class="card muted">
+        Добавь первый YouTube-канал.
+      </div>
+    `;
+
+  document.getElementById("channelGrid").innerHTML=html;
+  document.getElementById("dashboardChannelGrid").innerHTML=html;
+}
 
 function toggleMonetization(id){
 
@@ -899,425 +1406,620 @@ function toggleMonetization(id){
   channel.monetized=!channel.monetized;
 
   save();
-  renderAll();
+
+  if(currentChannelId===id){
+    openChannel(id);
+  }
 }
 
+/* CHANNEL DETAIL */
 
-/* CHANNEL CARDS */
+function openChannel(id){
 
-function channelHTML(channel){
+  currentChannelId=id;
 
-  const badge=channel.monetized
-    ? `<span class="badge badge-on">MONETIZED</span>`
-    : `<span class="badge badge-off">NOT MONETIZED</span>`;
+  showPage("channelDetail");
 
-  return `
-    <div class="channel-card">
+  renderChannelDetail();
+}
 
-      <div class="channel-top">
+function renderChannelDetail(){
 
-        <div>
-          <div class="channel-name">${escapeHTML(channel.name)}</div>
-          <div class="channel-niche">
-            ${escapeHTML(channel.niche || "Без ниши")}
-          </div>
-        </div>
+  const channel=data.channels.find(c=>c.id===currentChannelId);
 
-        ${badge}
+  if(!channel) return;
 
-      </div>
+  const streak=calculateChannelStreak(channel);
 
-      <div class="channel-actions">
+  const entries=Object.values(channel.tracker);
 
-        <button class="small-btn"
-          onclick="toggleMonetization(${channel.id})">
-          ${channel.monetized ? "Отключить монету" : "Подключить монету"}
-        </button>
+  const success=entries.filter(x=>x.status==="success").length;
+  const fail=entries.filter(x=>x.status==="fail").length;
+  const off=entries.filter(x=>x.status==="off").length;
 
-        ${
-          channel.link
-          ? `<button class="small-btn"
-              onclick="window.open('${safeURL(channel.link)}','_blank')">
-              Открыть
-             </button>`
-          : ""
-        }
+  document.getElementById("channelDetailContent").innerHTML=`
 
-        <button class="small-btn delete-btn"
-          onclick="deleteChannel(${channel.id})">
-          Удалить
-        </button>
+    <div class="detail-head">
+
+      ${avatarHTML(channel,true)}
+
+      <div>
+
+        <h1 style="margin-bottom:6px">
+          ${escapeHTML(channel.name)}
+        </h1>
+
+        <span class="badge ${channel.monetized?"on":"off"}">
+          ${channel.monetized?"MONETIZED":"NOT MONETIZED"}
+        </span>
 
       </div>
 
     </div>
-  `;
-}
 
+    <div class="detail-stats">
+
+      <div class="card">
+        <div class="stat-label">ТЕКУЩАЯ СЕРИЯ</div>
+        <div class="stat-value">🔥 ${streak.current}</div>
+      </div>
+
+      <div class="card">
+        <div class="stat-label">РЕКОРД</div>
+        <div class="stat-value">🏆 ${streak.best}</div>
+      </div>
+
+      <div class="card">
+        <div class="stat-label">ВЫЛОЖЕНО</div>
+        <div class="stat-value green">${success}</div>
+      </div>
+
+      <div class="card">
+        <div class="stat-label">ПРОПУЩЕНО</div>
+        <div class="stat-value red">${fail}</div>
+      </div>
+
+    </div>
+
+    <div id="channelCalendar"></div>
+
+    ${
+      channel.monetized
+      ? `
+        <div class="card" style="margin-top:16px">
+          <h3>Доход канала</h3>
+          <div class="muted">
+            Финансовая статистика открыта.
+            Перейди в раздел «Доходы», чтобы добавить заработок.
+          </div>
+        </div>
+      `
+      : `
+        <div class="card locked" style="margin-top:16px">
+          🔒 Финансы откроются после подключения монетизации
+        </div>
+      `
+    }
+
+  `;
+
+  renderCalendar(
+    document.getElementById("channelCalendar"),
+    channel.tracker,
+    "channel"
+  );
+}
 
 /* CALENDAR */
 
-function renderCalendar(elementId){
-
-  const element=document.getElementById(elementId);
-
-  if(!element) return;
+function renderCalendar(container,tracker,type){
 
   const now=new Date();
 
   const year=now.getFullYear();
   const month=now.getMonth();
 
-  const monthNames=[
-    "Январь","Февраль","Март","Апрель",
-    "Май","Июнь","Июль","Август",
-    "Сентябрь","Октябрь","Ноябрь","Декабрь"
-  ];
-
-  const title=document.getElementById("calendarTitle");
-
-  if(title){
-    title.textContent=monthNames[month]+" "+year;
-  }
-
-  const week=["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"];
-
-  let html=week
-    .map(x=>`<div class="week-name">${x}</div>`)
-    .join("");
-
   const first=new Date(year,month,1);
+  const last=new Date(year,month+1,0);
 
-  let firstDay=first.getDay();
+  let html=`
 
-  if(firstDay===0) firstDay=7;
+    <div class="calendar">
 
-  for(let i=1;i<firstDay;i++){
-    html+=`<div class="day empty"></div>`;
+      <div class="calendar-head">
+        <h3 style="margin:0">
+          ${new Intl.DateTimeFormat("ru-RU",{
+            month:"long",
+            year:"numeric"
+          }).format(now)}
+        </h3>
+
+        <div class="muted">
+          ✓ Выложил &nbsp; ✕ Пропуск &nbsp; ❄ Выходной
+        </div>
+      </div>
+
+      <div class="weekdays">
+        <div>ПН</div>
+        <div>ВТ</div>
+        <div>СР</div>
+        <div>ЧТ</div>
+        <div>ПТ</div>
+        <div>СБ</div>
+        <div>ВС</div>
+      </div>
+
+      <div class="days">
+  `;
+
+  let offset=first.getDay()-1;
+  if(offset<0) offset=6;
+
+  for(let i=0;i<offset;i++){
+    html+=`<div></div>`;
   }
 
-  const days=new Date(year,month+1,0).getDate();
+  for(let day=1;day<=last.getDate();day++){
 
-  for(let d=1;d<=days;d++){
+    const date=new Date(year,month,day);
+    const key=dateKey(date);
 
-    const key=
-      year+"-"+String(month+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    const entry=tracker[key];
 
-    const worked=data.workedDays.includes(key);
+    const today=key===dateKey();
+    const future=date>new Date();
+
+    let cls="";
+    let icon="";
+
+    if(entry?.status==="success"){
+      cls="success";
+      icon="✓ Выложил";
+    }
+
+    if(entry?.status==="fail"){
+      cls="fail";
+      icon="✕ Пропуск";
+    }
+
+    if(entry?.status==="off"){
+      cls="off";
+      icon="❄ Выходной";
+    }
 
     html+=`
-      <div
-        class="day ${worked ? "worked" : ""}"
-        onclick="toggleWorkDay('${key}')">
-        ${d}
+
+      <div class="day ${cls} ${today?"today":""} ${future?"future":""}"
+        onclick="openStatusMenu(event,'${key}','${type}')">
+
+        <div class="day-num">${day}</div>
+
+        <div class="day-icon">${icon}</div>
+
       </div>
     `;
   }
 
-  element.innerHTML=html;
+  html+=`
+      </div>
+    </div>
+  `;
+
+  container.innerHTML=html;
 }
 
+/* STATUS MENU */
 
-function toggleWorkDay(day){
+function openStatusMenu(event,key,type){
 
-  if(data.workedDays.includes(day)){
-    data.workedDays=data.workedDays.filter(x=>x!==day);
-  }else{
-    data.workedDays.push(day);
+  selectedCalendarDate=key;
+  selectedCalendarType=type;
+
+  const menu=document.getElementById("statusMenu");
+
+  menu.style.left=Math.min(event.clientX,window.innerWidth-230)+"px";
+  menu.style.top=Math.min(event.clientY,window.innerHeight-220)+"px";
+
+  menu.classList.add("show");
+
+  event.stopPropagation();
+}
+
+document.addEventListener("click",()=>{
+  document.getElementById("statusMenu").classList.remove("show");
+});
+
+function setSelectedStatus(status){
+
+  if(selectedCalendarType==="channel"){
+
+    const channel=data.channels.find(c=>c.id===currentChannelId);
+
+    if(!channel) return;
+
+    if(status){
+      channel.tracker[selectedCalendarDate]={
+        status,
+        count:status==="success"?channel.target:0
+      };
+    }else{
+      delete channel.tracker[selectedCalendarDate];
+    }
+
   }
 
+  if(selectedCalendarType==="work"){
+
+    if(status){
+      data.work[selectedCalendarDate]=status;
+    }else{
+      delete data.work[selectedCalendarDate];
+    }
+
+  }
+
+  if(status==="success") flash("win");
+  if(status==="fail") flash("lose");
+  if(status==="off") flash("freeze");
+
+  document.getElementById("statusMenu").classList.remove("show");
+
   save();
-  renderAll();
+
+  if(selectedCalendarType==="channel"){
+    renderChannelDetail();
+  }
+
+  if(selectedCalendarType==="work"){
+    renderWorkCalendar();
+  }
 }
 
+function flash(type){
+
+  const el=document.getElementById("flash");
+
+  el.className="flash";
+
+  void el.offsetWidth;
+
+  el.classList.add(type);
+
+  setTimeout(()=>{
+    el.className="flash";
+  },800);
+}
+
+/* WORK */
+
+function renderWorkCalendar(){
+
+  const converted={};
+
+  Object.entries(data.work).forEach(([key,status])=>{
+
+    converted[key]={
+      status:
+        status==="success" ? "success" :
+        status==="fail" ? "fail" :
+        "off"
+    };
+
+  });
+
+  const values=Object.values(data.work);
+
+  document.getElementById("workedCount").textContent=
+    values.filter(x=>x==="success").length;
+
+  document.getElementById("notWorkedCount").textContent=
+    values.filter(x=>x==="fail").length;
+
+  document.getElementById("workOffCount").textContent=
+    values.filter(x=>x==="off").length;
+
+  renderCalendar(
+    document.getElementById("workCalendar"),
+    converted,
+    "work"
+  );
+}
 
 /* INCOME */
 
 function addIncome(){
 
-  const channelId=
-    Number(document.getElementById("incomeChannel").value);
-
-  const amount=
-    Number(document.getElementById("incomeAmount").value);
+  const channelId=Number(document.getElementById("incomeChannel").value);
 
   const channel=data.channels.find(c=>c.id===channelId);
 
-  if(!channel){
-    alert("Сначала подключи монетизацию хотя бы одному каналу");
+  if(!channel || !channel.monetized){
+    alert("Выбери монетизированный канал");
     return;
   }
 
-  if(!amount || amount<=0){
+  const amount=Number(document.getElementById("incomeAmount").value);
+
+  if(!amount){
     alert("Введи сумму");
     return;
   }
 
-  data.income.unshift({
+  data.income.push({
     id:Date.now(),
     channelId,
     amount,
-    date:new Date().toLocaleDateString("ru-RU")
+    date:document.getElementById("incomeDate").value || dateKey()
   });
 
   document.getElementById("incomeAmount").value="";
 
   save();
-  renderAll();
 }
 
+function renderIncome(){
 
-function deleteIncome(id){
+  const monetized=data.channels.filter(c=>c.monetized);
 
-  data.income=data.income.filter(x=>x.id!==id);
+  const select=document.getElementById("incomeChannel");
 
-  save();
-  renderAll();
+  select.innerHTML=monetized.length
+    ? monetized.map(c=>`
+        <option value="${c.id}">
+          ${escapeHTML(c.name)}
+        </option>
+      `).join("")
+    : `<option>Нет монетизированных каналов</option>`;
+
+  document.getElementById("incomeDate").value=dateKey();
+
+  const today=dateKey();
+
+  const now=new Date();
+
+  const monthPrefix=
+    now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+
+  const todayIncome=data.income
+    .filter(x=>x.date===today)
+    .reduce((s,x)=>s+Number(x.amount),0);
+
+  const monthIncome=data.income
+    .filter(x=>x.date.startsWith(monthPrefix))
+    .reduce((s,x)=>s+Number(x.amount),0);
+
+  const daily={};
+
+  data.income.forEach(x=>{
+    daily[x.date]=(daily[x.date]||0)+Number(x.amount);
+  });
+
+  const amounts=Object.values(daily);
+
+  const best=amounts.length ? Math.max(...amounts) : 0;
+
+  const avg=amounts.length
+    ? amounts.reduce((a,b)=>a+b,0)/amounts.length
+    : 0;
+
+  document.getElementById("incomeToday").textContent=money(todayIncome);
+  document.getElementById("incomeMonth").textContent=money(monthIncome);
+  document.getElementById("incomeBest").textContent=money(best);
+  document.getElementById("incomeAverage").textContent=money(avg);
+
+  renderIncomeChart(daily);
+
+  document.getElementById("incomeHistory").innerHTML=
+    data.income.length
+    ? [...data.income].reverse().map(x=>{
+
+        const channel=data.channels.find(c=>c.id===x.channelId);
+
+        return `
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            padding:12px 0;
+            border-bottom:1px solid #252b34
+          ">
+            <div>
+              <strong>${escapeHTML(channel?.name || "Удалённый канал")}</strong>
+              <div class="muted">${x.date}</div>
+            </div>
+
+            <div class="green">
+              +${money(x.amount)}
+            </div>
+          </div>
+        `;
+
+      }).join("")
+    : `<div class="muted">Доходов пока нет.</div>`;
 }
 
+function renderIncomeChart(daily){
 
-/* EXPENSE */
+  const entries=Object.entries(daily)
+    .sort((a,b)=>a[0].localeCompare(b[0]))
+    .slice(-30);
+
+  if(entries.length<2){
+
+    document.getElementById("incomeChart").innerHTML=`
+      <div class="locked">
+        Добавь доход минимум за два дня — здесь появится график.
+      </div>
+    `;
+
+    return;
+  }
+
+  const width=700;
+  const height=230;
+
+  const values=entries.map(x=>x[1]);
+
+  const max=Math.max(...values,1);
+
+  const points=entries.map((entry,i)=>{
+
+    const x=(i/(entries.length-1))*width;
+
+    const y=height-(entry[1]/max)*(height-25);
+
+    return `${x},${y}`;
+
+  }).join(" ");
+
+  document.getElementById("incomeChart").innerHTML=`
+
+    <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+
+      <line class="chart-grid" x1="0" y1="25" x2="${width}" y2="25"></line>
+      <line class="chart-grid" x1="0" y1="${height/2}" x2="${width}" y2="${height/2}"></line>
+      <line class="chart-grid" x1="0" y1="${height-1}" x2="${width}" y2="${height-1}"></line>
+
+      <polyline class="chart-line" points="${points}"></polyline>
+
+    </svg>
+  `;
+}
+
+/* EXPENSES */
 
 function addExpense(){
 
-  const name=
-    document.getElementById("expenseName").value.trim();
+  const name=document.getElementById("expenseName").value.trim();
+  const amount=Number(document.getElementById("expenseAmount").value);
 
-  const amount=
-    Number(document.getElementById("expenseAmount").value);
-
-  if(!name){
-    alert("Напиши название расхода");
+  if(!name || !amount){
+    alert("Заполни название и сумму");
     return;
   }
 
-  if(!amount || amount<=0){
-    alert("Введи сумму");
-    return;
-  }
-
-  data.expenses.unshift({
+  data.expenses.push({
     id:Date.now(),
     name,
     amount,
-    date:new Date().toLocaleDateString("ru-RU")
+    date:dateKey()
   });
 
   document.getElementById("expenseName").value="";
   document.getElementById("expenseAmount").value="";
 
   save();
-  renderAll();
 }
 
+function renderExpenses(){
 
-function deleteExpense(id){
+  const now=new Date();
 
-  data.expenses=data.expenses.filter(x=>x.id!==id);
+  const prefix=
+    now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
 
-  save();
-  renderAll();
-}
+  const month=data.expenses
+    .filter(x=>x.date.startsWith(prefix))
+    .reduce((s,x)=>s+Number(x.amount),0);
 
+  const all=data.expenses
+    .reduce((s,x)=>s+Number(x.amount),0);
 
-/* SECURITY HELPERS */
+  document.getElementById("expenseMonth").textContent=money(month);
+  document.getElementById("expenseAll").textContent=money(all);
 
-function escapeHTML(text){
+  document.getElementById("expenseHistory").innerHTML=
+    data.expenses.length
+    ? [...data.expenses].reverse().map(x=>`
 
-  const div=document.createElement("div");
-  div.textContent=text;
-
-  return div.innerHTML;
-}
-
-function safeURL(url){
-
-  if(/^https?:\/\//i.test(url)){
-    return url.replace(/'/g,"%27");
-  }
-
-  return "#";
-}
-
-
-/* RENDER */
-
-function renderAll(){
-
-  const monetized=
-    data.channels.filter(c=>c.monetized);
-
-  const incomeTotal=
-    data.income.reduce((sum,x)=>sum+Number(x.amount),0);
-
-  const expenseTotal=
-    data.expenses.reduce((sum,x)=>sum+Number(x.amount),0);
-
-  const profit=incomeTotal-expenseTotal;
-
-
-  document.getElementById("totalChannels").textContent=
-    data.channels.length;
-
-  document.getElementById("monetizedChannels").textContent=
-    monetized.length;
-
-  document.getElementById("totalIncome").textContent=
-    "$"+incomeTotal.toFixed(2);
-
-  document.getElementById("profit").textContent=
-    "$"+profit.toFixed(2);
-
-  document.getElementById("incomeTotal2").textContent=
-    "$"+incomeTotal.toFixed(2);
-
-  document.getElementById("expenseTotal2").textContent=
-    "$"+expenseTotal.toFixed(2);
-
-  document.getElementById("expenseTotal3").textContent=
-    "$"+expenseTotal.toFixed(2);
-
-  document.getElementById("profit2").textContent=
-    "$"+profit.toFixed(2);
-
-  document.getElementById("workedCount").textContent=
-    data.workedDays.length+" рабочих дней";
-
-
-  /* CHANNELS */
-
-  const channelContent=data.channels.length
-    ? data.channels.map(channelHTML).join("")
-    : `<div class="empty-state">
-        Каналов пока нет. Нажми «Добавить канал».
-       </div>`;
-
-  document.getElementById("dashboardChannels").innerHTML=
-    channelContent;
-
-  document.getElementById("allChannels").innerHTML=
-    channelContent;
-
-
-  /* MONETIZED SELECT */
-
-  const select=document.getElementById("incomeChannel");
-
-  if(monetized.length){
-
-    select.innerHTML=monetized.map(c=>
-      `<option value="${c.id}">
-        ${escapeHTML(c.name)}
-       </option>`
-    ).join("");
-
-  }else{
-
-    select.innerHTML=
-      `<option value="">
-        Нет монетизированных каналов
-       </option>`;
-  }
-
-
-  /* INCOME LIST */
-
-  const incomeList=document.getElementById("incomeList");
-
-  incomeList.innerHTML=data.income.length
-    ? data.income.map(x=>{
-
-        const channel=
-          data.channels.find(c=>c.id===x.channelId);
-
-        return `
-          <div class="list-item">
-
-            <div>
-              <strong>
-                ${escapeHTML(channel ? channel.name : "Удалённый канал")}
-              </strong>
-
-              <div class="muted">
-                ${x.date}
-              </div>
-            </div>
-
-            <div>
-              <span class="amount green">
-                +$${Number(x.amount).toFixed(2)}
-              </span>
-
-              <button
-                class="small-btn delete-btn"
-                onclick="deleteIncome(${x.id})">
-                ×
-              </button>
-            </div>
-
-          </div>
-        `;
-
-      }).join("")
-    : `<div class="empty-state">
-        Доходов пока нет.
-       </div>`;
-
-
-  /* EXPENSE LIST */
-
-  const expenseList=document.getElementById("expenseList");
-
-  expenseList.innerHTML=data.expenses.length
-    ? data.expenses.map(x=>`
-
-        <div class="list-item">
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          padding:12px 0;
+          border-bottom:1px solid #252b34
+        ">
 
           <div>
             <strong>${escapeHTML(x.name)}</strong>
-
-            <div class="muted">
-              ${x.date}
-            </div>
+            <div class="muted">${x.date}</div>
           </div>
 
-          <div>
-
-            <span class="amount red">
-              -$${Number(x.amount).toFixed(2)}
-            </span>
-
-            <button
-              class="small-btn delete-btn"
-              onclick="deleteExpense(${x.id})">
-              ×
-            </button>
-
+          <div class="red">
+            -${money(x.amount)}
           </div>
 
         </div>
 
       `).join("")
-    : `<div class="empty-state">
-        Расходов пока нет.
-       </div>`;
-
-
-  renderCalendar("dashboardCalendar");
-  renderCalendar("fullCalendar");
+    : `<div class="muted">Расходов пока нет.</div>`;
 }
 
+/* DASHBOARD */
 
-/* CLOSE MODAL BY BACKGROUND */
+function renderDashboard(){
 
-document.getElementById("channelModal")
-.addEventListener("click",function(e){
+  const monetized=data.channels.filter(c=>c.monetized);
 
-  if(e.target===this){
-    closeChannelModal();
+  const now=new Date();
+
+  const prefix=
+    now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+
+  const income=data.income
+    .filter(x=>x.date.startsWith(prefix))
+    .reduce((s,x)=>s+Number(x.amount),0);
+
+  const expenses=data.expenses
+    .filter(x=>x.date.startsWith(prefix))
+    .reduce((s,x)=>s+Number(x.amount),0);
+
+  document.getElementById("dashboardChannels").textContent=
+    data.channels.length;
+
+  document.getElementById("dashboardMonetized").textContent=
+    monetized.length;
+
+  document.getElementById("dashboardIncome").textContent=
+    money(income);
+
+  const profit=income-expenses;
+
+  const profitEl=document.getElementById("dashboardProfit");
+
+  profitEl.textContent=money(profit);
+
+  profitEl.className=
+    "stat-value "+(profit>=0?"green":"red");
+
+  const streak=calculateGlobalStreak();
+
+  document.getElementById("globalStreak").textContent=streak.current;
+  document.getElementById("globalBest").textContent=streak.best;
+
+  document.getElementById("todayText").textContent=
+    new Intl.DateTimeFormat("ru-RU",{
+      weekday:"long",
+      day:"numeric",
+      month:"long"
+    }).format(new Date());
+}
+
+/* RENDER */
+
+function renderAll(){
+
+  renderDashboard();
+  renderChannels();
+  renderWorkCalendar();
+  renderIncome();
+  renderExpenses();
+
+  if(currentChannelId){
+    renderChannelDetail();
   }
+}
 
-});
+applyAutomaticMisses();
+renderAll();
 
 </script>
 
