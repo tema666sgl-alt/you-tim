@@ -1,45 +1,1325 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YOU TIM</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YOU TIM</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#080a0d;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+/* START */
+
+#startScreen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.logo{
+  font-size:58px;
+  font-weight:800;
+  letter-spacing:2px;
+  margin:0;
+}
+
+.subtitle{
+  color:#7e8792;
+  font-size:18px;
+  margin:12px 0 36px;
+}
+
+.green-btn{
+  background:#22c55e;
+  color:#041108;
+  border:0;
+  border-radius:14px;
+  padding:15px 30px;
+  font-weight:800;
+  transition:.2s;
+}
+
+.green-btn:hover{
+  transform:translateY(-2px);
+  background:#2bd568;
+}
+
+/* APP */
+
+#app{
+  display:none;
+  min-height:100vh;
+}
+
+.sidebar{
+  width:245px;
+  background:#0d1014;
+  border-right:1px solid #1d232b;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  padding:28px 18px;
+}
+
+.side-logo{
+  font-size:25px;
+  font-weight:900;
+  margin:0 10px 35px;
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.nav button{
+  width:100%;
+  text-align:left;
+  padding:13px 14px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#8e98a5;
+  font-weight:700;
+}
+
+.nav button:hover,
+.nav button.active{
+  background:#171c22;
+  color:#fff;
+}
+
+.main{
+  margin-left:245px;
+  padding:38px;
+  max-width:1500px;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  margin-bottom:35px;
+}
+
+.top h1{
+  margin:0;
+  font-size:34px;
+}
+
+.muted{
+  color:#7d8794;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.stat{
+  background:#101419;
+  border:1px solid #20262e;
+  border-radius:16px;
+  padding:20px;
+}
+
+.stat-title{
+  color:#7f8996;
+  font-size:13px;
+  margin-bottom:12px;
+}
+
+.stat-number{
+  font-size:30px;
+  font-weight:800;
+}
+
+.green{
+  color:#22c55e;
+}
+
+.red{
+  color:#ef4444;
+}
+
+.section{
+  margin-top:34px;
+}
+
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:15px;
+}
+
+.section h2{
+  margin:0;
+  font-size:21px;
+}
+
+.card{
+  background:#101419;
+  border:1px solid #20262e;
+  border-radius:16px;
+  padding:20px;
+}
+
+.channel-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.channel-card{
+  background:#101419;
+  border:1px solid #20262e;
+  border-radius:16px;
+  padding:20px;
+}
+
+.channel-top{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.channel-name{
+  font-size:20px;
+  font-weight:800;
+}
+
+.channel-niche{
+  color:#7d8794;
+  margin-top:6px;
+  font-size:14px;
+}
+
+.badge{
+  display:inline-block;
+  padding:7px 10px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:800;
+  height:max-content;
+}
+
+.badge-off{
+  color:#a3aab3;
+  background:#20252b;
+}
+
+.badge-on{
+  color:#2ce26c;
+  background:#0d2b18;
+}
+
+.channel-actions{
+  display:flex;
+  gap:8px;
+  margin-top:20px;
+  flex-wrap:wrap;
+}
+
+.small-btn{
+  border:1px solid #2b333d;
+  background:#171c22;
+  color:white;
+  padding:9px 12px;
+  border-radius:9px;
+}
+
+.small-btn:hover{
+  background:#20262d;
+}
+
+.delete-btn{
+  color:#ff6b6b;
+}
+
+.work-btn{
+  border:0;
+  background:#22c55e;
+  color:#061008;
+  padding:9px 12px;
+  border-radius:9px;
+  font-weight:800;
+}
+
+/* CALENDAR */
+
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:8px;
+}
+
+.day{
+  min-height:68px;
+  background:#151a20;
+  border:1px solid #242b34;
+  border-radius:10px;
+  padding:9px;
+  color:#8f98a4;
+  cursor:pointer;
+}
+
+.day:hover{
+  border-color:#22c55e;
+}
+
+.day.worked{
+  background:#0e2a18;
+  border-color:#22c55e;
+  color:#fff;
+}
+
+.day.empty{
+  opacity:.25;
+  cursor:default;
+}
+
+.week-name{
+  color:#646e79;
+  text-align:center;
+  font-size:12px;
+  padding:8px 0;
+}
+
+/* FORMS */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.72);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:50;
+}
+
+.modal-box{
+  width:100%;
+  max-width:470px;
+  background:#11151a;
+  border:1px solid #282f38;
+  border-radius:18px;
+  padding:25px;
+}
+
+.modal-box h2{
+  margin-top:0;
+}
+
+.field{
+  margin:15px 0;
+}
+
+.field label{
+  display:block;
+  color:#858f9b;
+  margin-bottom:7px;
+  font-size:13px;
+}
+
+.field input,
+.field select{
+  width:100%;
+  background:#090c10;
+  border:1px solid #29313a;
+  color:white;
+  padding:13px;
+  border-radius:10px;
+  outline:none;
+}
+
+.field input:focus,
+.field select:focus{
+  border-color:#22c55e;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:22px;
+}
+
+/* MONEY */
+
+.money-row{
+  display:grid;
+  grid-template-columns:1.5fr 1fr auto;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.money-row input,
+.money-row select{
+  background:#090c10;
+  border:1px solid #29313a;
+  color:white;
+  padding:12px;
+  border-radius:9px;
+}
+
+.list-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid #20262e;
+  gap:15px;
+}
+
+.list-item:last-child{
+  border-bottom:0;
+}
+
+.amount{
+  font-weight:800;
+}
+
+.page{
+  display:none;
+}
+
+.page.active-page{
+  display:block;
+}
+
+.empty-state{
+  color:#68727e;
+  padding:30px 5px;
+  text-align:center;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .channel-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:700px){
+  .sidebar{
+    position:static;
+    width:100%;
+    border-right:0;
+    border-bottom:1px solid #1d232b;
+  }
+
+  #app{
+    display:none;
+  }
+
+  .main{
+    margin-left:0;
+    padding:22px;
+  }
+
+  .nav{
+    flex-direction:row;
+    overflow:auto;
+  }
+
+  .nav button{
+    width:auto;
+    white-space:nowrap;
+  }
+
+  .grid,
+  .channel-grid{
+    grid-template-columns:1fr;
+  }
+
+  .money-row{
+    grid-template-columns:1fr;
+  }
+
+  .calendar{
+    gap:4px;
+  }
+
+  .day{
+    min-height:52px;
+    padding:6px;
+  }
+}
+</style>
 </head>
 
-<body style="margin:0;background:#080a0d;color:white;font-family:Arial,sans-serif;">
+<body>
 
-  <div style="
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-  ">
+<!-- START SCREEN -->
 
-    <h1 style="font-size:52px;margin:0;">
-      YOU TIM
-    </h1>
+<div id="startScreen">
+  <div>
+    <h1 class="logo">YOU TIM</h1>
+    <div class="subtitle">Создавай. Публикуй. Расти.</div>
+    <button class="green-btn" onclick="startApp()">НАЧАТЬ</button>
+  </div>
+</div>
 
-    <p style="color:#888;font-size:18px;margin-top:12px;">
-      Создавай. Публикуй. Расти.
-    </p>
 
-    <button style="
-      margin-top:35px;
-      padding:16px 50px;
-      border:0;
-      border-radius:16px;
-      background:#22c55e;
-      color:#061008;
-      font-size:17px;
-      font-weight:bold;
-      cursor:pointer;
-    ">
-      НАЧАТЬ
-    </button>
+<!-- APPLICATION -->
+
+<div id="app">
+
+  <aside class="sidebar">
+
+    <div class="side-logo">YOU TIM</div>
+
+    <div class="nav">
+      <button class="active" onclick="openPage('dashboard',this)">Dashboard</button>
+      <button onclick="openPage('channels',this)">Каналы</button>
+      <button onclick="openPage('calendarPage',this)">Календарь</button>
+      <button onclick="openPage('incomePage',this)">Доходы</button>
+      <button onclick="openPage('expensesPage',this)">Расходы</button>
+    </div>
+
+  </aside>
+
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+
+    <div id="dashboard" class="page active-page">
+
+      <div class="top">
+        <div>
+          <h1>Dashboard</h1>
+          <div class="muted">Твой YouTube-трекер</div>
+        </div>
+
+        <button class="green-btn" onclick="openChannelModal()">
+          + Добавить канал
+        </button>
+      </div>
+
+      <div class="grid">
+
+        <div class="stat">
+          <div class="stat-title">КАНАЛЫ</div>
+          <div class="stat-number" id="totalChannels">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-title">С МОНЕТИЗАЦИЕЙ</div>
+          <div class="stat-number green" id="monetizedChannels">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-title">ДОХОД</div>
+          <div class="stat-number green" id="totalIncome">$0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-title">ЧИСТАЯ ПРИБЫЛЬ</div>
+          <div class="stat-number" id="profit">$0</div>
+        </div>
+
+      </div>
+
+
+      <div class="section">
+
+        <div class="section-head">
+          <h2>Мои каналы</h2>
+        </div>
+
+        <div id="dashboardChannels" class="channel-grid"></div>
+
+      </div>
+
+
+      <div class="section">
+
+        <div class="section-head">
+          <h2>Активность</h2>
+          <span class="muted" id="workedCount">0 рабочих дней</span>
+        </div>
+
+        <div class="card">
+          <div id="dashboardCalendar" class="calendar"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- CHANNELS -->
+
+    <div id="channels" class="page">
+
+      <div class="top">
+        <div>
+          <h1>Каналы</h1>
+          <div class="muted">Управление YouTube-каналами</div>
+        </div>
+
+        <button class="green-btn" onclick="openChannelModal()">
+          + Добавить канал
+        </button>
+      </div>
+
+      <div id="allChannels" class="channel-grid"></div>
+
+    </div>
+
+
+    <!-- CALENDAR -->
+
+    <div id="calendarPage" class="page">
+
+      <div class="top">
+        <div>
+          <h1>Календарь</h1>
+          <div class="muted">Нажимай на день, когда работал</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 id="calendarTitle"></h2>
+        <div style="height:15px"></div>
+        <div id="fullCalendar" class="calendar"></div>
+      </div>
+
+    </div>
+
+
+    <!-- INCOME -->
+
+    <div id="incomePage" class="page">
+
+      <div class="top">
+        <div>
+          <h1>Доходы</h1>
+          <div class="muted">Доходы монетизированных каналов</div>
+        </div>
+      </div>
+
+      <div class="grid">
+
+        <div class="stat">
+          <div class="stat-title">ВСЕГО ЗАРАБОТАНО</div>
+          <div class="stat-number green" id="incomeTotal2">$0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-title">РАСХОДЫ</div>
+          <div class="stat-number red" id="expenseTotal2">$0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-title">ЧИСТАЯ ПРИБЫЛЬ</div>
+          <div class="stat-number" id="profit2">$0</div>
+        </div>
+
+      </div>
+
+
+      <div class="section card">
+
+        <h2>Добавить доход</h2>
+
+        <div style="height:15px"></div>
+
+        <div class="money-row">
+
+          <select id="incomeChannel"></select>
+
+          <input id="incomeAmount"
+                 type="number"
+                 step="0.01"
+                 placeholder="Сумма, $">
+
+          <button class="green-btn" onclick="addIncome()">
+            Добавить
+          </button>
+
+        </div>
+
+        <div id="incomeList"></div>
+
+      </div>
+
+    </div>
+
+
+    <!-- EXPENSES -->
+
+    <div id="expensesPage" class="page">
+
+      <div class="top">
+        <div>
+          <h1>Расходы</h1>
+          <div class="muted">Подписки, сервисы и другие расходы</div>
+        </div>
+      </div>
+
+      <div class="grid">
+
+        <div class="stat">
+          <div class="stat-title">ПОТРАЧЕНО</div>
+          <div class="stat-number red" id="expenseTotal3">$0</div>
+        </div>
+
+      </div>
+
+
+      <div class="section card">
+
+        <h2>Добавить расход</h2>
+
+        <div style="height:15px"></div>
+
+        <div class="money-row">
+
+          <input id="expenseName"
+                 placeholder="Например: ChatGPT">
+
+          <input id="expenseAmount"
+                 type="number"
+                 step="0.01"
+                 placeholder="Сумма, $">
+
+          <button class="green-btn" onclick="addExpense()">
+            Добавить
+          </button>
+
+        </div>
+
+        <div id="expenseList"></div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<!-- ADD CHANNEL MODAL -->
+
+<div id="channelModal" class="modal">
+
+  <div class="modal-box">
+
+    <h2>Добавить канал</h2>
+
+    <div class="field">
+      <label>Название канала</label>
+      <input id="channelName" placeholder="Например: WILD SHIFT">
+    </div>
+
+    <div class="field">
+      <label>Ниша</label>
+      <input id="channelNiche" placeholder="Например: Animals">
+    </div>
+
+    <div class="field">
+      <label>Ссылка на канал</label>
+      <input id="channelLink" placeholder="https://youtube.com/...">
+    </div>
+
+    <div class="field">
+      <label>Монетизация</label>
+
+      <select id="channelMonetized">
+        <option value="false">Не подключена</option>
+        <option value="true">Подключена</option>
+      </select>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button class="small-btn" onclick="closeChannelModal()">
+        Отмена
+      </button>
+
+      <button class="green-btn" onclick="addChannel()">
+        Добавить
+      </button>
+
+    </div>
 
   </div>
+
+</div>
+
+
+<script>
+
+/* DATA */
+
+let data = JSON.parse(localStorage.getItem("youTimData")) || {
+  channels:[],
+  workedDays:[],
+  income:[],
+  expenses:[]
+};
+
+function save(){
+  localStorage.setItem("youTimData",JSON.stringify(data));
+}
+
+
+/* START */
+
+function startApp(){
+
+  document.getElementById("startScreen").style.display="none";
+  document.getElementById("app").style.display="block";
+
+  renderAll();
+}
+
+
+/* NAVIGATION */
+
+function openPage(page,button){
+
+  document.querySelectorAll(".page")
+    .forEach(p=>p.classList.remove("active-page"));
+
+  document.getElementById(page)
+    .classList.add("active-page");
+
+  document.querySelectorAll(".nav button")
+    .forEach(b=>b.classList.remove("active"));
+
+  button.classList.add("active");
+
+  renderAll();
+}
+
+
+/* CHANNEL MODAL */
+
+function openChannelModal(){
+  document.getElementById("channelModal").style.display="flex";
+}
+
+function closeChannelModal(){
+  document.getElementById("channelModal").style.display="none";
+}
+
+
+/* ADD CHANNEL */
+
+function addChannel(){
+
+  const name=document.getElementById("channelName").value.trim();
+  const niche=document.getElementById("channelNiche").value.trim();
+  const link=document.getElementById("channelLink").value.trim();
+
+  const monetized=
+    document.getElementById("channelMonetized").value==="true";
+
+  if(!name){
+    alert("Напиши название канала");
+    return;
+  }
+
+  data.channels.push({
+    id:Date.now(),
+    name,
+    niche,
+    link,
+    monetized
+  });
+
+  document.getElementById("channelName").value="";
+  document.getElementById("channelNiche").value="";
+  document.getElementById("channelLink").value="";
+  document.getElementById("channelMonetized").value="false";
+
+  save();
+  closeChannelModal();
+  renderAll();
+}
+
+
+/* DELETE CHANNEL */
+
+function deleteChannel(id){
+
+  if(!confirm("Удалить этот канал?")) return;
+
+  data.channels=data.channels.filter(c=>c.id!==id);
+
+  save();
+  renderAll();
+}
+
+
+/* MONETIZATION */
+
+function toggleMonetization(id){
+
+  const channel=data.channels.find(c=>c.id===id);
+
+  if(!channel) return;
+
+  channel.monetized=!channel.monetized;
+
+  save();
+  renderAll();
+}
+
+
+/* CHANNEL CARDS */
+
+function channelHTML(channel){
+
+  const badge=channel.monetized
+    ? `<span class="badge badge-on">MONETIZED</span>`
+    : `<span class="badge badge-off">NOT MONETIZED</span>`;
+
+  return `
+    <div class="channel-card">
+
+      <div class="channel-top">
+
+        <div>
+          <div class="channel-name">${escapeHTML(channel.name)}</div>
+          <div class="channel-niche">
+            ${escapeHTML(channel.niche || "Без ниши")}
+          </div>
+        </div>
+
+        ${badge}
+
+      </div>
+
+      <div class="channel-actions">
+
+        <button class="small-btn"
+          onclick="toggleMonetization(${channel.id})">
+          ${channel.monetized ? "Отключить монету" : "Подключить монету"}
+        </button>
+
+        ${
+          channel.link
+          ? `<button class="small-btn"
+              onclick="window.open('${safeURL(channel.link)}','_blank')">
+              Открыть
+             </button>`
+          : ""
+        }
+
+        <button class="small-btn delete-btn"
+          onclick="deleteChannel(${channel.id})">
+          Удалить
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* CALENDAR */
+
+function renderCalendar(elementId){
+
+  const element=document.getElementById(elementId);
+
+  if(!element) return;
+
+  const now=new Date();
+
+  const year=now.getFullYear();
+  const month=now.getMonth();
+
+  const monthNames=[
+    "Январь","Февраль","Март","Апрель",
+    "Май","Июнь","Июль","Август",
+    "Сентябрь","Октябрь","Ноябрь","Декабрь"
+  ];
+
+  const title=document.getElementById("calendarTitle");
+
+  if(title){
+    title.textContent=monthNames[month]+" "+year;
+  }
+
+  const week=["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"];
+
+  let html=week
+    .map(x=>`<div class="week-name">${x}</div>`)
+    .join("");
+
+  const first=new Date(year,month,1);
+
+  let firstDay=first.getDay();
+
+  if(firstDay===0) firstDay=7;
+
+  for(let i=1;i<firstDay;i++){
+    html+=`<div class="day empty"></div>`;
+  }
+
+  const days=new Date(year,month+1,0).getDate();
+
+  for(let d=1;d<=days;d++){
+
+    const key=
+      year+"-"+String(month+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+
+    const worked=data.workedDays.includes(key);
+
+    html+=`
+      <div
+        class="day ${worked ? "worked" : ""}"
+        onclick="toggleWorkDay('${key}')">
+        ${d}
+      </div>
+    `;
+  }
+
+  element.innerHTML=html;
+}
+
+
+function toggleWorkDay(day){
+
+  if(data.workedDays.includes(day)){
+    data.workedDays=data.workedDays.filter(x=>x!==day);
+  }else{
+    data.workedDays.push(day);
+  }
+
+  save();
+  renderAll();
+}
+
+
+/* INCOME */
+
+function addIncome(){
+
+  const channelId=
+    Number(document.getElementById("incomeChannel").value);
+
+  const amount=
+    Number(document.getElementById("incomeAmount").value);
+
+  const channel=data.channels.find(c=>c.id===channelId);
+
+  if(!channel){
+    alert("Сначала подключи монетизацию хотя бы одному каналу");
+    return;
+  }
+
+  if(!amount || amount<=0){
+    alert("Введи сумму");
+    return;
+  }
+
+  data.income.unshift({
+    id:Date.now(),
+    channelId,
+    amount,
+    date:new Date().toLocaleDateString("ru-RU")
+  });
+
+  document.getElementById("incomeAmount").value="";
+
+  save();
+  renderAll();
+}
+
+
+function deleteIncome(id){
+
+  data.income=data.income.filter(x=>x.id!==id);
+
+  save();
+  renderAll();
+}
+
+
+/* EXPENSE */
+
+function addExpense(){
+
+  const name=
+    document.getElementById("expenseName").value.trim();
+
+  const amount=
+    Number(document.getElementById("expenseAmount").value);
+
+  if(!name){
+    alert("Напиши название расхода");
+    return;
+  }
+
+  if(!amount || amount<=0){
+    alert("Введи сумму");
+    return;
+  }
+
+  data.expenses.unshift({
+    id:Date.now(),
+    name,
+    amount,
+    date:new Date().toLocaleDateString("ru-RU")
+  });
+
+  document.getElementById("expenseName").value="";
+  document.getElementById("expenseAmount").value="";
+
+  save();
+  renderAll();
+}
+
+
+function deleteExpense(id){
+
+  data.expenses=data.expenses.filter(x=>x.id!==id);
+
+  save();
+  renderAll();
+}
+
+
+/* SECURITY HELPERS */
+
+function escapeHTML(text){
+
+  const div=document.createElement("div");
+  div.textContent=text;
+
+  return div.innerHTML;
+}
+
+function safeURL(url){
+
+  if(/^https?:\/\//i.test(url)){
+    return url.replace(/'/g,"%27");
+  }
+
+  return "#";
+}
+
+
+/* RENDER */
+
+function renderAll(){
+
+  const monetized=
+    data.channels.filter(c=>c.monetized);
+
+  const incomeTotal=
+    data.income.reduce((sum,x)=>sum+Number(x.amount),0);
+
+  const expenseTotal=
+    data.expenses.reduce((sum,x)=>sum+Number(x.amount),0);
+
+  const profit=incomeTotal-expenseTotal;
+
+
+  document.getElementById("totalChannels").textContent=
+    data.channels.length;
+
+  document.getElementById("monetizedChannels").textContent=
+    monetized.length;
+
+  document.getElementById("totalIncome").textContent=
+    "$"+incomeTotal.toFixed(2);
+
+  document.getElementById("profit").textContent=
+    "$"+profit.toFixed(2);
+
+  document.getElementById("incomeTotal2").textContent=
+    "$"+incomeTotal.toFixed(2);
+
+  document.getElementById("expenseTotal2").textContent=
+    "$"+expenseTotal.toFixed(2);
+
+  document.getElementById("expenseTotal3").textContent=
+    "$"+expenseTotal.toFixed(2);
+
+  document.getElementById("profit2").textContent=
+    "$"+profit.toFixed(2);
+
+  document.getElementById("workedCount").textContent=
+    data.workedDays.length+" рабочих дней";
+
+
+  /* CHANNELS */
+
+  const channelContent=data.channels.length
+    ? data.channels.map(channelHTML).join("")
+    : `<div class="empty-state">
+        Каналов пока нет. Нажми «Добавить канал».
+       </div>`;
+
+  document.getElementById("dashboardChannels").innerHTML=
+    channelContent;
+
+  document.getElementById("allChannels").innerHTML=
+    channelContent;
+
+
+  /* MONETIZED SELECT */
+
+  const select=document.getElementById("incomeChannel");
+
+  if(monetized.length){
+
+    select.innerHTML=monetized.map(c=>
+      `<option value="${c.id}">
+        ${escapeHTML(c.name)}
+       </option>`
+    ).join("");
+
+  }else{
+
+    select.innerHTML=
+      `<option value="">
+        Нет монетизированных каналов
+       </option>`;
+  }
+
+
+  /* INCOME LIST */
+
+  const incomeList=document.getElementById("incomeList");
+
+  incomeList.innerHTML=data.income.length
+    ? data.income.map(x=>{
+
+        const channel=
+          data.channels.find(c=>c.id===x.channelId);
+
+        return `
+          <div class="list-item">
+
+            <div>
+              <strong>
+                ${escapeHTML(channel ? channel.name : "Удалённый канал")}
+              </strong>
+
+              <div class="muted">
+                ${x.date}
+              </div>
+            </div>
+
+            <div>
+              <span class="amount green">
+                +$${Number(x.amount).toFixed(2)}
+              </span>
+
+              <button
+                class="small-btn delete-btn"
+                onclick="deleteIncome(${x.id})">
+                ×
+              </button>
+            </div>
+
+          </div>
+        `;
+
+      }).join("")
+    : `<div class="empty-state">
+        Доходов пока нет.
+       </div>`;
+
+
+  /* EXPENSE LIST */
+
+  const expenseList=document.getElementById("expenseList");
+
+  expenseList.innerHTML=data.expenses.length
+    ? data.expenses.map(x=>`
+
+        <div class="list-item">
+
+          <div>
+            <strong>${escapeHTML(x.name)}</strong>
+
+            <div class="muted">
+              ${x.date}
+            </div>
+          </div>
+
+          <div>
+
+            <span class="amount red">
+              -$${Number(x.amount).toFixed(2)}
+            </span>
+
+            <button
+              class="small-btn delete-btn"
+              onclick="deleteExpense(${x.id})">
+              ×
+            </button>
+
+          </div>
+
+        </div>
+
+      `).join("")
+    : `<div class="empty-state">
+        Расходов пока нет.
+       </div>`;
+
+
+  renderCalendar("dashboardCalendar");
+  renderCalendar("fullCalendar");
+}
+
+
+/* CLOSE MODAL BY BACKGROUND */
+
+document.getElementById("channelModal")
+.addEventListener("click",function(e){
+
+  if(e.target===this){
+    closeChannelModal();
+  }
+
+});
+
+</script>
 
 </body>
 </html>
