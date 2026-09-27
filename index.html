@@ -855,6 +855,20 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 }
 </style>
 
+
+<style id="yt-v42-push-style">
+#ytPushOpen{position:fixed;right:10px;bottom:120px;z-index:88001;background:#14251c;color:#42ee91;border:1px solid #42ee9170;border-radius:12px;padding:9px 11px;font:800 10px system-ui;cursor:pointer;box-shadow:0 10px 30px #0008}
+#ytPushPanel{display:none;position:fixed;inset:0;z-index:120000;background:#000c;align-items:center;justify-content:center;padding:14px;font-family:system-ui}
+#ytPushPanel.open{display:flex}
+#ytPushPanel .sheet{width:min(440px,100%);max-height:88dvh;overflow:auto;background:#0e1715;color:#eaf8f0;border:1px solid #315744;border-radius:17px;padding:18px;box-shadow:0 25px 80px #000c}
+#ytPushPanel h2{font-size:19px;margin:0 0 10px}#ytPushPanel p{font-size:12px;line-height:1.5;color:#adc1b5}
+#ytPushPanel button{cursor:pointer;padding:11px;border-radius:10px;border:1px solid #315744;background:#193728;color:#e5fff0;font-weight:800}
+#ytPushPanel button.primary{background:#43e68d;color:#052013}#ytPushPanel .actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+#ytPushPanel textarea{box-sizing:border-box;width:100%;background:#08120e;color:white;border:1px solid #315744;border-radius:9px;padding:10px;font-size:13px;resize:vertical}
+#ytPushStatus{font-size:11px;color:#9cc4aa;min-height:20px;margin:10px 0;white-space:pre-wrap}
+#ytPushAdmin{display:none;border-top:1px solid #315744;margin-top:15px;padding-top:13px}
+@media(max-width:760px){#ytPushOpen{bottom:114px;right:9px;font-size:8px;padding:7px 9px}#ytPushPanel{align-items:end;padding:8px}#ytPushPanel .sheet{border-radius:18px 18px 10px 10px;padding:14px}}
+</style>
 </head>
 <body>
 
@@ -875,7 +889,7 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 <div class="app"><aside class="sidebar"><div class="brand yt-brand-fixed">
       <span class="yt-brand-logo" aria-hidden="true"><span></span></span>
       <span class="yt-brand-name">YOU TIM</span>
-      <small>V41</small>
+      <small>V42</small>
     </div><div class="nav">
 <button class="active" data-page="dashboard"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></span><span>Главная</span></button>
 <button data-page="channels"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span><span>Каналы</span></button>
@@ -2841,4 +2855,52 @@ body.light-theme .yt-account::after{color:#111820}
 })();
 </script>
 
+
+<button id="ytPushOpen" type="button" hidden>🔔 УВЕДОМЛЕНИЯ</button>
+<div id="ytPushPanel" role="dialog" aria-modal="true" aria-label="Уведомления YOU TIM">
+ <div class="sheet"><h2>🔔 YOU TIM — уведомления</h2>
+ <p>Разреши уведомления, чтобы получать сообщения от YOU TIM даже после закрытия приложения. Можно отключить в любой момент. На iPhone сначала добавь сайт на экран «Домой».</p>
+ <div id="ytPushStatus">Проверка подключения…</div>
+ <div class="actions"><button id="ytPushEnable" class="primary">ВКЛЮЧИТЬ</button><button id="ytPushDisable">ОТКЛЮЧИТЬ</button><button id="ytPushTest">ТЕСТ</button><button id="ytPushClose">ЗАКРЫТЬ</button></div>
+ <section id="ytPushAdmin"><h3>ADMIN — отправить сообщение</h3><p>Отправка только пользователям, которые сами включили уведомления.</p><textarea id="ytPushMessage" rows="3" maxlength="400" placeholder="Текст уведомления (до 400 символов)"></textarea><button id="ytPushSend" class="primary" style="width:100%;margin-top:8px">ОТПРАВИТЬ ПОДПИСЧИКАМ</button></section>
+ </div>
+</div>
+<script id="yt-v42-push-js">
+(()=>{
+const PROJECT='https://ugnpjfdqktlabdyqubzk.supabase.co';
+const FN=PROJECT+'/functions/v1/push';
+const el=id=>document.getElementById(id), status=s=>{el('ytPushStatus').textContent=s};
+let vapid=null, ready=false;
+function supported(){return window.isSecureContext&&'serviceWorker'in navigator&&'PushManager'in window&&'Notification'in window}
+function decodeKey(k){const s=(k+'='.repeat((4-k.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/');return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
+async function session(){return (await window.ytSupabase?.auth.getSession())?.data?.session}
+async function request(action,body={}){
+ const s=await session();if(!s)throw Error('Сначала войди в аккаунт / Sign in first');
+ const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.access_token,'apikey':'sb_publishable_AgFy9XHiEIPPrq6MrP247g_CbC7OU2g'},body:JSON.stringify({action,...body})});
+ const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||'Сервер уведомлений не настроен ('+r.status+')');return j;
+}
+async function config(){if(vapid)return vapid;const j=await request('config');if(!j.publicKey)throw Error('На сервере нет VAPID_PUBLIC_KEY');vapid=j.publicKey;return vapid}
+async function register(){await navigator.serviceWorker.register('./sw.js',{scope:'./'});return navigator.serviceWorker.ready}
+async function open(){el('ytPushPanel').classList.add('open');try{
+ if(!supported()){status('Это устройство или браузер не поддерживает Web Push. На iPhone установи YOU TIM на экран «Домой» (iOS 16.4+).');return}
+ const s=await session();if(!s){status('Войди в аккаунт YOU TIM.');return}
+ const reg=await register();const sub=await reg.pushManager.getSubscription();status(sub?'Уведомления включены на этом устройстве.':'Уведомления пока выключены.');
+ const admin=await window.ytSupabase.rpc('is_admin');el('ytPushAdmin').style.display=admin.data===true?'block':'none';
+ }catch(e){status(e.message)}}
+async function enable(){try{status('Подключение…');if(!supported())throw Error('Web Push не поддерживается.');const reg=await register();const key=await config();
+ const permission=await Notification.requestPermission();if(permission!=='granted')throw Error('Разрешение не получено. Проверь настройки браузера.');
+ const old=await reg.pushManager.getSubscription();if(old){await old.unsubscribe()}
+ const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:decodeKey(key)});
+ try{await request('subscribe',{subscription:sub.toJSON()})}catch(e){await sub.unsubscribe();throw e}
+ status('Готово! Уведомления включены на этом устройстве.');}catch(e){status('Ошибка: '+e.message)}}
+async function disable(){try{const reg=await register(),sub=await reg.pushManager.getSubscription();if(sub){await request('unsubscribe',{endpoint:sub.endpoint});await sub.unsubscribe()}status('Уведомления отключены на этом устройстве.')}catch(e){status('Ошибка: '+e.message)}}
+async function test(){try{status('Отправка теста…');const r=await request('test');status('Тест отправлен: '+(r.sent||0)+' устройство(а). Если нет уведомления — проверь разрешения телефона.')}catch(e){status('Ошибка: '+e.message)}}
+async function send(){const message=el('ytPushMessage').value.trim();if(!message){status('Напиши текст сообщения.');return}if(!confirm('Отправить сообщение всем подписавшимся пользователям?'))return;try{status('Отправка…');const r=await request('broadcast',{title:'YOU TIM',message});status('Отправлено: '+r.sent+'; ошибки: '+r.failed);el('ytPushMessage').value=''}catch(e){status('Ошибка: '+e.message)}}
+el('ytPushOpen').addEventListener('click',open);el('ytPushClose').addEventListener('click',()=>el('ytPushPanel').classList.remove('open'));
+el('ytPushPanel').addEventListener('click',e=>{if(e.target===el('ytPushPanel'))el('ytPushPanel').classList.remove('open')});
+el('ytPushEnable').addEventListener('click',enable);el('ytPushDisable').addEventListener('click',disable);el('ytPushTest').addEventListener('click',test);el('ytPushSend').addEventListener('click',send);
+async function boot(){const s=await session().catch(()=>null);el('ytPushOpen').hidden=!s}
+addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInterval(boot,20000);
+})();
+</script>
 </body></html>

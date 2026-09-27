@@ -1,0 +1,32 @@
+YOU TIM V42 — НАСТРОЙКА PUSH (один раз)
+
+ВАЖНО: загрузка файлов на GitHub добавляет интерфейс, но НЕ включает серверные push сама по себе.
+
+1) GitHub: распакуй ZIP и загрузи в корень репозитория ТОЛЬКО шесть файлов из папки SITE_FILES:
+   index.html, sw.js, manifest.json, icon-192.png, icon-512.png, apple-touch-icon.png.
+   ZIP целиком не загружать.
+
+2) Supabase → SQL Editor: выполни файл supabase/01_push_subscriptions.sql.
+
+3) Создай VAPID-ключи ОДИН РАЗ. Например, на компьютере с Node.js:
+   npx web-push generate-vapid-keys
+   PUBLIC KEY можно показывать клиентам. PRIVATE KEY — только в Supabase Secrets, никому не присылай.
+
+4) Supabase → Edge Functions → Secrets: добавь
+   VAPID_PUBLIC_KEY = публичный ключ
+   VAPID_PRIVATE_KEY = приватный ключ
+   VAPID_SUBJECT = mailto:твой-email
+   (SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY обычно уже доступны в проекте; проверь настройки.)
+
+5) Разверни Edge Function из файла supabase/functions/push/index.ts с именем push.
+   Через Supabase CLI: supabase functions deploy push
+   У функции должна быть включена проверка JWT (verify_jwt=true).
+
+6) Открой YOU TIM под своей учётной записью → УВЕДОМЛЕНИЯ → ВКЛЮЧИТЬ → ТЕСТ.
+   В ADMIN появится поле для рассылки всем пользователям, включившим уведомления.
+
+На iPhone Web Push работает для установленных на экран «Домой» веб-приложений начиная с iOS 16.4.
+Уведомления зависят от разрешений пользователя, настроек ОС, сети и доставки push-провайдера.
+Отключение в приложении удаляет подписку текущего устройства. Другие устройства отключаются отдельно.
+
+ПРИМЕЧАНИЕ: без выполнения шагов 2–5 кнопка ВКЛЮЧИТЬ покажет ошибку сервера — это ожидаемо.
