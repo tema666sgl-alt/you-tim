@@ -889,7 +889,7 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 <div class="app"><aside class="sidebar"><div class="brand yt-brand-fixed">
       <span class="yt-brand-logo" aria-hidden="true"><span></span></span>
       <span class="yt-brand-name">YOU TIM</span>
-      <small>V47</small>
+      
     </div><div class="nav">
 <button class="active" data-page="dashboard"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></span><span>Главная</span></button>
 <button data-page="channels"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span><span>Каналы</span></button>
@@ -1716,10 +1716,8 @@ window.renderCreatorOS=function(){
   window.renderDashboard=function(){dash13();renderCommandCenter13()}
   renderCommandCenter13();
 
-  // PIN gate only if user explicitly enabled it.
-  if(data.security.pinEnabled && data.security.pin){
-    setTimeout(()=>{let p=prompt("YOU TIM · PIN");if(p!==data.security.pin){document.body.innerHTML='<div style="height:100vh;display:grid;place-items:center;background:#080b0e;color:#fff;font-family:Arial"><b>Неверный PIN. Перезагрузи страницу.</b></div>'}},1600);
-  }
+  // Old browser PIN gate removed.
+  if(data.security?.pinEnabled){ data.security.pinEnabled=false; try{save14()}catch(e){} }
 })();
 </script>
 
@@ -2388,17 +2386,13 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
  }
 
  function startPolling(){
+   // Stability mode: cloud is loaded once on login. Local edits are pushed to cloud,
+   // but background pulls never overwrite an active editing session.
    clearInterval(pollTimer);
-   pollTimer=setInterval(pullCloud,2500);
  }
  function startRealtime(){
    if(realtimeChannel){try{sb.removeChannel(realtimeChannel)}catch(e){}}
-   if(!user)return;
-   realtimeChannel=sb.channel('youtim-'+user.id)
-     .on('postgres_changes',{
-       event:'*',schema:'public',table:'user_app_data',filter:'user_id=eq.'+user.id
-     },()=>setTimeout(pullCloud,120))
-     .subscribe();
+   realtimeChannel=null;
  }
 
  localStorage.setItem=function(k,v){
@@ -2409,9 +2403,8 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
      scheduleSave();
    }
  };
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)pullCloud()});
- window.addEventListener('focus',pullCloud);
- window.addEventListener('online',pullCloud);
+ document.addEventListener('visibilitychange',()=>{if(document.hidden&&localDirty)cloudSave()});
+ window.addEventListener('online',()=>{if(localDirty)cloudSave()});
 
  document.getElementById('ytAuthForm').addEventListener('submit',async e=>{
    e.preventDefault(); setMsg(''); submit.disabled=true;
@@ -2425,11 +2418,13 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
        const {data:r,error}=await sb.auth.signUp({email,password,options:{data:{username:rawUsername}}});
        if(error)throw error;
        if(!r.session)throw new Error('В Supabase ещё включено подтверждение email. Выключи Confirm email.');
+       sessionStorage.removeItem('yt_admin_pin_fails');
        showUser(r.user); await cloudBoot();
        setMsg('Профиль создан.','ok');
      }else{
        const {data:r,error}=await sb.auth.signInWithPassword({email,password});
        if(error)throw error;
+       sessionStorage.removeItem('yt_admin_pin_fails');
        showUser(r.user); await cloudBoot();
      }
    }catch(err){
@@ -2976,25 +2971,51 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
 })();
 </script>
 
-<!-- YOU TIM V44 — hidden admin password entry -->
-<style id="yt-v44-admin-entry-css">
+<!-- YOU TIM — ADMIN PIN GATE -->
+<style id="yt-admin-pin-css">
 .yt-brand-logo{cursor:pointer!important;user-select:none}.yt-brand-logo:active{transform:scale(.94)}
-#ytAdminPassGate{position:fixed;inset:0;z-index:1300000;background:#000b;display:none;place-items:center;padding:18px;backdrop-filter:blur(8px)}
-#ytAdminPassGate.on{display:grid}.yt-admin-pass-card{width:min(380px,100%);background:#0d1419;border:1px solid #315744;border-radius:20px;padding:20px;box-shadow:0 25px 80px #000}.yt-admin-pass-card h2{margin:0 0 6px;font-size:17px}.yt-admin-pass-card p{margin:0 0 13px;color:#8d9aa4;font-size:9px;line-height:1.5}.yt-admin-pass-card input{width:100%;padding:12px;border-radius:11px;border:1px solid #2b3943;background:#080d11;color:#fff;outline:none;font-size:14px}.yt-admin-pass-card input:focus{border-color:#35e878}.yt-admin-pass-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.yt-admin-pass-actions button{padding:11px;border-radius:10px;border:1px solid #2b3943;background:#121a20;color:#fff;font-weight:950}.yt-admin-pass-actions .go{background:#35e878;color:#07110b;border:0}.yt-admin-pass-msg{min-height:17px;margin-top:8px;color:#ff7580;font-size:9px}
+#ytAdminPassGate{position:fixed;inset:0;z-index:1300000;background:rgba(0,0,0,.82);display:none;place-items:center;padding:18px;backdrop-filter:blur(14px)}
+#ytAdminPassGate.on{display:grid}.yt-admin-pass-card{width:min(390px,100%);background:linear-gradient(180deg,#111a20,#0a1014);border:1px solid #2f5943;border-radius:24px;padding:24px;box-shadow:0 30px 100px #000,0 0 45px rgba(53,232,120,.08);text-align:center}
+.yt-admin-shield{width:58px;height:58px;margin:0 auto 13px;border-radius:18px;background:#10251a;border:1px solid #35e87866;display:grid;place-items:center;font-size:28px}.yt-admin-pass-card h2{margin:0 0 7px;font-size:20px}.yt-admin-pass-card p{margin:0 0 16px;color:#8d9aa4;font-size:11px;line-height:1.5}
+.yt-admin-pass-card input{width:100%;box-sizing:border-box;padding:14px;border-radius:13px;border:1px solid #34424c;background:#070c10;color:#fff;outline:none;font-size:22px;font-weight:900;text-align:center;letter-spacing:8px}.yt-admin-pass-card input:focus{border-color:#35e878;box-shadow:0 0 0 3px rgba(53,232,120,.08)}
+.yt-admin-pass-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.yt-admin-pass-actions button{padding:13px;border-radius:12px;border:1px solid #2b3943;background:#121a20;color:#fff;font-weight:950}.yt-admin-pass-actions .go{background:#35e878;color:#07110b;border:0}.yt-admin-pass-msg{min-height:20px;margin-top:10px;color:#ff7580;font-size:10px;font-weight:850}
+@media(max-width:760px){.yt-admin-pass-card{padding:20px;border-radius:20px}.yt-admin-pass-card h2{font-size:18px}}
 </style>
-<div id="ytAdminPassGate"><form class="yt-admin-pass-card" id="ytAdminPassForm"><h2>YOU TIM ADMIN</h2><p>Введите пароль администратора.</p><input id="ytAdminPassword" type="password" autocomplete="current-password" placeholder="Пароль администратора" required><div class="yt-admin-pass-actions"><button type="button" id="ytAdminPassCancel">ОТМЕНА</button><button class="go" type="submit">ВОЙТИ</button></div><div class="yt-admin-pass-msg" id="ytAdminPassMsg"></div></form></div>
-<script id="yt-v44-admin-entry-js">
+<div id="ytAdminPassGate"><form class="yt-admin-pass-card" id="ytAdminPassForm"><div class="yt-admin-shield">🔒</div><h2>Добро пожаловать в ADMIN</h2><p>Введите 6-значный PIN администратора</p><input id="ytAdminPassword" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" placeholder="••••••" required><div class="yt-admin-pass-actions"><button type="button" id="ytAdminPassCancel">ОТМЕНА</button><button class="go" type="submit">ВОЙТИ</button></div><div class="yt-admin-pass-msg" id="ytAdminPassMsg"></div></form></div>
+<script id="yt-admin-pin-js">
 (function(){
- const gate=document.getElementById('ytAdminPassGate'), form=document.getElementById('ytAdminPassForm'), input=document.getElementById('ytAdminPassword'), msg=document.getElementById('ytAdminPassMsg');
- function open(){gate.classList.add('on');input.value='';msg.textContent='';setTimeout(()=>input.focus(),50)}
+ const gate=document.getElementById('ytAdminPassGate'),form=document.getElementById('ytAdminPassForm'),input=document.getElementById('ytAdminPassword'),msg=document.getElementById('ytAdminPassMsg');
+ const FAIL_KEY='yt_admin_pin_fails';
+ const fails=()=>Number(sessionStorage.getItem(FAIL_KEY)||0);
+ const setFails=n=>sessionStorage.setItem(FAIL_KEY,String(n));
+ function open(){gate.classList.add('on');input.value='';msg.textContent=fails()?`Осталось попыток: ${Math.max(0,3-fails())}`:'';setTimeout(()=>input.focus(),60)}
  function close(){gate.classList.remove('on');input.value='';msg.textContent=''}
- document.querySelectorAll('.yt-brand-logo').forEach(el=>{el.setAttribute('title','Admin');el.addEventListener('click',async()=>{try{const r=await window.ytSupabase?.rpc('is_admin');if(!r?.error&&r?.data===true){showPage('admin');setTimeout(()=>window.ytAdminLoad?.(),30);return}}catch(e){}open()})});
- document.getElementById('ytAdminPassCancel').onclick=close; gate.addEventListener('click',e=>{if(e.target===gate)close()});
- form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='Проверка...';const btn=form.querySelector('.go');btn.disabled=true;try{const {data,error}=await window.ytSupabase.auth.signInWithPassword({email:'tema666sgl@gmail.com',password:input.value});if(error)throw error;const r=await window.ytSupabase.rpc('is_admin');if(r.error||r.data!==true){await window.ytSupabase.auth.signOut();throw new Error('Этот аккаунт не является администратором.')}close();setTimeout(()=>{showPage('admin');window.ytAdminLoad?.()},180)}catch(err){msg.textContent='Неверный пароль администратора.'}finally{btn.disabled=false}});
+ async function forceLogin(){try{await window.ytSupabase?.auth.signOut()}catch(e){} close(); location.reload()}
+ document.querySelectorAll('.yt-brand-logo').forEach(x=>{x.setAttribute('title','ADMIN');x.addEventListener('click',open)});
+ document.getElementById('ytAdminPassCancel').onclick=close;
+ gate.addEventListener('click',e=>{if(e.target===gate)close()});
+ input.addEventListener('input',()=>{input.value=input.value.replace(/\D/g,'').slice(0,6)});
+ form.addEventListener('submit',async e=>{
+   e.preventDefault();
+   if(fails()>=3){await forceLogin();return}
+   if(!/^\d{6}$/.test(input.value)){msg.textContent='Введите ровно 6 цифр.';return}
+   msg.textContent='Проверка…';const btn=form.querySelector('.go');btn.disabled=true;
+   try{
+     // The current account must already be the server-authorized administrator.
+     const adm=await window.ytSupabase.rpc('is_admin');
+     if(adm.error||adm.data!==true)throw new Error('not-admin');
+     // PIN is the 6-digit password of the admin account; re-authenticate before opening ADMIN.
+     const {error}=await window.ytSupabase.auth.signInWithPassword({email:'tema666sgl@gmail.com',password:input.value});
+     if(error)throw error;
+     setFails(0);close();setTimeout(()=>{showPage('admin');window.ytAdminLoad?.()},120);
+   }catch(err){
+     const n=fails()+1;setFails(n);input.value='';
+     if(n>=3){msg.textContent='3 ошибки. Возврат на вход…';setTimeout(forceLogin,900)}
+     else{msg.textContent=`Неверный PIN. Осталось попыток: ${3-n}`;input.focus()}
+   }finally{btn.disabled=false}
+ });
 })();
 </script>
-
-
 
 <!-- YOU TIM V48 — phone-first compact tour -->
 <style id="yt-v47-mobile-tour-css">
