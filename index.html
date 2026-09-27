@@ -889,7 +889,7 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 <div class="app"><aside class="sidebar"><div class="brand yt-brand-fixed">
       <span class="yt-brand-logo" aria-hidden="true"><span></span></span>
       <span class="yt-brand-name">YOU TIM</span>
-      <small>V43</small>
+      <small>V44</small>
     </div><div class="nav">
 <button class="active" data-page="dashboard"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></span><span>Главная</span></button>
 <button data-page="channels"><span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span><span>Каналы</span></button>
@@ -2195,7 +2195,7 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
     <div class="yt-auth-sub" id="ytAuthSub">Войди в аккаунт — данные будут доступны на телефоне и компьютере.</div>
     <div class="yt-auth-tabs"><button id="ytLoginTab" class="active" type="button">ВОЙТИ</button><button id="ytSignupTab" type="button">РЕГИСТРАЦИЯ</button></div>
     <form id="ytAuthForm">
-      <div class="yt-auth-field"><label>EMAIL</label><input id="ytAuthEmail" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+      <div class="yt-auth-field"><label>ИМЯ ПОЛЬЗОВАТЕЛЯ</label><input id="ytAuthUsername" type="text" autocomplete="username" required minlength="3" maxlength="24" placeholder="Например: Tima"></div>
       <div class="yt-auth-field"><label>ПАРОЛЬ</label><input id="ytAuthPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Минимум 6 символов"></div>
       <button class="yt-auth-submit" id="ytAuthSubmit" type="submit">ВОЙТИ</button>
       <div class="yt-auth-msg" id="ytAuthMsg"></div>
@@ -2224,6 +2224,11 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
  const originalSetItem=localStorage.setItem.bind(localStorage);
  const gate=document.getElementById('ytAuthGate'),msg=document.getElementById('ytAuthMsg'),submit=document.getElementById('ytAuthSubmit');
 
+ const ADMIN_EMAIL='tema666sgl@gmail.com';
+ function cleanUsername(v){return String(v||'').trim().toLowerCase().replace(/[^a-z0-9._-]/g,'');}
+ function usernameEmail(v){return cleanUsername(v)+'@users.youtim.app';}
+ function displayName(u){return u?.user_metadata?.username||((u?.email||'').endsWith('@users.youtim.app')?(u.email.split('@')[0]):(u?.email||''));}
+
  function setMsg(t,type=''){msg.textContent=t||'';msg.className='yt-auth-msg '+type}
  function setMode(m){
    mode=m;
@@ -2246,7 +2251,7 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
    gate.classList.toggle('on',!u);
    const a=document.getElementById('ytAccount');
    a.classList.toggle('on',!!u);
-   document.getElementById('ytAccountEmail').textContent=u?.email||'';
+   document.getElementById('ytAccountEmail').textContent=displayName(u);
  }
  function localPayload(){
    try{return JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}')}
@@ -2393,20 +2398,29 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
 
  document.getElementById('ytAuthForm').addEventListener('submit',async e=>{
    e.preventDefault(); setMsg(''); submit.disabled=true;
-   const email=document.getElementById('ytAuthEmail').value.trim();
+   const rawUsername=document.getElementById('ytAuthUsername').value.trim();
+   const username=cleanUsername(rawUsername);
    const password=document.getElementById('ytAuthPassword').value;
+   if(username.length<3){setMsg('Имя: минимум 3 символа. Используй латиницу, цифры, . _ -','err');submit.disabled=false;return}
+   const email=usernameEmail(username);
    try{
      if(mode==='signup'){
-       const {data:r,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:'https://tema666sgl-alt.github.io/you-tim/'}});
+       const {data:r,error}=await sb.auth.signUp({email,password,options:{data:{username:rawUsername}}});
        if(error)throw error;
-       if(r.session){showUser(r.user);await cloudBoot()}
-       else setMsg('Аккаунт создан. Проверь почту и подтверди email, затем войди.','ok');
+       if(!r.session)throw new Error('В Supabase ещё включено подтверждение email. Выключи Confirm email.');
+       showUser(r.user); await cloudBoot();
+       setMsg('Профиль создан.','ok');
      }else{
        const {data:r,error}=await sb.auth.signInWithPassword({email,password});
        if(error)throw error;
        showUser(r.user); await cloudBoot();
      }
-   }catch(err){setMsg(err.message||'Ошибка входа.','err')}
+   }catch(err){
+     let t=err?.message||'Ошибка входа.';
+     if(/invalid login credentials/i.test(t))t='Неверное имя или пароль.';
+     if(/already registered|already been registered/i.test(t))t='Такое имя уже занято.';
+     setMsg(t,'err')
+   }
    finally{submit.disabled=false}
  });
 
@@ -2544,7 +2558,7 @@ body.light-theme .yt-account::after{color:#111820}
 </style>
 <div id="ytConsentGate"><div class="yt-terms"><h2>YOU TIM — Terms & Privacy / Условия и конфиденциальность</h2><div class="lead">Перед использованием облачных функций ознакомьтесь с условиями. Scroll to the end, confirm the checkbox, then agree.</div><div class="yt-terms-scroll" id="ytTermsScroll">
 <h3>1. Назначение сервиса / Purpose</h3><p>YOU TIM — инструмент для организации работы с YouTube-каналами, планирования публикаций, календаря, целей, заметок, статистики, доходов и других функций продуктивности. YOU TIM is a productivity and channel-management tool. Функции могут изменяться, добавляться или удаляться по мере развития продукта.</p>
-<h3>2. Аккаунт / Account</h3><p>Для облачной синхронизации создаётся аккаунт. Пользователь отвечает за корректность введённого email, безопасность пароля и действия в своём аккаунте. Не передавайте пароль третьим лицам. Администратор YOU TIM не запрашивает пароль Google или YouTube.</p>
+<h3>2. Аккаунт / Account</h3><p>Для облачной синхронизации создаётся аккаунт с именем пользователя и паролем. Подтверждение email не требуется. Пользователь отвечает за безопасность пароля и действия в своём аккаунте. Не передавайте пароль третьим лицам. Администратор YOU TIM не запрашивает пароль Google или YouTube.</p>
 <h3>3. Какие данные вы добавляете / Data you provide</h3><p><strong>YOU TIM может хранить данные, которые пользователь сам вводит в приложение:</strong> названия YouTube-каналов, ссылки на каналы, выбранную или указанную нишу, статус монетизации, график публикаций, цели, календарные отметки, прогресс, заметки, доходы/расходы, настройки приложения и другую информацию, которую пользователь сохраняет в интерфейсе. YOU TIM may store channel names, channel URLs, niche/category, monetization status, schedules, goals, progress, notes, financial entries, settings and other information entered into the app.</p>
 <h3>4. Доступ администратора / Administrator access</h3><p><strong>Уполномоченный администратор YOU TIM может иметь доступ к данным, которые вы сохраняете в сервисе, включая названия каналов, ссылки, ниши и статус монетизации.</strong> Такой доступ может использоваться для поддержки пользователей, диагностики ошибок, безопасности, предотвращения злоупотреблений, понимания использования функций и улучшения продукта. Authorized YOU TIM administrators may access information stored in the service, including channel names, URLs, niches and monetization status, for support, diagnostics, security and product improvement.</p>
 <h3>5. Улучшение приложения / Product improvement</h3><p>Агрегированные и предоставленные пользователями данные могут анализироваться, чтобы понять, какие функции полезны, где возникают ошибки, какие типы каналов используют YOU TIM и какие инструменты стоит улучшать. Мы можем анализировать использование функций без необходимости публиковать ваши данные другим пользователям.</p>
@@ -2917,4 +2931,23 @@ async function boot(){const s=await session().catch(()=>null);el('ytPushOpen').h
 addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInterval(boot,20000);
 })();
 </script>
+
+<!-- YOU TIM V44 — hidden admin password entry -->
+<style id="yt-v44-admin-entry-css">
+.yt-brand-logo{cursor:pointer!important;user-select:none}.yt-brand-logo:active{transform:scale(.94)}
+#ytAdminPassGate{position:fixed;inset:0;z-index:1300000;background:#000b;display:none;place-items:center;padding:18px;backdrop-filter:blur(8px)}
+#ytAdminPassGate.on{display:grid}.yt-admin-pass-card{width:min(380px,100%);background:#0d1419;border:1px solid #315744;border-radius:20px;padding:20px;box-shadow:0 25px 80px #000}.yt-admin-pass-card h2{margin:0 0 6px;font-size:17px}.yt-admin-pass-card p{margin:0 0 13px;color:#8d9aa4;font-size:9px;line-height:1.5}.yt-admin-pass-card input{width:100%;padding:12px;border-radius:11px;border:1px solid #2b3943;background:#080d11;color:#fff;outline:none;font-size:14px}.yt-admin-pass-card input:focus{border-color:#35e878}.yt-admin-pass-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.yt-admin-pass-actions button{padding:11px;border-radius:10px;border:1px solid #2b3943;background:#121a20;color:#fff;font-weight:950}.yt-admin-pass-actions .go{background:#35e878;color:#07110b;border:0}.yt-admin-pass-msg{min-height:17px;margin-top:8px;color:#ff7580;font-size:9px}
+</style>
+<div id="ytAdminPassGate"><form class="yt-admin-pass-card" id="ytAdminPassForm"><h2>YOU TIM ADMIN</h2><p>Введите пароль администратора.</p><input id="ytAdminPassword" type="password" autocomplete="current-password" placeholder="Пароль администратора" required><div class="yt-admin-pass-actions"><button type="button" id="ytAdminPassCancel">ОТМЕНА</button><button class="go" type="submit">ВОЙТИ</button></div><div class="yt-admin-pass-msg" id="ytAdminPassMsg"></div></form></div>
+<script id="yt-v44-admin-entry-js">
+(function(){
+ const gate=document.getElementById('ytAdminPassGate'), form=document.getElementById('ytAdminPassForm'), input=document.getElementById('ytAdminPassword'), msg=document.getElementById('ytAdminPassMsg');
+ function open(){gate.classList.add('on');input.value='';msg.textContent='';setTimeout(()=>input.focus(),50)}
+ function close(){gate.classList.remove('on');input.value='';msg.textContent=''}
+ document.querySelectorAll('.yt-brand-logo').forEach(el=>{el.setAttribute('title','Admin');el.addEventListener('click',async()=>{try{const r=await window.ytSupabase?.rpc('is_admin');if(!r?.error&&r?.data===true){showPage('admin');setTimeout(()=>window.ytAdminLoad?.(),30);return}}catch(e){}open()})});
+ document.getElementById('ytAdminPassCancel').onclick=close; gate.addEventListener('click',e=>{if(e.target===gate)close()});
+ form.addEventListener('submit',async e=>{e.preventDefault();msg.textContent='Проверка...';const btn=form.querySelector('.go');btn.disabled=true;try{const {data,error}=await window.ytSupabase.auth.signInWithPassword({email:'tema666sgl@gmail.com',password:input.value});if(error)throw error;const r=await window.ytSupabase.rpc('is_admin');if(r.error||r.data!==true){await window.ytSupabase.auth.signOut();throw new Error('Этот аккаунт не является администратором.')}close();setTimeout(()=>{showPage('admin');window.ytAdminLoad?.()},180)}catch(err){msg.textContent='Неверный пароль администратора.'}finally{btn.disabled=false}});
+})();
+</script>
+
 </body></html>
