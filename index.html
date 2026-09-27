@@ -1225,7 +1225,7 @@ applyAutomaticMisses();renderAll();
   }
   function allUploads(){let n=0;data.channels.forEach(c=>Object.values(c.tracker||{}).forEach(v=>{if(v.status==="success")n++}));return n}
   function workCounts(){
-    let vals=Object.values(data.work||{}),worked=vals.filter(x=>x.status==="success").length,miss=vals.filter(x=>x.status==="fail").length,off=vals.filter(x=>x.status==="off").length;
+    let vals=Object.values(data.work||{}),worked=vals.filter(x=>(typeof x==="string"?x:x?.status)==="success").length,miss=vals.filter(x=>(typeof x==="string"?x:x?.status)==="fail").length,off=vals.filter(x=>(typeof x==="string"?x:x?.status)==="off").length;
     return{worked,miss,off,rate:(worked+miss)?Math.round(worked/(worked+miss)*100):0};
   }
   function bestIncomeDay(){
@@ -2222,6 +2222,7 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
 
  let mode='login', user=null, cloudTimer=null, applyingCloud=false, syncReady=false, pollTimer=null, realtimeChannel=null;
  let saveGeneration=0, appliedGeneration=0, localDirty=false, cloudSaving=false;
+ const PENDING_KEY='youtim_pending_sync_v61';
  const originalSetItem=localStorage.setItem.bind(localStorage);
  const gate=document.getElementById('ytAuthGate'),msg=document.getElementById('ytAuthMsg'),submit=document.getElementById('ytAuthSubmit');
 
@@ -2294,6 +2295,14 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
    if(!user)return;
    cloudState('syncing'); syncReady=false;
    try{
+     // V61: if the previous session closed before Supabase finished saving,
+     // the local edit (including removed calendar marks) wins on the next launch.
+     const pending=localStorage.getItem(PENDING_KEY)==='1';
+     const pendingLocal=localPayload();
+     if(pending && validPayload(pendingLocal)){
+       await writeCloud(pendingLocal);
+       localStorage.removeItem(PENDING_KEY);
+     }
      const {payload:cloud}=await getCloud();
      if(validPayload(cloud)){
        // Existing cloud is the only source of truth for this account.
@@ -2354,7 +2363,7 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
      await writeCloud(payload);
      appliedGeneration=Math.max(appliedGeneration,myGen);
      // Only mark clean when nothing changed while the request was in flight.
-     if(saveGeneration===myGen)localDirty=false;
+     if(saveGeneration===myGen){localDirty=false;localStorage.removeItem(PENDING_KEY);}
      cloudState('');
      if(localDirty)scheduleSave(120);
      return true;
@@ -2398,10 +2407,13 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
 
  localStorage.setItem=function(k,v){
    originalSetItem(k,v);
-   if(k===LOCAL_KEY&&!applyingCloud&&user&&syncReady){
+   if(k===LOCAL_KEY&&!applyingCloud&&user){
+     // Persist a tiny dirty flag separately so a fast app close/reopen cannot
+     // resurrect an older cloud tracker snapshot.
+     try{originalSetItem(PENDING_KEY,'1')}catch(e){}
      saveGeneration++;
      localDirty=true;
-     scheduleSave();
+     if(syncReady)scheduleSave(40);
    }
  };
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&localDirty)cloudSave()});

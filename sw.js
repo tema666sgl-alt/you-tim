@@ -1,4 +1,4 @@
-const CACHE='you-tim-v59-standalone-fix';
+const CACHE='you-tim-v61-calendar-sync-fix';
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))))});
 self.addEventListener('activate',e=>{e.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k))))]))});
 self.addEventListener('fetch',e=>{
