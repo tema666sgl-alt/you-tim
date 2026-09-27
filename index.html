@@ -1835,7 +1835,7 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
  function cloudState(s){const el=document.getElementById('ytCloud');if(!el)return;el.className='yt-cloud '+(s||'');el.textContent=s==='syncing'?'● SYNC':s==='error'?'● ERROR':'● CLOUD'}
  function showUser(u){user=u||null;gate.classList.toggle('on',!u);const a=document.getElementById('ytAccount');a.classList.toggle('on',!!u);document.getElementById('ytAccountEmail').textContent=u?.email||''}
  async function cloudLoad(){if(!user)return;cloudState('syncing');try{
-   const {data:row,error}=await sb.from('user_data').select('*').eq('user_id',user.id).maybeSingle();
+   const {data:row,error}=await sb.from('user_app_data').select('*').eq('user_id',user.id).maybeSingle();
    if(error)throw error;
    const payload=row&&(row.data||row.app_data||row.payload||row.state);
    if(payload&&typeof payload==='object'){
@@ -1847,8 +1847,8 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
  }catch(e){console.error('YOU TIM cloud load',e);cloudState('error')}}
  async function cloudSave(force){if(!user||applyingCloud)return;cloudState('syncing');try{
    let payload;try{payload=JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}')}catch(e){payload=(typeof data!=='undefined'?data:{})}
-   let res=await sb.from('user_data').upsert({user_id:user.id,data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});
-   if(res.error){res=await sb.from('user_data').upsert({user_id:user.id,app_data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'})}
+   let res=await sb.from('user_app_data').upsert({user_id:user.id,data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+   if(res.error){res=await sb.from('user_app_data').upsert({user_id:user.id,app_data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'})}
    if(res.error)throw res.error;cloudState('');
  }catch(e){console.error('YOU TIM cloud save',e);cloudState('error')}}
  function scheduleSave(){clearTimeout(cloudTimer);cloudTimer=setTimeout(()=>cloudSave(false),700)}
@@ -1867,4 +1867,28 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
  window.ytCloudSave=()=>cloudSave(true);
 })();
 </script>
+
+<style>
+/* ===== YOU TIM V27 — CLEAN ACCOUNT BAR ===== */
+.v21name{display:none!important}
+.yt-account{
+  right:58px!important;top:12px!important;height:34px!important;max-width:none!important;
+  padding:0 10px!important;gap:7px!important;border-radius:11px!important;
+  white-space:nowrap!important;overflow:visible!important;
+}
+.yt-account .yt-email{display:none!important}
+.yt-account::after{content:"Temirlan";color:#fff;font-size:9px;font-weight:1000}
+.yt-cloud{width:8px;height:8px;border-radius:50%;background:#35e878;font-size:0!important;box-shadow:0 0 9px rgba(53,232,120,.45);flex:0 0 8px}
+.yt-cloud.syncing{background:#ffc85a;box-shadow:0 0 9px rgba(255,200,90,.45)}
+.yt-cloud.error{background:#ff7580;box-shadow:0 0 9px rgba(255,117,128,.45)}
+.yt-account button{margin-left:2px!important;font-size:0!important;width:18px;height:18px;padding:0!important;position:relative}
+.yt-account button::after{content:"↪";font-size:13px;color:#8d98a4;position:absolute;inset:0;display:grid;place-items:center}
+body.light-theme .yt-account::after{color:#111820}
+@media(max-width:760px){
+  .v21top{top:8px!important;right:8px!important}
+  .yt-account{right:44px!important;top:8px!important;height:30px!important;padding:0 8px!important;gap:6px!important}
+  .yt-account::after{font-size:8px}
+}
+</style>
+
 </body></html>
