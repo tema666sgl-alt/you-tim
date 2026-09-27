@@ -3002,17 +3002,20 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
    if(!/^\d{6}$/.test(input.value)){msg.textContent='Введите ровно 6 цифр.';return}
    msg.textContent='Проверка…';const btn=form.querySelector('.go');btn.disabled=true;
    try{
-     // The current account must already be the server-authorized administrator.
-     const adm=await window.ytSupabase.rpc('is_admin');
-     if(adm.error||adm.data!==true)throw new Error('not-admin');
-     // Separate local ADMIN gate. The signed-in account must also be authorized by Supabase.
+     // Verify the PIN first. A Supabase permission problem must NOT consume a PIN attempt.
      const data=new TextEncoder().encode(input.value);
      const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',data))).map(b=>b.toString(16).padStart(2,'0')).join('');
      if(digest!=='34911b6511668074432b5d846221de62bc0f4ef93e88c08fe9c28f2bd4d7eb6c')throw new Error('bad-pin');
+     const adm=await window.ytSupabase.rpc('is_admin');
+     if(adm.error)throw new Error('admin-check-error');
+     if(adm.data!==true)throw new Error('not-admin');
      setFails(0);close();setTimeout(()=>{showPage('admin');window.ytAdminLoad?.()},120);
    }catch(err){
-     const n=fails()+1;setFails(n);input.value='';
-     if(n>=3){msg.textContent='3 ошибки. Возврат на вход…';setTimeout(forceLogin,900)}
+     input.value='';
+     if(err?.message==='not-admin'){msg.textContent='PIN правильный, но этот аккаунт не имеет прав ADMIN.';input.focus();return}
+     if(err?.message==='admin-check-error'){msg.textContent='PIN правильный, но Supabase не смог проверить права ADMIN. Попробуй ещё раз.';input.focus();return}
+     const n=fails()+1;setFails(n);
+     if(n>=3){msg.textContent='3 неверных PIN. Возврат на вход…';setTimeout(forceLogin,900)}
      else{msg.textContent=`Неверный PIN. Осталось попыток: ${3-n}`;input.focus()}
    }finally{btn.disabled=false}
  });
