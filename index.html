@@ -952,7 +952,7 @@ const STORAGE_KEY="youtim_v2";let data=loadData(),currentChannelId=null,selected
 function defaultData(){return{channels:[],work:{},income:[],expenses:[]}}function loadData(){try{let d=JSON.parse(localStorage.getItem(STORAGE_KEY))||defaultData();d.channels=d.channels||[];d.work=d.work||{};d.income=d.income||[];d.expenses=d.expenses||[];return d}catch(e){return defaultData()}}function save(render=true){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));if(render)renderAll()}
 function dateKey(date=new Date()){return`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}function money(n){return"$"+Number(n||0).toLocaleString("en-US",{maximumFractionDigits:2})}function escapeHTML(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
 document.querySelectorAll(".nav button").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
-function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===id||(id==="channelDetail"&&b.dataset.page==="channels")));if(id==="work")renderWorkCalendar();if(id==="settings"&&window.renderSettings15)renderSettings15();if(id==="studio"&&window.renderStudio)renderStudio();if(id==="goals"&&window.renderGoalPage)renderGoalPage();if(id==="income")renderIncome();if(id==="expenses")renderExpenses();if(id==="admin"&&window.ytAdminLoad)window.ytAdminLoad()}
+function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===id||(id==="channelDetail"&&b.dataset.page==="channels")));if(id==="channels"||id==="dashboard"){try{renderChannels();renderDashboard()}catch(e){console.warn("YOU TIM page refresh",e)}}if(id==="work")renderWorkCalendar();if(id==="settings"&&window.renderSettings15)renderSettings15();if(id==="studio"&&window.renderStudio)renderStudio();if(id==="goals"&&window.renderGoalPage)renderGoalPage();if(id==="income")renderIncome();if(id==="expenses")renderExpenses();if(id==="admin"&&window.ytAdminLoad)window.ytAdminLoad()}
 document.querySelectorAll(".color-dot").forEach(dot=>dot.onclick=()=>{document.querySelectorAll(".color-dot").forEach(d=>d.classList.remove("selected"));dot.classList.add("selected");selectedColor=dot.dataset.color});
 document.querySelectorAll(".schedule-day").forEach(btn=>btn.onclick=e=>{e.preventDefault();btn.classList.toggle("selected")});
 channelImage.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>uploadedImage=r.result;r.readAsDataURL(f)};
@@ -1007,6 +1007,7 @@ function saveChannelForm(){
        Cloud persistence continues in the background through the existing save hook. */
     currentChannelId=newChannel.id;
     localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    try{renderChannels();renderDashboard()}catch(e){}
     try{window.ytCloudSave?.()}catch(e){}
     closeChannelModal();
     showPage("channelDetail");
@@ -1026,7 +1027,7 @@ function calculateChannelStreak(c){let best=0,run=0;Object.keys(c.tracker||{}).s
 function avatarHTML(c,large=false){let cl=large?"detail-avatar":"avatar";return c.image?`<div class="${cl}" style="--cc:${c.color};background:${c.color}"><img src="${c.image}"></div>`:`<div class="${cl}" style="--cc:${c.color};background:${c.color}">${escapeHTML(c.name.charAt(0).toUpperCase())}</div>`}
 function channelIncome(id){return data.income.filter(x=>String(x.channelId)===String(id)).reduce((s,x)=>s+Number(x.amount||0),0)}
 function channelCardHTML(c){let s=calculateChannelStreak(c);return`<div class="channel-card" style="--cc:${c.color}"><div class="channel-head">${avatarHTML(c)}<div><div class="channel-title">${escapeHTML(c.name)}</div><span class="badge ${c.monetized?"on":""}">${c.monetized?"MONETIZED":"NOT MONETIZED"}</span></div></div><div class="channel-metrics"><div class="metric"><small>STREAK</small><b><span class="mini-fire">🔥</span> ${s.current}</b></div><div class="metric"><small>BEST</small><b>${s.best}</b></div><div class="metric"><small>ДОХОД</small><b>${c.monetized?money(channelIncome(c.id)):"—"}</b></div></div><div class="channel-actions"><button class="btn btn-sm" onclick="openChannel(${c.id})">Открыть</button><button class="btn btn-sm" onclick="openChannelModal(${c.id})">Изменить</button></div></div>`}
-function renderChannels(){let html=data.channels.length?data.channels.map(channelCardHTML).join(""):`<div class="empty-state">Добавь первый YouTube-канал</div>`;channelGrid.innerHTML=html;dashboardChannelGrid.innerHTML=html}
+function renderChannels(){data.channels=Array.isArray(data.channels)?data.channels:[];let html=data.channels.length?data.channels.map(channelCardHTML).join(""):`<div class="empty-state">Добавь первый YouTube-канал</div>`;const cg=document.getElementById("channelGrid"),dg=document.getElementById("dashboardChannelGrid");if(cg)cg.innerHTML=html;if(dg)dg.innerHTML=html}
 function openChannel(id){currentChannelId=id;showPage("channelDetail");renderChannelDetail()}
 function youtubeURL(v){
   let u=String(v||"").trim();
@@ -2971,7 +2972,7 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
 })();
 </script>
 
-<!-- YOU TIM — ADMIN PIN GATE -->
+<!-- YOU TIM — STABLE UI + ADMIN GATE -->
 <style id="yt-admin-pin-css">
 .yt-brand-logo{cursor:pointer!important;user-select:none}.yt-brand-logo:active{transform:scale(.94)}
 #ytAdminPassGate{position:fixed;inset:0;z-index:1300000;background:rgba(0,0,0,.82);display:none;place-items:center;padding:18px;backdrop-filter:blur(14px)}
@@ -3101,6 +3102,42 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
    const cg=$('#ytConsentGate');if(cg&&(cg.classList.contains('on')||getComputedStyle(cg).display!=='none')){setTimeout(maybeStart,1200);return}i=0;render();
  }catch(e){}}
  addEventListener('load',()=>setTimeout(maybeStart,2200));
+})();
+</script>
+
+
+<!-- YOU TIM — V51 stability + tactile audio -->
+<style id="yt-v51-polish">
+/* Account auth is the only normal-user lock. Remove the obsolete local 4-digit PIN card. */
+.settings-card:has(.settings-row button[onclick*="Pin15"]),.os-card:has(button[onclick*="togglePin13"]){display:none!important}
+.yt-auth-card{box-shadow:0 35px 110px rgba(0,0,0,.72),0 0 55px rgba(53,232,120,.06)!important}
+</style>
+<script id="yt-v51-stability-audio">
+(function(){
+  /* Legacy per-device PIN caused native browser prompts. Normal users already have account name+password. */
+  try{ if(window.data?.security){window.data.security.pinEnabled=false;window.data.security.pin='';localStorage.setItem('youtim_v2',JSON.stringify(window.data));} }catch(e){}
+  window.changePin15=function(){alert('Защита аккаунта работает через имя и пароль YOU TIM. Выйди из аккаунта, чтобы снова запросить пароль.')};
+  window.disablePin15=function(){};
+  window.togglePin13=function(){alert('Защита аккаунта работает через имя и пароль YOU TIM.')};
+
+  let ac=null;
+  function ctx(){try{return ac||(ac=new (window.AudioContext||window.webkitAudioContext)())}catch(e){return null}}
+  function tone(freq,dur=.045,vol=.035,type='sine',delay=0){const c=ctx();if(!c)return;try{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+delay;o.type=type;o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.015)}catch(e){}}
+  function clickSound(){tone(520,.028,.018,'sine');tone(760,.022,.010,'sine',.018)}
+  function successSound(){tone(523,.07,.035,'sine');tone(659,.08,.035,'sine',.055);tone(784,.11,.04,'sine',.115)}
+  function failSound(){tone(220,.10,.03,'triangle');tone(165,.13,.028,'triangle',.08)}
+  function offSound(){tone(392,.08,.022,'sine');tone(330,.12,.018,'sine',.07)}
+  window.ytSound={click:clickSound,success:successSound,fail:failSound,off:offSound};
+  document.addEventListener('pointerdown',e=>{const b=e.target.closest('button,.btn,.nav button,#ytMobileNav47 button');if(!b||b.disabled)return;clickSound()},{passive:true});
+
+  const oldStatus=window.setSelectedStatus;
+  if(typeof oldStatus==='function') window.setSelectedStatus=function(status){const r=oldStatus(status);if(status==='success')successSound();else if(status==='fail')failSound();else if(status==='off')offSound();return r};
+
+  /* Last-line consistency guard: channel count and both channel lists always come from the same data object. */
+  function refreshChannels(){try{if(typeof renderChannels==='function')renderChannels();if(typeof renderDashboard==='function')renderDashboard()}catch(e){}}
+  document.addEventListener('click',e=>{if(e.target.closest('[data-page="channels"],#ytMobileNav47 button'))setTimeout(refreshChannels,0)});
+  window.addEventListener('pageshow',()=>setTimeout(refreshChannels,50));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(refreshChannels,50)});
 })();
 </script>
 
