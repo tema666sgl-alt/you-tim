@@ -2977,7 +2977,7 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
 
 
 
-<!-- YOU TIM V47 — mobile navigation + first-login interactive tour -->
+<!-- YOU TIM V48 — phone-first compact tour -->
 <style id="yt-v47-mobile-tour-css">
 #ytMobileNav47,#ytMore47{display:none}
 @media(max-width:760px){
@@ -2998,7 +2998,17 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
 #ytTour47 .count{color:#35e878;font:950 9px system-ui;letter-spacing:1.4px}#ytTour47 h3{margin:7px 0 6px;font:950 18px system-ui}#ytTour47 p{margin:0;color:#a0abb4;font:500 11px/1.55 system-ui}
 #ytTour47 .actions{display:flex;justify-content:flex-end;margin-top:14px}#ytTour47Next{border:0;border-radius:11px;background:#35e878;color:#07110b;padding:11px 18px;font:950 11px system-ui}
 .yt-tour-target47{position:relative!important;z-index:1400002!important;box-shadow:0 0 0 4px #35e878,0 0 0 9999px rgba(0,0,0,.62),0 0 35px #35e87888!important;border-radius:14px!important;pointer-events:none!important}
-@media(max-width:760px){#ytTour47 .box{bottom:84px;width:calc(100vw - 18px);padding:15px}#ytTour47 h3{font-size:16px}#ytTour47 p{font-size:10px}}
+@media(max-width:760px){
+ #ytTour47 .box{left:10px;right:10px;bottom:84px;transform:none;width:auto;max-height:178px;overflow:hidden;padding:11px 12px;border-radius:15px}
+ #ytTour47 .count{font-size:8px;letter-spacing:1px}
+ #ytTour47 h3{font-size:14px;line-height:1.15;margin:4px 0}
+ #ytTour47 p{font-size:10px;line-height:1.3;max-height:52px;overflow:auto;padding-right:3px}
+ #ytTour47 .actions{margin-top:8px}
+ #ytTour47Next{width:100%;padding:10px 12px;font-size:11px;position:sticky;bottom:0}
+ .yt-tour-target47{box-shadow:0 0 0 3px #35e878,0 0 0 9999px rgba(0,0,0,.70),0 0 22px #35e87866!important;border-radius:12px!important}
+ body.yt-tour-mobile-on #ytInstallBar,body.yt-tour-mobile-on #ytPushOpen,body.yt-tour-mobile-on .v22-ai-fab,body.yt-tour-mobile-on #ytAccountDock{display:none!important}
+ body.yt-tour-mobile-on{overflow-x:hidden!important}
+}
 </style>
 <nav id="ytMobileNav47" aria-label="Мобильная навигация">
  <button data-go47="dashboard" class="active"><b>⌂</b><span>Главная</span></button>
@@ -3025,26 +3035,26 @@ addEventListener('load',()=>setTimeout(boot,1200));setTimeout(boot,2000);setInte
  const tour=$('#ytTour47'), title=$('#ytTourTitle47'), text=$('#ytTourText47'), count=$('#ytTourCount47'), next=$('#ytTourNext47');
  let i=0,target=null,user=null;
  const steps=[
-  {p:'dashboard',s:'.welcome',t:'Добро пожаловать в YOU TIM',x:'Здесь твоя главная панель. Ты видишь прогресс, каналы, серию работы, цели и основные показатели.'},
+  {p:'dashboard',s:'.welcome h1, .welcome h2, .welcome',t:'Добро пожаловать в YOU TIM',x:'Здесь твоя главная панель. Ты видишь прогресс, каналы, серию работы, цели и основные показатели.'},
   {p:'dashboard',s:'.welcome-actions .btn-green',t:'Добавь YouTube-канал',x:'Нажми «Добавить канал», чтобы создать отдельный трекер для каждого своего канала.'},
   {p:'dashboard',s:'.welcome-actions .btn:not(.btn-green)',t:'Отмечай работу',x:'Эта кнопка ведёт в календарь. Там отмечай дни, когда работал, отдыхал или пропустил работу.'},
-  {p:'dashboard',s:'#globalStreakCard',t:'Твоя серия',x:'Огонь показывает непрерывную серию рабочих дней, а BEST — твой лучший результат.'},
-  {p:'dashboard',s:'#creatorOS',t:'Цели на месяц',x:'Здесь следи за целью по доходу, публикациям и просмотрам. Цели можно менять.'},
-  {p:'channels',s:'#channels',t:'Каналы',x:'В этом разделе находятся все твои каналы. Каждый канал имеет собственную статистику, streak и доход.'},
-  {p:'work',s:'#work',t:'Календарь',x:'Отмечай каждый день. Это помогает видеть дисциплину и не терять рабочую серию.'},
-  {p:'studio',s:'#studio',t:'План',x:'Здесь планируй будущие видео и задачи, чтобы понимать, что нужно сделать дальше.'},
-  {p:'goals',s:'#goals',t:'Цель',x:'Раздел цели показывает, к какому результату ты идёшь и сколько осталось.'},
-  {p:'income',s:'#income',t:'Доходы',x:'Записывай заработок по монетизированным каналам и смотри динамику дохода.'},
-  {p:'expenses',s:'#expenses',t:'Расходы',x:'Добавляй расходы, чтобы YOU TIM считал реальную чистую прибыль.'},
-  {p:'settings',s:'#settings',t:'Настройки и резервная копия',x:'Здесь находятся настройки и backup. Резервная копия помогает сохранить данные отдельно.'},
+  {p:'dashboard',s:'#globalStreakCard h2, #globalStreakCard .big, #globalStreakCard',t:'Твоя серия',x:'Огонь показывает непрерывную серию рабочих дней, а BEST — твой лучший результат.'},
+  {p:'dashboard',s:'#creatorOS h2, #creatorOS .section-title, #creatorOS',t:'Цели на месяц',x:'Здесь следи за целью по доходу, публикациям и просмотрам. Цели можно менять.'},
+  {p:'channels',s:'#channels h1, #channels h2, #channels .section-title, #channels',t:'Каналы',x:'В этом разделе находятся все твои каналы. Каждый канал имеет собственную статистику, streak и доход.'},
+  {p:'work',s:'#work h1, #work h2, #work .section-title, #work',t:'Календарь',x:'Отмечай каждый день. Это помогает видеть дисциплину и не терять рабочую серию.'},
+  {p:'studio',s:'#studio h1, #studio h2, #studio .section-title, #studio',t:'План',x:'Здесь планируй будущие видео и задачи, чтобы понимать, что нужно сделать дальше.'},
+  {p:'goals',s:'#goals h1, #goals h2, #goals .section-title, #goals',t:'Цель',x:'Раздел цели показывает, к какому результату ты идёшь и сколько осталось.'},
+  {p:'income',s:'#income h1, #income h2, #income .section-title, #income',t:'Доходы',x:'Записывай заработок по монетизированным каналам и смотри динамику дохода.'},
+  {p:'expenses',s:'#expenses h1, #expenses h2, #expenses .section-title, #expenses',t:'Расходы',x:'Добавляй расходы, чтобы YOU TIM считал реальную чистую прибыль.'},
+  {p:'settings',s:'#settings h1, #settings h2, #settings .section-title, #settings',t:'Настройки и резервная копия',x:'Здесь находятся настройки и backup. Резервная копия помогает сохранить данные отдельно.'},
   {p:'dashboard',s:'#ytPushOpen',t:'Уведомления',x:'Если включишь уведомления, YOU TIM сможет присылать важные сообщения на это устройство.'},
   {p:'dashboard',s:'#ytAccountDock, #ytMobileAccountMini',t:'Твой аккаунт',x:'Через аккаунт можно выйти или сменить пользователя. Данные каждого пользователя отделены друг от друга.'},
-  {p:'dashboard',s:'.welcome',t:'Готово',x:'Теперь ты знаешь основные разделы YOU TIM. Добавь первый канал и начинай отмечать работу.'}
+  {p:'dashboard',s:'.welcome-actions .btn-green, .welcome h1, .welcome',t:'Готово',x:'Теперь ты знаешь основные разделы YOU TIM. Добавь первый канал и начинай отмечать работу.'}
  ];
  function clear(){if(target)target.classList.remove('yt-tour-target47');target=null}
  function findTarget(sel){for(const s of sel.split(',').map(x=>x.trim())){const e=$(s);if(e&&getComputedStyle(e).display!=='none')return e}return null}
- function render(){clear();const st=steps[i];if(st.p)go(st.p);setTimeout(()=>{target=findTarget(st.s);if(target){target.classList.add('yt-tour-target47');target.scrollIntoView({behavior:'smooth',block:'center'})}count.textContent=`ОБУЧЕНИЕ ${i+1} / ${steps.length}`;title.textContent=st.t;text.textContent=st.x;next.textContent=i===steps.length-1?'ЗАВЕРШИТЬ':'ДАЛЬШЕ';tour.classList.add('on')},180)}
- async function finish(){clear();tour.classList.remove('on');try{localStorage.setItem('yt_tutorial_v47_'+user.id,'1');await window.ytSupabase.auth.updateUser({data:{...(user.user_metadata||{}),yt_tutorial_completed_v47:true}})}catch(e){}go('dashboard')}
+ function render(){clear();const st=steps[i];if(st.p)go(st.p);document.body.classList.add('yt-tour-mobile-on');setTimeout(()=>{target=findTarget(st.s);if(target){target.classList.add('yt-tour-target47');const mobile=matchMedia('(max-width:760px)').matches;if(mobile){const vh=window.visualViewport?.height||innerHeight;const boxH=190;const safeTop=70,safeBottom=90+boxH;const r=target.getBoundingClientRect();if(r.top<safeTop||r.bottom>vh-safeBottom){const y=scrollY+r.top-(safeTop+18);scrollTo({top:Math.max(0,y),behavior:'smooth'})}}else target.scrollIntoView({behavior:'smooth',block:'center'})}count.textContent=`ОБУЧЕНИЕ ${i+1} / ${steps.length}`;title.textContent=st.t;text.textContent=st.x;next.textContent=i===steps.length-1?'ЗАВЕРШИТЬ':'ДАЛЬШЕ';tour.classList.add('on')},220)}
+ async function finish(){clear();tour.classList.remove('on');document.body.classList.remove('yt-tour-mobile-on');try{localStorage.setItem('yt_tutorial_v47_'+user.id,'1');await window.ytSupabase.auth.updateUser({data:{...(user.user_metadata||{}),yt_tutorial_completed_v47:true}})}catch(e){}go('dashboard');setTimeout(()=>window.dispatchEvent(new Event('resize')),100)}
  next.addEventListener('click',()=>{if(i>=steps.length-1)finish();else{i++;render()}});
  async function maybeStart(){try{if(!window.ytSupabase)return;const r=await window.ytSupabase.auth.getSession(),u=r?.data?.session?.user;if(!u)return;user=u;if(u.user_metadata?.yt_tutorial_completed_v47===true||localStorage.getItem('yt_tutorial_v47_'+u.id)==='1')return;
    /* Do not cover the consent dialog. Wait until it has been accepted/closed. */
