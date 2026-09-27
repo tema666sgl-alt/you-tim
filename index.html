@@ -560,6 +560,60 @@ body.light-theme .v22-analytics,body.light-theme .v22-metric,body.light-theme .v
 @media(max-width:1250px){.v22-channel-grid{grid-template-columns:minmax(500px,1fr) 176px}.v22-analytics{grid-column:1/-1;min-height:390px}}@media(max-width:760px){.v22-channel-grid{display:block}.v22-analytics{margin-top:10px}.v22-ai-fab{right:12px;bottom:74px}.v22-ai{right:12px;bottom:136px}}
 </style>
 
+
+<style>
+/* ===== YOU TIM V31 — MOBILE CALENDAR TAP FIX ===== */
+@media(max-width:760px){
+  .day:not(.future){
+    cursor:pointer!important;
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+    -webkit-tap-highlight-color:rgba(255,255,255,.10);
+    user-select:none;
+    min-width:0;
+    min-height:42px!important;
+    position:relative;
+    z-index:2;
+  }
+  .day:not(.future):active{
+    transform:scale(.92)!important;
+    filter:brightness(1.35)!important;
+  }
+  .status-menu{
+    position:fixed!important;
+    left:10px!important;
+    right:10px!important;
+    bottom:82px!important;
+    top:auto!important;
+    width:auto!important;
+    padding:9px!important;
+    border-radius:18px!important;
+    z-index:999999!important;
+    background:#151c23!important;
+    border:1px solid #3a4652!important;
+    box-shadow:0 22px 70px rgba(0,0,0,.72)!important;
+  }
+  .status-menu button{
+    min-height:52px!important;
+    padding:13px 14px!important;
+    font-size:14px!important;
+    border-radius:11px!important;
+    touch-action:manipulation!important;
+  }
+  .status-menu button:active{background:#2a3540!important;transform:scale(.985)}
+  .status-menu.show:before{
+    content:"Выбери статус дня";
+    display:block;
+    padding:5px 10px 10px;
+    color:#8f9ba7;
+    font-size:11px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.7px;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -692,8 +746,51 @@ function youtubeURL(v){
 }
 function renderChannelDetail(){const c=data.channels.find(x=>x.id===currentChannelId);if(!c)return;let s=calculateChannelStreak(c),v=Object.values(c.tracker||{});channelDetailContent.innerHTML=`<div class="detail-head">${avatarHTML(c,true)}<div style="flex:1"><div class="channel-title-line"><h1 style="margin:0">${escapeHTML(c.name)}</h1>${youtubeURL(c.url)?`<a class="youtube-link-btn" href="${escapeHTML(youtubeURL(c.url))}" target="_blank" rel="noopener noreferrer" title="Открыть YouTube канал"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/></svg><span>YouTube</span></a>`:""}</div><span class="badge ${c.monetized?"on":""}">${c.monetized?"MONETIZED":"NOT MONETIZED"}</span></div><button class="btn" onclick="openChannelModal(${c.id})">Изменить</button></div><div class="detail-stats"><div class="card"><div class="stat-label">ТЕКУЩАЯ СЕРИЯ</div><div class="stat-value">🔥 ${s.current}</div></div><div class="card"><div class="stat-label">РЕКОРД</div><div class="stat-value">${s.best}</div></div><div class="card"><div class="stat-label">ВЫЛОЖЕНО</div><div class="stat-value green">${v.filter(x=>x.status==="success").length}</div></div><div class="card"><div class="stat-label">ПРОПУЩЕНО</div><div class="stat-value red">${v.filter(x=>x.status==="fail").length}</div></div></div><div class="tracker-layout"><div id="channelCalendar"></div><div class="fire-panel ${c.tracker?.[dateKey()]?.status==="off"?"frozen":""}"><div class="live-fire">🔥</div><div class="fire-num">${s.current}</div><div class="fire-label">DAY STREAK</div><div class="fire-best">BEST ${s.best}</div></div></div>`;renderCalendar(channelCalendar,c.tracker||{},"channel")}
 function renderCalendar(container,tracker,type){const now=new Date(),y=now.getFullYear(),m=now.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0);let html=`<div class="calendar"><div class="calendar-head"><div class="calendar-title">${new Intl.DateTimeFormat("ru-RU",{month:"long",year:"numeric"}).format(now)}</div><div class="legend">зелёный — выполнено · красный — пропуск · синий — выходной</div></div><div class="weekdays">${["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;let off=first.getDay()-1;if(off<0)off=6;for(let i=0;i<off;i++)html+="<div></div>";let t0=new Date();t0.setHours(0,0,0,0);for(let d=1;d<=last.getDate();d++){let dt=new Date(y,m,d),k=dateKey(dt),e=tracker[k],future=dt>t0;html+=`<button class="day ${e?.status||""} ${k===dateKey()?"today":""} ${future?"future":""}" data-date="${k}" ${future?"":"onclick=\"openStatusMenu(event,'"+k+"','"+type+"')\""}><span>${d}</span></button>`}container.innerHTML=html+"</div></div>"}
-function openStatusMenu(e,k,type){selectedCalendarDate=k;selectedCalendarType=type;statusMenu.style.left=Math.min(e.clientX,innerWidth-215)+"px";statusMenu.style.top=Math.min(e.clientY,innerHeight-190)+"px";statusMenu.classList.add("show");e.stopPropagation()}document.addEventListener("click",()=>statusMenu.classList.remove("show"));
-function setSelectedStatus(status){if(selectedCalendarType==="channel"){let c=data.channels.find(x=>x.id===currentChannelId);if(!c)return;if(status)c.tracker[selectedCalendarDate]={status,count:status==="success"?c.target:0};else delete c.tracker[selectedCalendarDate]}else if(selectedCalendarType==="work"){if(status)data.work[selectedCalendarDate]=status;else delete data.work[selectedCalendarDate]}save(false);statusMenu.classList.remove("show");if(status)flash(status==="success"?"win":status==="fail"?"lose":"freeze");if(selectedCalendarType==="channel")renderChannelDetail();else renderWorkCalendar();renderDashboard();renderChannels();requestAnimationFrame(()=>{let el=document.querySelector(`[data-date="${selectedCalendarDate}"]`);if(el)el.classList.add("flash-cell")})}
+function openStatusMenu(e,k,type){
+  if(e){e.preventDefault();e.stopPropagation()}
+  selectedCalendarDate=k;
+  selectedCalendarType=type;
+  if(innerWidth<=760){
+    statusMenu.style.left="10px";
+    statusMenu.style.right="10px";
+    statusMenu.style.top="auto";
+    statusMenu.style.bottom="82px";
+  }else{
+    statusMenu.style.right="auto";
+    statusMenu.style.bottom="auto";
+    statusMenu.style.left=Math.min((e&&Number.isFinite(e.clientX)?e.clientX:innerWidth/2),innerWidth-215)+"px";
+    statusMenu.style.top=Math.min((e&&Number.isFinite(e.clientY)?e.clientY:innerHeight/2),innerHeight-190)+"px";
+  }
+  statusMenu.classList.add("show");
+}
+document.addEventListener("click",(e)=>{
+  if(!statusMenu.contains(e.target))statusMenu.classList.remove("show");
+});
+function setSelectedStatus(status){
+  const changedDate=selectedCalendarDate, changedType=selectedCalendarType;
+  if(changedType==="channel"){
+    let c=data.channels.find(x=>x.id===currentChannelId);
+    if(!c)return;
+    c.tracker=c.tracker||{};
+    if(status)c.tracker[changedDate]={status,count:status==="success"?c.target:0};
+    else delete c.tracker[changedDate];
+  }else if(changedType==="work"){
+    data.work=data.work||{};
+    if(status)data.work[changedDate]=status;
+    else delete data.work[changedDate];
+  }
+  save(false);
+  statusMenu.classList.remove("show");
+  if(status)flash(status==="success"?"win":status==="fail"?"lose":"freeze");
+  if(changedType==="channel")renderChannelDetail();else renderWorkCalendar();
+  renderDashboard();renderChannels();
+  requestAnimationFrame(()=>{
+    let el=document.querySelector(`[data-date="${changedDate}"]`);
+    if(el)el.classList.add("flash-cell");
+  });
+  // V31: don't wait for another action; send this calendar change to Supabase now.
+  try{if(typeof window.ytCloudSave==="function")window.ytCloudSave()}catch(e){}
+}
 function flash(type){flashEl=document.getElementById("flash");flashEl.className="flash";void flashEl.offsetWidth;flashEl.classList.add(type);setTimeout(()=>flashEl.className="flash",800)}
 function renderWorkCalendar(){let converted={};Object.entries(data.work).forEach(([k,s])=>converted[k]={status:s});let v=Object.values(data.work);workedCount.textContent=v.filter(x=>x==="success").length;notWorkedCount.textContent=v.filter(x=>x==="fail").length;workOffCount.textContent=v.filter(x=>x==="off").length;renderCalendar(workCalendar,converted,"work")}
 function addIncome(){let id=Number(incomeChannel.value),c=data.channels.find(x=>x.id===id),amount=Number(incomeAmount.value);if(!c||!c.monetized)return alert("Выбери монетизированный канал");if(!amount)return alert("Введи сумму");data.income.push({id:Date.now(),channelId:id,amount,date:incomeDate.value||dateKey()});incomeAmount.value="";save()}
@@ -2058,7 +2155,7 @@ body.light-theme .yt-auth-card{background:#fff;color:#111820;border-color:#d8e0e
 </script>
 
 <style>
-/* ===== YOU TIM V30 — CLEAN CLOUD START + ONE ACCOUNT ONE DATA ===== */
+/* ===== YOU TIM V31 — MOBILE CALENDAR + CLOUD SAVE FIX ===== */
 .v21name{display:none!important}
 .yt-account{
   right:58px!important;top:12px!important;height:34px!important;max-width:none!important;
